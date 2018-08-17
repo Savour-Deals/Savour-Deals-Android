@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Savour</string>
+    <string name="user_hint">Username</string>
 </resources>
