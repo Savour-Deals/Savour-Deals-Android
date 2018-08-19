@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Savour</string>
     <string name="user_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_in">Sign In</string>
 </resources>

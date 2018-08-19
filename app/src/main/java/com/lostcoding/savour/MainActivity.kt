@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
 
+    private var myDataset = arrayOf("Hello","World!")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,7 +55,12 @@ class MainActivity : AppCompatActivity() {
             return ViewHolder(textView)
         }
 
-        // Replace the contents of a view (invoked by the layout manager)
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            // - get element from your dataset at this position
+            // - replace the contents of the view wht taht element
+            holder.textView.text = myDataset[position]
+        }
 
+        override fun getItemCount(): Int = myDataset.size
     }
 }
