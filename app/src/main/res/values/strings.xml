@@ -3,4 +3,6 @@
     <string name="user_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="sign_in">Sign In</string>
+    <string name="facebook_application_id" translatable="false">127494581197194</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb12749458119719</string>
 </resources>
