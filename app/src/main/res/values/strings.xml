@@ -5,4 +5,6 @@
     <string name="sign_in">Sign In</string>
     <string name="facebook_application_id" translatable="false">127494581197194</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb12749458119719</string>
+    <string name="rename_hint">Re-enter Password</string>
+    <string name="email_hint">Email</string>
 </resources>
