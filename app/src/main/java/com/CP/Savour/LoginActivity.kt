@@ -53,8 +53,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser() {
-        email = editTextEmail?.text.toString()
-        password = editTextPassword?.text.toString()
+        val email = editTextEmail?.text.toString()
+        val password = editTextPassword?.text.toString()
 
         if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
             Log.d(TAG, "Loggin in user.")
