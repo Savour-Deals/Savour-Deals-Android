@@ -5,10 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
@@ -24,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var editTextPassword: EditText? = null
     private var buttonLogin: Button? = null
+    private var progressBar: ProgressBar? = null
 
     // Firebase references
     private var mAuth: FirebaseAuth? = null
@@ -36,12 +35,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        textViewForgotPassword = findViewById(R.id.tv_forgot_password)
-        textViewCreateAccount = findViewById(R.id.tv_register_account)
-        editTextEmail = findViewById(R.id.et_email)
-        editTextPassword = findViewById(R.id.et_password)
-        buttonLogin = findViewById(R.id.btn_login)
-
+        textViewForgotPassword = findViewById(R.id.tv_forgot_password) as TextView
+        textViewCreateAccount = findViewById(R.id.tv_register_account) as TextView
+        editTextEmail = findViewById(R.id.et_email) as EditText
+        editTextPassword = findViewById(R.id.et_password) as EditText
+        buttonLogin = findViewById(R.id.btn_login) as Button
+        progressBar = findViewById(R.id.login_progress) as ProgressBar
+        progressBar!!.visibility = View.GONE
         mAuth = FirebaseAuth.getInstance()
 
         // sending the user to the login activity whenever the textview for the forgot password is pressed
@@ -55,11 +55,11 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUser() {
         val email = editTextEmail?.text.toString()
         val password = editTextPassword?.text.toString()
-
+        progressBar!!.visibility = View.VISIBLE
         if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-            Log.d(TAG, "Loggin in user.")
+            Log.d(TAG, "Logging in user.")
 
-            mAuth!!.signInWithEmailAndPassword(email!!,password!!)
+            mAuth!!.signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(this) { task ->
 
                         if(task.isSuccessful) {
@@ -74,11 +74,13 @@ class LoginActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Enter all details", Toast.LENGTH_SHORT).show()
         }
+        progressBar!!.visibility = View.GONE
     }
 
     private fun updateUI() {
         val intent = Intent(this@LoginActivity, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
+        finish()
     }
 }

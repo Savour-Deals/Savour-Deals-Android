@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -22,7 +23,7 @@ class CreateAccountActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var editTextPassword: EditText? = null
     private var buttonCreateAccount: Button? = null
-    private var mProgressBar: ProgressBar? = null
+    private var progressBar: ProgressBar? = null
 
     //Firebase references
     private var mDatabaseReference: DatabaseReference? = null
@@ -58,9 +59,7 @@ class CreateAccountActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.et_email) as EditText
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonCreateAccount = findViewById(R.id.btn_register) as Button
-
-        // creating the progress bar
-        mProgressBar = ProgressBar(this)
+        progressBar = findViewById(R.id.signup_progress) as ProgressBar
 
         // retrieving the data base reference
         mDatabase = FirebaseDatabase.getInstance()
@@ -90,7 +89,7 @@ class CreateAccountActivity : AppCompatActivity() {
             mAuth!!
                     .createUserWithEmailAndPassword(email!!,password!!)
                     .addOnCompleteListener(this) { task ->
-
+                        progressBar!!.visibility = View.VISIBLE
                         if (task.isSuccessful) {
                             // sign in success, update UI with the signed-in user's information
                             Log.d(TAG,"createUserWithEmail:success")
@@ -114,6 +113,7 @@ class CreateAccountActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Enter all details please", Toast.LENGTH_SHORT).show()
         }
+        progressBar!!.visibility = View.GONE
     }
 
     private fun verifyEmail() {

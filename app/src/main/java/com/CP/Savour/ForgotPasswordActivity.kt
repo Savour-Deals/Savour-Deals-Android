@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
@@ -18,6 +19,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
     // UI Elements
     private var editTextEmail: EditText? = null
     private var buttonSubmit: Button? = null
+
 
     // Firebase references
     private var mAuth: FirebaseAuth? = null
