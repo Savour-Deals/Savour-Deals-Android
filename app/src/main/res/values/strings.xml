@@ -8,4 +8,5 @@
     <string name="create_act">Need to sign up? Click here!</string>
     <string name="forgot_pass">Forgot Password?</string>
     <string name="reset_pass">Reset Password</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
 </resources>

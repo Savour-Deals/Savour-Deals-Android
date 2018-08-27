@@ -11,7 +11,7 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
-    private val images = intArrayOf(R.drawable.Patio)
+    private val images = intArrayOf(R.drawable.patio)
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
