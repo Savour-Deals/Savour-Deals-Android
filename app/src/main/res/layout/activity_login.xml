@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/homepage"
     tools:context=".LoginActivity">
 
     <EditText
@@ -13,7 +14,14 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:background="@drawable/button"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
         android:ems="10"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
         android:hint="@string/email"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/et_password"
@@ -27,6 +35,13 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:ellipsize="start"
+        android:gravity="center_horizontal"
+        android:textColorHint="@color/colorText"
+        android:textColor="@color/colorText"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:background="@drawable/button"
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
@@ -38,12 +53,15 @@
         android:id="@+id/btn_login"
         android:layout_width="377dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="92dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:background="@drawable/button"
         android:text="@string/common_signin_button_text"
+        android:textColor="@color/colorText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -53,6 +71,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/forgot_pass"
+        android:textColor="@color/colorText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,6 +83,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/create_act"
+        android:textColor="@color/colorText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
