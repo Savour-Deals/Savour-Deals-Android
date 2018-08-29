@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 class LoginActivity : AppCompatActivity() {
 
     private val TAG = "LoginActivity"
-
+    
     private var email: String? = null
     private var password: String? = null
 
@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private var editTextPassword: EditText? = null
     private var buttonLogin: Button? = null
     private var progressBar: ProgressBar? = null
+    private var constraintView: View? = null
 
     // Firebase references
     private var mAuth: FirebaseAuth? = null
@@ -30,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
 
         initialize()
     }
@@ -40,7 +42,6 @@ class LoginActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.et_email) as EditText
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonLogin = findViewById(R.id.btn_login) as Button
-        progressBar = findViewById(R.id.login_progress) as ProgressBar
         progressBar!!.visibility = View.GONE
         mAuth = FirebaseAuth.getInstance()
 
@@ -55,7 +56,6 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUser() {
         val email = editTextEmail?.text.toString()
         val password = editTextPassword?.text.toString()
-        progressBar!!.visibility = View.VISIBLE
         if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
             Log.d(TAG, "Logging in user.")
 
@@ -74,7 +74,6 @@ class LoginActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Enter all details", Toast.LENGTH_SHORT).show()
         }
-        progressBar!!.visibility = View.GONE
     }
 
     private fun updateUI() {
