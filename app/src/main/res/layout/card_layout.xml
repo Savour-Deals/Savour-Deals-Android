@@ -7,14 +7,14 @@
     android:layout_height="wrap_content"
     android:id="@+id/card_view"
     android:layout_margin="5dp"
-    android:elevation="150dp"
     card_view:cardBackgroundColor="#FFFFFF"
-    card_view:cardElevation="3dp"
+    card_view:cardElevation="30dp"
     card_view:contentPadding="4dp" >
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="230dp">
+        android:layout_height="230dp"
+        >
 
         <ImageView
             android:id="@+id/item_image"

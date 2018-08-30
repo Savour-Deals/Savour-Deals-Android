@@ -22,7 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var editTextPassword: EditText? = null
     private var buttonLogin: Button? = null
-    private var progressBar: ProgressBar? = null
+
     private var constraintView: View? = null
 
     // Firebase references
@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.et_email) as EditText
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonLogin = findViewById(R.id.btn_login) as Button
-        progressBar!!.visibility = View.GONE
+
         mAuth = FirebaseAuth.getInstance()
 
         // sending the user to the login activity whenever the textview for the forgot password is pressed
