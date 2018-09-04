@@ -8,25 +8,22 @@
     android:id="@+id/card_view"
     android:layout_margin="5dp"
     card_view:cardBackgroundColor="#FFFFFF"
-    card_view:cardElevation="30dp"
+    card_view:cardElevation="40dp"
     card_view:contentPadding="4dp" >
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="230dp"
-        >
+        android:layout_height="267dp">
 
         <ImageView
             android:id="@+id/item_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="187dp"
+            android:scaleType="fitXY"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="parent"
-            card_view:srcCompat="@mipmap/ponion" />
+            card_view:srcCompat="@drawable/patio" />
 
         <TextView
             android:id="@+id/item_title"

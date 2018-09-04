@@ -1,11 +1,13 @@
 package com.CP.Savour
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.firebase.database.*
 
 class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
@@ -19,10 +21,27 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
+        var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
+
         viewHolder.itemTitle.text = restaurants[i]
         viewHolder.itemDetail.text = resturantDescriptions[i]
         viewHolder.itemImage.setImageResource(images[i])
 
+
+        println("Reference toString " + vendorReference.toString())
+
+        val vendorListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val restaurants = dataSnapshot
+
+                println(dataSnapshot.toString())
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+        }
+        vendorReference.addValueEventListener(vendorListener)
     }
     override fun getItemCount(): Int {
         return restaurants.size
