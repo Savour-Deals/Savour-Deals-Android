@@ -32,9 +32,11 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
         val vendorListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val restaurants = dataSnapshot
 
-                println(dataSnapshot.toString())
+                // looping through the datasnapshot containing all of the vendors
+                for(child: DataSnapshot in dataSnapshot.children) {
+                    println("Child: " + child.toString())
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
