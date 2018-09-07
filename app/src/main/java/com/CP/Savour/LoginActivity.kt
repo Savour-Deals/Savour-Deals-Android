@@ -8,6 +8,9 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
+import android.view.WindowManager
+
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -43,6 +46,8 @@ class LoginActivity : AppCompatActivity() {
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonLogin = findViewById(R.id.btn_login) as Button
 
+        makeTransparentStatusBar(true)
+
         mAuth = FirebaseAuth.getInstance()
 
         // sending the user to the login activity whenever the textview for the forgot password is pressed
@@ -51,6 +56,14 @@ class LoginActivity : AppCompatActivity() {
         textViewCreateAccount!!.setOnClickListener { startActivity(Intent (this@LoginActivity, CreateAccountActivity::class.java))}
 
         buttonLogin!!.setOnClickListener { loginUser() }
+    }
+
+    private fun makeTransparentStatusBar(isTransperant: Boolean) {
+        if (isTransperant) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
     }
 
     private fun loginUser() {

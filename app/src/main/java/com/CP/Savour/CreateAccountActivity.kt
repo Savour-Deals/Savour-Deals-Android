@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -61,6 +62,8 @@ class CreateAccountActivity : AppCompatActivity() {
         buttonCreateAccount = findViewById(R.id.btn_register) as Button
         progressBar = findViewById(R.id.signup_progress) as ProgressBar
 
+        makeTransparentStatusBar(true)
+
         // retrieving the data base reference
         mDatabase = FirebaseDatabase.getInstance()
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
@@ -69,6 +72,14 @@ class CreateAccountActivity : AppCompatActivity() {
         // registering the click listen to the button
         // when the button is pressed, it will call the custom method createNewAccount()
         buttonCreateAccount!!.setOnClickListener { createNewAccount() }
+    }
+
+    private fun makeTransparentStatusBar(isTransperant: Boolean) {
+        if (isTransperant) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
     }
 
     /**
