@@ -14,6 +14,7 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
     private val images = intArrayOf(R.drawable.patio)
+    private var vendors = arrayOf<Vendor>()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
@@ -35,7 +36,9 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
                 // looping through the datasnapshot containing all of the vendors
                 for(child: DataSnapshot in dataSnapshot.children) {
+
                     println("Child: " + child.toString())
+
                 }
             }
 
