@@ -4,20 +4,20 @@ package com.CP.Savour
  * This data class will be used to parse the Vendor datasnapshot from the firebase calls
  * In the Recycler adapter.
  */
-data class Vendor(
-        var address: String,
-        var description: String,
-        var dailyHours: Map<String, Object>,
-        var followers: Map<String,Object>,
-        var loyalty: Map<String, Object>,
-        var menu: String,
-        var name: String,
-        var phone: String,
-        var photo: String,
-        var placeId: String
+class Vendor {
+    public var address: String? = ""
+    public var description: String? = ""
+    public var dailyHours: Map<String, Object>? = mapOf()
+    public var followers: Map<String,Object>? = mapOf()
+    public var loyalty: Map<String, Object>? = mapOf()
+    public var menu: String? = ""
+    public var name: String? = ""
+    public var phone: String? = ""
+    public var photo: String? = ""
+    public var placeId: String? = ""
+    public var uuid: String? = ""
 
-) {
+    constructor() {
 
-    // creating the empty constructor so that the class can parse the datasnapshot
-    constructor() : this("","", mapOf(), mapOf(),mapOf(),"","","","","")
+    }
 }

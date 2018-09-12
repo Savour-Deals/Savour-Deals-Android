@@ -9,8 +9,13 @@ import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import android.view.WindowManager
+import com.squareup.picasso.Picasso
+import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.module.AppGlideModule
+import com.bumptech.glide.Glide
 
-
+@GlideModule
+class AppGlideModule : AppGlideModule()
 
 class LoginActivity : AppCompatActivity() {
 
@@ -18,6 +23,8 @@ class LoginActivity : AppCompatActivity() {
     
     private var email: String? = null
     private var password: String? = null
+
+
 
     // UI Elements
     private var textViewForgotPassword: TextView? = null
@@ -34,7 +41,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
 
         initialize()
     }

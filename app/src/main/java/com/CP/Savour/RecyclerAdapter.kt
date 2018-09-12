@@ -14,7 +14,7 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
     private val images = intArrayOf(R.drawable.patio)
-    private var vendors = mutableListOf<Vendor>()
+    public var vendors = mutableListOf<Vendor>()
     private var testArray = mutableMapOf<String?, Any>()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
@@ -34,17 +34,24 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
         val vendorListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
+                vendors.clear()
+                dataSnapshot.children.mapNotNullTo(vendors) {
+                    it.getValue<Vendor>(Vendor::class.java)
+                }
                 // looping through the data snapshot containing all of the vendors
                 for(child: DataSnapshot in dataSnapshot.children) {
-
                     // adding the vendors to a hashmap
                     //this doesn't like it for whatever reason
                     //vendors.add(child.getValue(Vendor::class.java)!!)
-
-                    println("Child: " + child.getValue().toString())
                     child.getValue() as MutableMap<String,Any>
                     testArray[child.key] = child.getValue() as MutableMap<String,Any>
+                }
+
+                for(item in testArray) {
+
+                    var subitem = item.value.to(HashMap<String,Any>())
+                    println(subitem.toString())
+
                 }
             }
 
