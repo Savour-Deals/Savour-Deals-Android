@@ -9,6 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.database.*
 
+/**
+ * The recycler adapter class creates the individual cards that are on display in the main activity
+ */
 class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private val restaurants = arrayOf("Purple Onion")
@@ -34,24 +37,26 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
         val vendorListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                vendors.clear()
-                dataSnapshot.children.mapNotNullTo(vendors) {
-                    it.getValue<Vendor>(Vendor::class.java)
-                }
-                // looping through the data snapshot containing all of the vendors
-                for(child: DataSnapshot in dataSnapshot.children) {
-                    // adding the vendors to a hashmap
-                    //this doesn't like it for whatever reason
-                    //vendors.add(child.getValue(Vendor::class.java)!!)
-                    child.getValue() as MutableMap<String,Any>
-                    testArray[child.key] = child.getValue() as MutableMap<String,Any>
-                }
+                if (dataSnapshot.exists()) {
+                    vendors.clear()
+                    dataSnapshot.children.mapNotNullTo(vendors) {
+                        it!!.getValue<Vendor>(Vendor::class.java)
+                    }
+                    // looping through the data snapshot containing all of the vendors
+                    for(child: DataSnapshot in dataSnapshot.children) {
+                        // adding the vendors to a hashmap
+                        //this doesn't like it for whatever reason
+                        //vendors.add(child.getValue(Vendor::class.java)!!)
+                        child.getValue() as MutableMap<String,Any>
+                        testArray[child.key] = child.getValue() as MutableMap<String,Any>
+                    }
 
-                for(item in testArray) {
+                    for(item in testArray) {
 
-                    var subitem = item.value.to(HashMap<String,Any>())
-                    println(subitem.toString())
+                        var subitem = item.value.to(HashMap<String,Any>())
+                        println(subitem.toString())
 
+                    }
                 }
             }
 
