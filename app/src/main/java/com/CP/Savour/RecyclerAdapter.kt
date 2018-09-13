@@ -1,5 +1,6 @@
 package com.CP.Savour
 
+import android.content.Context
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -22,7 +23,8 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     private val images = intArrayOf(R.drawable.patio)
     public var vendors = mutableListOf<Vendor>()
     private var testArray = mutableMapOf<String?, Any>()
-
+    public val Context.picasso: Picasso
+    get() = Picasso.get()
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
         return ViewHolder(v)
@@ -46,7 +48,11 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
                         children -> children.hasChildren()
                     }.map {
                         children -> children.key
+
+
                         println(children.child("photo").getValue().toString())
+                        val url = children.child("photo").getValue().toString()
+
                         // htake the photo url, turning that into a string, and then casting it as a Uri
                         //println(children.getValue().toString())
                     }.first()
