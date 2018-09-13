@@ -1,5 +1,6 @@
 package com.CP.Savour
 
+import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
+import java.net.URI
 
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
@@ -28,35 +31,25 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
-        viewHolder.itemTitle.text = restaurants[i]
-        viewHolder.itemDetail.text = resturantDescriptions[i]
         viewHolder.itemImage.setImageResource(images[i])
 
 
         println("Reference toString " + vendorReference.toString())
 
+        //TODO: retrieve data from firebase data base of the restaurants to display onto card views for main activity
         val vendorListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     vendors.clear()
-                    dataSnapshot.children.mapNotNullTo(vendors) {
-                        it!!.getValue<Vendor>(Vendor::class.java)
-                    }
-                    // looping through the data snapshot containing all of the vendors
-                    for(child: DataSnapshot in dataSnapshot.children) {
-                        // adding the vendors to a hashmap
-                        //this doesn't like it for whatever reason
-                        //vendors.add(child.getValue(Vendor::class.java)!!)
-                        child.getValue() as MutableMap<String,Any>
-                        testArray[child.key] = child.getValue() as MutableMap<String,Any>
-                    }
 
-                    for(item in testArray) {
-
-                        var subitem = item.value.to(HashMap<String,Any>())
-                        println(subitem.toString())
-
-                    }
+                    dataSnapshot.children.filter {
+                        children -> children.hasChildren()
+                    }.map {
+                        children -> children.key
+                        println(children.child("photo").getValue().toString())
+                        // htake the photo url, turning that into a string, and then casting it as a Uri
+                        //println(children.getValue().toString())
+                    }.first()
                 }
             }
 
@@ -71,13 +64,11 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
-        var itemTitle: TextView
-        var itemDetail: TextView
+
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
-            itemTitle = itemView.findViewById(R.id.item_title)
-            itemDetail = itemView.findViewById(R.id.item_detail)
+
         }
     }
 }
