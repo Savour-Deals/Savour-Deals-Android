@@ -20,11 +20,12 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
-    private val images = intArrayOf(R.drawable.patio)
-    public var vendors = mutableListOf<Vendor>()
+    private val images = mutableMapOf<String,String>()
+    private var vendors : MutableList<String> = mutableListOf()
     private var testArray = mutableMapOf<String?, Any>()
     public val Context.picasso: Picasso
     get() = Picasso.get()
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
         return ViewHolder(v)
@@ -33,17 +34,22 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
-        viewHolder.itemImage.setImageResource(images[i])
-
-
         println("Reference toString " + vendorReference.toString())
 
-        //TODO: retrieve data from firebase data base of the restaurants to display onto card views for main activity
+        //TODO("retrieve data from firebase data base of the restaurants to display onto card views for main activity")
+        /**
+         * This event listener keeps track of the vendors object in the realtime database
+         * If a change occurs to any value in the database, the ValueEventListener will be triggered
+         * this allows us to update information on the fly and display updated vendor information
+         */
         val vendorListener = object : ValueEventListener {
+            /**
+             * Listening for when the data has been changed
+             * and also when we want to access f
+             */
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    vendors.clear()
-
+                    var j: Int = 0
                     dataSnapshot.children.filter {
                         children -> children.hasChildren()
                     }.map {
@@ -52,9 +58,16 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
                         println(children.child("photo").getValue().toString())
                         val url = children.child("photo").getValue().toString()
+                        println(children.key)
 
-                        // htake the photo url, turning that into a string, and then casting it as a Uri
-                        //println(children.getValue().toString())
+                        /**
+                         * Since the datasnapshot contains all of the vendors, and the
+                         */
+                        vendors[j] = children.key!!
+                        images[children.key!!] = url
+                        //  loads the image from the url into the desired tag
+                        Picasso.get().load(url).into(viewHolder.itemImage)
+
                     }.first()
                 }
             }
