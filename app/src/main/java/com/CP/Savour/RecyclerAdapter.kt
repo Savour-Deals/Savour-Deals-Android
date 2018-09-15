@@ -18,10 +18,9 @@ import java.net.URI
  */
 class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
-    private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
     private val images = mutableMapOf<String,String>()
-    private var vendors : MutableList<String> = mutableListOf()
+    private var vendors : Array<String> = arrayOf()
     private var testArray = mutableMapOf<String?, Any>()
     public val Context.picasso: Picasso
     get() = Picasso.get()
@@ -34,9 +33,12 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
+        // this is the line to load the current cardview's vendor image to the page
+        Picasso.get().load(images[vendors[i]]).into(viewHolder.itemImage)
+
         println("Reference toString " + vendorReference.toString())
 
-        //TODO("retrieve data from firebase data base of the restaurants to display onto card views for main activity")
+        //TODO("retrieve data from firebase data base of the vendors to display onto card views for main activity")
         /**
          * This event listener keeps track of the vendors object in the realtime database
          * If a change occurs to any value in the database, the ValueEventListener will be triggered
@@ -49,7 +51,7 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
              */
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    var j: Int = 0
+                    val j: Int = 0
                     dataSnapshot.children.filter {
                         children -> children.hasChildren()
                     }.map {
@@ -62,11 +64,13 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
                         /**
                          * Since the datasnapshot contains all of the vendors, and the
+                         * filter function on the children of the datasnapshot goes through all of the vendors,
+                         * we have to "catch" the vendor we want because this is being called in t he
                          */
                         vendors[j] = children.key!!
                         images[children.key!!] = url
                         //  loads the image from the url into the desired tag
-                        Picasso.get().load(url).into(viewHolder.itemImage)
+
 
                     }.first()
                 }
@@ -78,9 +82,18 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         }
         vendorReference.addValueEventListener(vendorListener)
     }
+
+    /**
+     * get the count of the vendors because why not
+     */
     override fun getItemCount(): Int {
-        return restaurants.size
+        return vendors.size
     }
+
+    /**
+     * this inner class contains the information that the itemview needs
+     * this is looking at the cardviews that we are displaying to the recycler view
+     */
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
 
