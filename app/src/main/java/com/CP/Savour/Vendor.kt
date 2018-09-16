@@ -5,17 +5,17 @@ package com.CP.Savour
  * In the Recycler adapter.
  */
 class Vendor {
-    public var address: String? = ""
-    public var description: String? = ""
-    public var dailyHours: Map<String, Object>? = mapOf()
-    public var followers: Map<String,Object>? = mapOf()
-    public var loyalty: Map<String, Object>? = mapOf()
-    public var menu: String? = ""
-    public var name: String? = ""
-    public var phone: String? = ""
-    public var photo: String? = ""
-    public var placeId: String? = ""
-    public var uuid: String? = ""
+    var address: String? = null
+    var description: String? = null
+    var dailyHours: Map<String, Object>? = null
+    var followers: Map<String,Object>? = null
+    var loyalty: Map<String, Object>? = null
+    var menu: String? = null
+    var name: String? = null
+    var phone: String? = null
+    var photo: String? = null
+    var placeId: String? = null
+
 
     constructor() {
 

@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         restaurant_list.layoutManager = layoutManager
 
         adapter = RecyclerAdapter()
+
         restaurant_list.adapter = adapter
     }
 }
