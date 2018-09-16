@@ -17,6 +17,8 @@ class Vendor {
     var placeId: String? = null
     var subscriptionId: String? = null
 
+    constructor() { }
+
     constructor(address: String?, dailyHours: Map<String, Any>?, description: String?, followers: Map<String, Any>?, loyalty: Map<String, Any>?, menu: String?, name: String?, phone: String?, photo: String?, placeId: String?, subscriptionId: String?) {
         this.address = address
         this.dailyHours = dailyHours
