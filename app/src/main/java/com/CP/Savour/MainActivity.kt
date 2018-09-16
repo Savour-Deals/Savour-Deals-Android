@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
      * and will load the values into the cardview and display it to the recyclerview
      */
     private fun loadFirebaseData() {
-
+        //val firebas
     }
 
     inner class VendorsViewHolder(var mView: View) : RecyclerView.ViewHolder(mView) {
