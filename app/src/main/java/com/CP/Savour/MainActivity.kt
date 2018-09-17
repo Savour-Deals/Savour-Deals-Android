@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var vendorReference : DatabaseReference
     lateinit var recyclerView: RecyclerView
+    lateinit var firebaseRecyclerAdapter : FirebaseRecyclerAdapter<Vendor,VendorsViewHolder>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
      * and will load the values into the cardview and display it to the recyclerview
      */
     private fun loadFirebaseData() {
-        val firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Vendor, VendorsViewHolder> (Vendor::class.java) {
+       firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Vendor, VendorsViewHolder> (Vendor::class.java,R.id.card_view, VendorsViewHolder::class.java,) {
             override fun onCreateViewHolder(p0: ViewGroup, p1: Int): VendorsViewHolder {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
