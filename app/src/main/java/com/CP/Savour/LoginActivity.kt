@@ -10,12 +10,7 @@ import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import android.view.WindowManager
 import com.squareup.picasso.Picasso
-import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.module.AppGlideModule
-import com.bumptech.glide.Glide
 
-@GlideModule
-class AppGlideModule : AppGlideModule()
 
 class LoginActivity : AppCompatActivity() {
 
