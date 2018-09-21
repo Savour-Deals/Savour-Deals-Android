@@ -43,7 +43,12 @@ class MainActivity : AppCompatActivity() {
                 .setQuery(vendorQuery,Vendor::class.java)
                 .build()
 
-       firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Vendor, VendorViewHolder> (options) {
+        /**
+         * Need to figure out whow to get this to work...
+         *
+         */
+
+        firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Vendor, VendorViewHolder> (options) {
             override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): VendorViewHolder {
                 val view = LayoutInflater.from(parent.baseContext).inflate(R.layout.card_layout,viewGroup,false)
                 return VendorViewHolder(view)
