@@ -16,7 +16,8 @@ import java.net.URI
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val vendorMap: MutableMap<String,Any>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+
 
     private val restaurants = arrayOf("Purple Onion")
     private val resturantDescriptions = arrayOf("The purple onion is yummy!")
@@ -35,7 +36,8 @@ class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         //Picasso.get().load(url).into(viewHolder.itemImage)
     }
     override fun getItemCount(): Int {
-        return restaurants.size
+        println("VendorMap Size: " + vendorMap.size)
+        return vendorMap.size
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView

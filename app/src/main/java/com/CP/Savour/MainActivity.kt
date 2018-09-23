@@ -17,12 +17,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
-
+        val vendors = getFirebaseData()
         layoutManager = LinearLayoutManager(this)
-        restaurant_list.layoutManager = layoutManager
-
-        adapter = RecyclerAdapter()
-        restaurant_list.adapter = adapter
     }
 
     private fun getFirebaseData() : MutableMap<String, Any> {
@@ -45,16 +41,17 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     var j: Int = 0
+
                     dataSnapshot.children.filter {
                         children -> children.hasChildren()
                     }.map {
                         children -> children.key
 
+                        vendors[children.key!!] = children
 
                         println(children.child("photo").getValue().toString())
                         val url = children.child("photo").getValue().toString()
                         urls.add(url)
-
                         /**
                          * Since the datasnapshot contains all of the vendors, and the
                          */
@@ -64,6 +61,12 @@ class MainActivity : AppCompatActivity() {
 
 
                     }.first()
+                    adapter = RecyclerAdapter(vendors)
+
+                    restaurant_list.layoutManager = layoutManager
+
+
+                    restaurant_list.adapter = adapter
                 }
             }
 
