@@ -11,6 +11,9 @@ import android.view.WindowManager
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
+import com.google.firebase.database.DataSnapshot
+
+
 
 class MainActivity : AppCompatActivity() {
     private var layoutManager: RecyclerView.LayoutManager? = null
@@ -25,10 +28,9 @@ class MainActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this)
     }
 
-    private fun getFirebaseData() : MutableMap<String, Any> {
+    private fun getFirebaseData() : ArrayList<Any> {
         var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
-        var vendors = mutableMapOf<String,Any>()
-        var urls = mutableListOf<String>()
+        var vendors: ArrayList<Any> = ArrayList()
         println("Reference toString " + vendorReference.toString())
 
         //TODO("retrieve data from firebase data base of the restaurants to display onto card views for main activity")
@@ -44,27 +46,27 @@ class MainActivity : AppCompatActivity() {
              */
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    var j: Int = 0
 
-                    dataSnapshot.children.filter {
-                        children -> children.hasChildren()
-                    }.map {
-                        children -> children.key
+                    for (vendorSnapshot in dataSnapshot.children) {
+                        vendors.add(vendorSnapshot.value!!)
+                    }
 
-                        vendors[children.key!!] = children
+//                    dataSnapshot.children.filter {
+//                        children -> children.hasChildren()
+//                    }.map {
+//                        children -> children.key
+//
+//                        vendors = children.
 
-                        println(children.child("photo").getValue().toString())
-                        val url = children.child("photo").getValue().toString()
-                        urls.add(url)
+//                        println(children.child("photo").getValue().toString())
+//                        val url = children.child("photo").getValue().toString()
+//                        urls.add(url)
                         /**
                          * Since the datasnapshot contains all of the vendors, and the
                          */
                         //vendors[j] = children.key!!
                         //images[children.key!!] = url
                         //  loads the image from the url into the desired tag
-
-
-                    }.first()
                     adapter = RecyclerAdapter(vendors)
 
                     restaurant_list.layoutManager = layoutManager

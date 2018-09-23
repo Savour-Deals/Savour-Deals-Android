@@ -16,14 +16,10 @@ import java.net.URI
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class RecyclerAdapter(val vendorMap: MutableMap<String,Any>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val vendors: ArrayList<Any>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
-    private val restaurants = arrayOf("Purple Onion")
-    private val resturantDescriptions = arrayOf("The purple onion is yummy!")
-    private val images = mutableMapOf<String,String>()
-    private var vendors : MutableList<String> = mutableListOf()
-    private var testArray = mutableMapOf<String?, Any>()
+
     public val Context.picasso: Picasso
         get() = Picasso.get()
 
@@ -34,11 +30,16 @@ class RecyclerAdapter(val vendorMap: MutableMap<String,Any>) : RecyclerView.Adap
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
-        //Picasso.get().load(url).into(viewHolder.itemImage)
+        var temp = vendors[i] as HashMap<String, Any>
+        Picasso.get().setIndicatorsEnabled(true)
+
+        val img = temp.getValue("photo")?.let {
+            Picasso.get().load(temp.getValue("photo").toString()).into(viewHolder.itemImage)
+        }
     }
     override fun getItemCount(): Int {
-        println("VendorMap Size: " + vendorMap.size)
-        return vendorMap.size
+        println("VendorMap Size: " + vendors.size)
+        return vendors.size
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
