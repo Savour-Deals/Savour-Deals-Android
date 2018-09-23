@@ -2,41 +2,45 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    >
+    android:background="#000000">
 
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/imageView3"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:alpha=".4"
         android:scaleType="centerCrop"
         android:src="@drawable/stil336188"
-        android:alpha=".4"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="303dp"
-        android:layout_height="257dp"
+        android:layout_height="191dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/et_first_name"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/savour_white" />
 
     <EditText
-        android:id="@+id/et_first_name"
-        android:layout_width="0dp"
+        android:id="@+id/et_full_name"
+        android:layout_width="368dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
         android:background="@drawable/button"
         android:ellipsize="start"
         android:ems="10"
@@ -47,38 +51,18 @@
         android:paddingTop="10dp"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/et_last_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/et_last_name"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/button"
-        android:ellipsize="start"
-        android:ems="10"
-        android:gravity="center_horizontal"
-        android:hint="@string/last_name"
-        android:inputType="textPersonName"
-        android:paddingStart="10dp"
-        android:paddingTop="10dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/et_email"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
         android:id="@+id/et_password"
-        android:layout_width="0dp"
+        android:layout_width="368dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/button"
         android:ellipsize="start"
         android:ems="10"
@@ -89,17 +73,17 @@
         android:paddingTop="10dp"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/btn_register"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_email" />
 
     <EditText
         android:id="@+id/et_email"
-        android:layout_width="0dp"
+        android:layout_width="368dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/button"
         android:ellipsize="start"
         android:ems="10"
@@ -110,17 +94,17 @@
         android:paddingTop="10dp"
         android:textColor="#FFFFFF"
         android:textColorHint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/et_password"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_full_name" />
 
     <Button
         android:id="@+id/btn_register"
-        android:layout_width="0dp"
+        android:layout_width="368dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/button"
         android:ellipsize="start"
         android:gravity="center_horizontal"
@@ -128,9 +112,9 @@
         android:paddingTop="10dp"
         android:text="@string/sign_up"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_password" />
 
     <ProgressBar
         android:id="@+id/signup_progress"
@@ -138,5 +122,16 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:visibility="gone" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/facebook_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_register" />
 
 </android.support.constraint.ConstraintLayout>

@@ -19,8 +19,7 @@ class CreateAccountActivity : AppCompatActivity() {
     /**
      *  UI Elements
      */
-    private var editTextFirstName: EditText? = null
-    private var editTextLastName: EditText? = null
+    private var editTextFullName: EditText? = null
     private var editTextEmail: EditText? = null
     private var editTextPassword: EditText? = null
     private var buttonCreateAccount: Button? = null
@@ -34,8 +33,7 @@ class CreateAccountActivity : AppCompatActivity() {
     private val TAG = "CreateAccountActivity"
 
     //global variables
-    private var firstName: String? = null
-    private var lastName: String? = null
+    private var fullName: String? = null
     private var email: String? = null
     private var password: String? = null
 
@@ -55,8 +53,7 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun initialize() {
 
         // retrieving the views from the layout
-        editTextFirstName = findViewById(R.id.et_first_name) as EditText
-        editTextLastName = findViewById(R.id.et_last_name) as EditText
+        editTextFullName = findViewById(R.id.et_full_name) as EditText
         editTextEmail = findViewById(R.id.et_email) as EditText
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonCreateAccount = findViewById(R.id.btn_register) as Button
@@ -88,13 +85,12 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun createNewAccount() {
 
         // retrieving the text from the edit text boxes
-        firstName = editTextFirstName?.text.toString()
-        lastName = editTextLastName?.text.toString()
+        fullName = editTextFullName?.text.toString()
         email = editTextEmail?.text.toString()
         password = editTextPassword?.text.toString()
 
         // validating the register form...
-        if (!TextUtils.isEmpty(firstName) && !TextUtils.isEmpty(lastName) && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
+        if (!TextUtils.isEmpty(fullName)  && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
             // TODO: Create a working progress bar.
 
             mAuth!!
@@ -112,7 +108,7 @@ class CreateAccountActivity : AppCompatActivity() {
 
                             // update user profile information
                             val currentUserDb = mDatabaseReference!!.child(userId)
-                            currentUserDb.child("full_name").setValue(firstName + " " + lastName)
+                            currentUserDb.child("full_name").setValue(fullName)
 
                             updateUserInfoAndUI()
                         } else {
