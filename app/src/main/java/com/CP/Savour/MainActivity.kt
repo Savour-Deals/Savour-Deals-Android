@@ -23,7 +23,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // defining the top level action bar
         setSupportActionBar(findViewById(R.id.my_toolbar))
+
+        // retrieving the vendors from the database
         val vendors = getFirebaseData()
         layoutManager = LinearLayoutManager(this)
     }
