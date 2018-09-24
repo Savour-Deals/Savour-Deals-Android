@@ -2,6 +2,8 @@ package com.CP.Savour
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
+import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -16,13 +18,17 @@ import com.google.firebase.database.DataSnapshot
 
 
 class MainActivity : AppCompatActivity() {
-    private var layoutManager: RecyclerView.LayoutManager? = null
-    private var adapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
-    lateinit var recyclerView: RecyclerView
-
+    private var layoutManager : RecyclerView.LayoutManager? = null
+    private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
+    lateinit var recyclerView : RecyclerView
+    lateinit var toolbar : ActionBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // defining the bottom level navigation bar
+        //toolbar = supportActionBar!!
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.navigation_view)
 
         // defining the top level action bar
         setSupportActionBar(findViewById(R.id.my_toolbar))
