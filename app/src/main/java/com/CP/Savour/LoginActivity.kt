@@ -10,6 +10,9 @@ import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import android.view.WindowManager
 import com.squareup.picasso.Picasso
+import com.google.firebase.auth.FirebaseUser
+
+
 
 
 class LoginActivity : AppCompatActivity() {
@@ -57,6 +60,14 @@ class LoginActivity : AppCompatActivity() {
         textViewCreateAccount!!.setOnClickListener { startActivity(Intent (this@LoginActivity, CreateAccountActivity::class.java))}
 
         buttonLogin!!.setOnClickListener { loginUser() }
+
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            val firebaseUser = auth.currentUser
+            if (firebaseUser != null) {
+                Log.d(TAG, "signInWithEmail:success")
+                updateUI()
+            }
+        }
     }
 
     private fun makeTransparentStatusBar(isTransperant: Boolean) {
@@ -66,6 +77,8 @@ class LoginActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
     }
+
+
 
     private fun loginUser() {
         val email = editTextEmail?.text.toString()
