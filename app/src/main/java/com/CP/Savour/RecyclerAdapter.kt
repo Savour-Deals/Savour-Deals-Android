@@ -31,11 +31,12 @@ class RecyclerAdapter(val vendors: ArrayList<Any>) : RecyclerView.Adapter<Recycl
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = vendors[i] as HashMap<String, Any>
-        Picasso.get().setIndicatorsEnabled(true)
+        Picasso.get().setIndicatorsEnabled(false)
 
         val img = temp.getValue("photo")?.let {
             Picasso.get().load(temp.getValue("photo").toString()).into(viewHolder.itemImage)
         }
+        viewHolder.vendorName.text = temp.getValue("name").toString()
     }
     override fun getItemCount(): Int {
         println("VendorMap Size: " + vendors.size)
@@ -43,10 +44,12 @@ class RecyclerAdapter(val vendors: ArrayList<Any>) : RecyclerView.Adapter<Recycl
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
+        var vendorName: TextView
 
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
+            vendorName = itemView.findViewById(R.id.vendorName)
 
         }
     }
