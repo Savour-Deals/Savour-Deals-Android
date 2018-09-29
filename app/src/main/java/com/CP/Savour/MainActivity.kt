@@ -20,12 +20,14 @@ import com.google.firebase.database.DataSnapshot
 class MainActivity : AppCompatActivity() {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
-    lateinit var recyclerView : RecyclerView
-    lateinit var toolbar : ActionBar
+    private lateinit var recyclerView : RecyclerView
+    private var toolbar : ActionBar? = null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        toolbar = supportActionBar
         // defining the bottom level navigation bar
         //toolbar = supportActionBar!!
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.navigation_view)
