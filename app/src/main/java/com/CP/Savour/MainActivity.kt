@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -63,22 +63,6 @@ class MainActivity : AppCompatActivity() {
                         vendors.add(vendorSnapshot.value!!)
                     }
 
-//                    dataSnapshot.children.filter {
-//                        children -> children.hasChildren()
-//                    }.map {
-//                        children -> children.key
-//
-//                        vendors = children.
-
-//                        println(children.child("photo").getValue().toString())
-//                        val url = children.child("photo").getValue().toString()
-//                        urls.add(url)
-                        /**
-                         * Since the datasnapshot contains all of the vendors, and the
-                         */
-                        //vendors[j] = children.key!!
-                        //images[children.key!!] = url
-                        //  loads the image from the url into the desired tag
                     adapter = RecyclerAdapter(vendors)
 
                     restaurant_list.layoutManager = layoutManager
