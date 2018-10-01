@@ -41,7 +41,7 @@ class DealsRecyclerAdapter(val deals: ArrayList<Any>) : RecyclerView.Adapter<Dea
         viewHolder.dealDescription.text = temp.getValue("deal_description").toString()
     }
     override fun getItemCount(): Int {
-        println("VendorMap Size: " + deals.size)
+        println("dealsMap Size: " + deals.size)
         return deals.size
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -43,7 +43,7 @@ class DealsFragment : Fragment() {
          * If a change occurs to any value in the database, the ValueEventListener will be triggered
          * this allows us to update information on the fly and display updated vendor information
          */
-        val vendorListener = object : ValueEventListener {
+        val dealsListener = object : ValueEventListener {
             /**
              * Listening for when the data has been changed
              * and also when we want to access f
@@ -68,7 +68,7 @@ class DealsFragment : Fragment() {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
-        dealsReference.addValueEventListener(vendorListener)
+        dealsReference.addValueEventListener(dealsListener)
         return deals
     }
 

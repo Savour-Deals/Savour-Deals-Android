@@ -1,16 +1,27 @@
 package com.CP.Savour
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.ActivityCompat
 
 
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import android.widget.FrameLayout
+import android.content.DialogInterface
+import android.R.string.ok
+import android.R.string.ok
+import android.support.v7.app.AlertDialog
+
 
 class MainActivity : AppCompatActivity() {
     private var content: FrameLayout? = null
+    val MY_PERMISSIONS_REQUEST_LOCATION = 99
+
 
     private val mOnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -64,6 +75,47 @@ class MainActivity : AppCompatActivity() {
 
         val fragment = DealsFragment()
         addFragment(fragment)
+
+        checkLocationPermission()
     }
+
+
+
+    fun checkLocationPermission(): Boolean {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                AlertDialog.Builder(this)
+                        .setTitle("Location Permissions")
+                        .setMessage("We need your location to show you sweet deals nearby!")
+                        .setPositiveButton("OK", DialogInterface.OnClickListener { dialogInterface, i ->
+                            //Prompt the user once explanation has been shown
+                            ActivityCompat.requestPermissions(this@MainActivity,
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                    MY_PERMISSIONS_REQUEST_LOCATION)
+                        })
+                        .create()
+                        .show()
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        MY_PERMISSIONS_REQUEST_LOCATION)
+            }
+            return false
+        } else {
+            return true
+        }
+    }
+
 
 }

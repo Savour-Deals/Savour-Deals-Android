@@ -1,5 +1,9 @@
 package com.CP.Savour
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
@@ -8,11 +12,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.support.v7.widget.LinearLayoutManager
+import com.firebase.geofire.*
 
 import com.google.firebase.database.*
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 import com.google.firebase.database.DataSnapshot
+
+import com.firebase.geofire.GeoLocation
+import com.google.firebase.database.DatabaseError
+import com.firebase.geofire.GeoQueryEventListener
+import android.os.Looper
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import com.google.android.gms.maps.model.LatLng
+import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_vendor.*
 
 
@@ -22,13 +36,28 @@ class VendorFragment : Fragment() {
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
+    var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
+    var geoFire = GeoFire(geoRef);
+
+    val vendors = mutableMapOf<String, Any?>()
+
+    var firstLocationUpdate = true
+    var geoQuery:GeoQuery? = null
+    var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
+
+    private var mLocationRequest: LocationRequest? = null
+
+    private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
+    private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
         // retrieving the vendors from the database
-        val vendors = getFirebaseData()
         layoutManager = LinearLayoutManager(context)
+
+        startLocationUpdates()
 
         return inflater.inflate(R.layout.fragment_vendor, container, false)
     }
@@ -37,44 +66,153 @@ class VendorFragment : Fragment() {
         fun newInstance(): VendorFragment = VendorFragment()
     }
 
-    private fun getFirebaseData() : ArrayList<Any> {
-        var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
-        var vendors: ArrayList<Any> = ArrayList()
-        println("Reference toString " + vendorReference.toString())
 
-        //TODO("retrieve data from firebase data base of the restaurants to display onto card views for main activity")
-        /**
-         * This event listener keeps track of the vendors object in the realtime database
-         * If a change occurs to any value in the database, the ValueEventListener will be triggered
-         * this allows us to update information on the fly and display updated vendor information
-         */
-        val vendorListener = object : ValueEventListener {
-            /**
-             * Listening for when the data has been changed
-             * and also when we want to access f
-             */
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
 
-                    for (vendorSnapshot in dataSnapshot.children) {
-                        vendors.add(vendorSnapshot.value!!)
+
+
+    private fun getFirebaseData(lat:Double, lng:Double) {
+        geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query
+
+        geoQuery!!.addGeoQueryEventListener(object : GeoQueryEventListener {
+            override fun onKeyEntered(key: String, location: GeoLocation) {
+                println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude))
+                vendorReference.child(key)
+                val vendorListener = object : ValueEventListener {
+                    /**
+                     * Listening for when the data has been changed
+                     * and also when we want to access f
+                     */
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+
+                            vendors.put(dataSnapshot.key!!,dataSnapshot.value!!)
+
+                            adapter = RecyclerAdapter(ArrayList(vendors.values))
+
+                            vendor_list.layoutManager = layoutManager
+
+
+                            vendor_list.adapter = adapter
+                        }
                     }
 
-                    adapter = RecyclerAdapter(vendors)
-
-                    vendor_list.layoutManager = layoutManager
-
-
-                    vendor_list.adapter = adapter
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
                 }
+                vendorReference.child(key).addValueEventListener(vendorListener)
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            override fun onKeyExited(key: String) {
+                println(String.format("Key %s is no longer in the search area", key))
+                vendors.remove(key)
+                adapter = RecyclerAdapter(ArrayList(vendors.values))
+
+                vendor_list.layoutManager = layoutManager
+
+
+                vendor_list.adapter = adapter
+            }
+
+            override fun onKeyMoved(key: String, location: GeoLocation) {
+                println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude))
+            }
+
+            override fun onGeoQueryReady() {
+//                println("All initial data has been loaded and events have been fired!")
+            }
+
+            override fun onGeoQueryError(error: DatabaseError) {
+                System.err.println("There was an error with this query: $error")
+            }
+        })
+
+    }
+
+    // Trigger new location updates at interval
+    protected fun startLocationUpdates() {
+
+        // Create the location request to start receiving updates
+        mLocationRequest = LocationRequest()
+        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
+        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+
+        // Create LocationSettingsRequest object using location request
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(mLocationRequest!!)
+        val locationSettingsRequest = builder.build()
+
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult) {
+                onLocationChanged(locationResult!!.getLastLocation())
+            }
+
+        }
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        if(Build.VERSION.SDK_INT >= 23 && checkPermission()) {
+            getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+        }
+
+    }
+
+    private fun checkPermission() : Boolean {
+        if (ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            requestPermissions()
+            return false
+        }
+    }
+
+    fun onLocationChanged(location: Location) {
+        // New location has now been determined
+        val msg = "Updated Location: " +
+                java.lang.Double.toString(location.getLatitude()) + "," +
+                java.lang.Double.toString(location.getLongitude())
+        // You can now create a LatLng Object for use with maps
+        val latLng = LatLng(location.getLatitude(), location.getLongitude())
+        if(firstLocationUpdate){
+            firstLocationUpdate = false
+            getFirebaseData(location.latitude,location.longitude)
+        }else{
+            geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+        }
+    }
+
+    private fun registerLocationListner() {
+        // initialize location callback object
+        val locationCallback = object : com.google.android.gms.location.LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult?) {
+                onLocationChanged(locationResult!!.getLastLocation())
             }
         }
-        vendorReference.addValueEventListener(vendorListener)
-        return vendors
+
+        // add permission if android version is greater then 23
+        if(Build.VERSION.SDK_INT >= 23 && checkPermission()) {
+            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
+        }
+
     }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(this.activity!!, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"),1)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 1) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION ) {
+                registerLocationListner()
+            }
+        }
+    }
+
+
 
 }

@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.CP.Savour">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/savour_logo"
@@ -18,7 +23,12 @@
         </activity>
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".ForgotPasswordActivity"/>
+        <activity android:name=".ForgotPasswordActivity" />
+
+        <service
+            android:name=".LocationService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
