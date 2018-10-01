@@ -20,7 +20,7 @@
 
     <item
         android:id="@+id/navigation_account"
-        android:icon="@drawable/icon_logo"
+        android:icon="@drawable/icon_user"
         android:title="Account"
         />
 </menu>

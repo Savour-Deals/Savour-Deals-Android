@@ -20,8 +20,27 @@ import com.google.firebase.database.DataSnapshot
 class MainActivity : AppCompatActivity() {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
-    private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
+
+    private lateinit var recyclerView : RecyclerView
+    
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when(item.itemId) {
+            R.id.navigation_deals -> {
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_favorites -> {
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_account -> {
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_vendors -> {
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         //toolbar = supportActionBar!!
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.navigation_view)
 
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         // defining the top level action bar
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
