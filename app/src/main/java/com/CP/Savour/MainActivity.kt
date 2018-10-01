@@ -3,82 +3,71 @@ package com.CP.Savour
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.ActionBar
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import com.google.firebase.database.*
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
-import com.google.firebase.database.DataSnapshot
+
+
+import android.support.v4.app.Fragment
+import android.view.MenuItem
+import android.widget.FrameLayout
+
+
 
 
 
 class MainActivity : AppCompatActivity() {
-    private var layoutManager : RecyclerView.LayoutManager? = null
-    private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
-    private lateinit var recyclerView : RecyclerView
-    private var toolbar : ActionBar? = null
+    private var content: FrameLayout? = null
+
+    private val mOnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
+
+        override fun onNavigationItemSelected(item: MenuItem): Boolean {
+            when (item.itemId) {
+                R.id.navigation_deals -> {
+                    val fragment = DealsFragment()
+                    addFragment(fragment)
+                    return true
+                }
+                R.id.navigation_favorites -> {
+                    val fragment = FavoritesFragment()
+                    addFragment(fragment)
+                    return true
+                }
+                R.id.navigation_vendors -> {
+                    var fragment = VendorFragment()
+                    addFragment(fragment)
+                    return true
+                }
+                R.id.navigation_account -> {
+                    var fragment = AccountFragment()
+                    addFragment(fragment)
+                    return true
+                }
+            }
+            return false
+        }
+
+    }
+
+    /**
+     * add/replace fragment in container [framelayout]
+     */
+    private fun addFragment(fragment: Fragment) {
+        supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.content, fragment, fragment.javaClass.getSimpleName())
+                .addToBackStack(fragment.javaClass.getSimpleName())
+                .commit()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        toolbar = supportActionBar
-        // defining the bottom level navigation bar
-        //toolbar = supportActionBar!!
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.navigation_view)
+        content = findViewById(R.id.content) as FrameLayout
+        val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        // defining the top level action bar
-        setSupportActionBar(findViewById(R.id.my_toolbar))
 
-        // retrieving the vendors from the database
-        val vendors = getFirebaseData()
-        layoutManager = LinearLayoutManager(this)
+        val fragment = DealsFragment()
+        addFragment(fragment)
     }
-
-    private fun getFirebaseData() : ArrayList<Any> {
-        var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
-        var vendors: ArrayList<Any> = ArrayList()
-        println("Reference toString " + vendorReference.toString())
-
-        //TODO("retrieve data from firebase data base of the restaurants to display onto card views for main activity")
-        /**
-         * This event listener keeps track of the vendors object in the realtime database
-         * If a change occurs to any value in the database, the ValueEventListener will be triggered
-         * this allows us to update information on the fly and display updated vendor information
-         */
-        val vendorListener = object : ValueEventListener {
-            /**
-             * Listening for when the data has been changed
-             * and also when we want to access f
-             */
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-
-                    for (vendorSnapshot in dataSnapshot.children) {
-                        vendors.add(vendorSnapshot.value!!)
-                    }
-
-                    adapter = RecyclerAdapter(vendors)
-
-                    restaurant_list.layoutManager = layoutManager
-
-
-                    restaurant_list.adapter = adapter
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        }
-        vendorReference.addValueEventListener(vendorListener)
-        return vendors
-    }
-
 
 }
