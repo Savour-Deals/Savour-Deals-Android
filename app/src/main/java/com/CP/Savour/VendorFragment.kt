@@ -62,10 +62,10 @@ class VendorFragment : Fragment() {
 
                     adapter = RecyclerAdapter(vendors)
 
-                    restaurant_list.layoutManager = layoutManager
+                    vendor_list.layoutManager = layoutManager
 
 
-                    restaurant_list.adapter = adapter
+                    vendor_list.adapter = adapter
                 }
             }
 

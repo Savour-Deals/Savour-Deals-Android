@@ -14,15 +14,11 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
          />
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/restaurant_list"
+        android:id="@+id/vendor_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="40dp"        />
-        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/my_toolbar"-->
+        android:layout_marginTop="40dp"   />
+
 
 
 </FrameLayout>
