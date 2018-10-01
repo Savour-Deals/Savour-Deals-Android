@@ -9,10 +9,6 @@ import android.support.v4.app.Fragment
 import android.view.MenuItem
 import android.widget.FrameLayout
 
-
-
-
-
 class MainActivity : AppCompatActivity() {
     private var content: FrameLayout? = null
 
