@@ -50,7 +50,6 @@ class RecyclerAdapter(val vendors: ArrayList<Any>) : RecyclerView.Adapter<Recycl
         init {
             itemImage = itemView.findViewById(R.id.item_image)
             vendorName = itemView.findViewById(R.id.vendorName)
-
         }
     }
 }
