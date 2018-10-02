@@ -39,13 +39,14 @@ class VendorFragment : Fragment() {
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef);
 
-    val vendors = mutableMapOf<String, Any?>()
+    val vendors = mutableMapOf<String, Vendor?>()
 
     var firstLocationUpdate = true
     var geoQuery:GeoQuery? = null
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
     private var mLocationRequest: LocationRequest? = null
+    private var myLocation: Location? = null
 
     private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
@@ -92,12 +93,16 @@ class VendorFragment : Fragment() {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
 
-                            vendors.put(dataSnapshot.key!!,dataSnapshot.value!!)
+                            //convert to android Location object
+                            val vendorLocation = Location("")
+                            vendorLocation.latitude = location.latitude
+                            vendorLocation.longitude = location.longitude
+
+                            vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
 
                             adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
 
                             vendor_list.layoutManager = layoutManager
-
 
                             vendor_list.adapter = adapter
                         }
@@ -115,7 +120,6 @@ class VendorFragment : Fragment() {
                 adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
 
                 vendor_list.layoutManager = layoutManager
-
 
                 vendor_list.adapter = adapter
             }
@@ -178,11 +182,7 @@ class VendorFragment : Fragment() {
 
     fun onLocationChanged(location: Location) {
         // New location has now been determined
-        val msg = "Updated Location: " +
-                java.lang.Double.toString(location.getLatitude()) + "," +
-                java.lang.Double.toString(location.getLongitude())
-        // You can now create a LatLng Object for use with maps
-        val latLng = LatLng(location.getLatitude(), location.getLongitude())
+        this.myLocation = location
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
