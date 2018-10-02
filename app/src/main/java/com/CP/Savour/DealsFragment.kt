@@ -55,7 +55,7 @@ class DealsFragment : Fragment() {
                         deals.add(dealSnapshot.value!!)
                     }
 
-                    adapter = DealsRecyclerAdapter(deals)
+                    adapter = DealsRecyclerAdapter(deals, context!!)
 
                     deal_list.layoutManager = layoutManager
 
@@ -65,7 +65,6 @@ class DealsFragment : Fragment() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
         dealsReference.addValueEventListener(dealsListener)

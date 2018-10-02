@@ -7,19 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class RecyclerAdapter(val vendors: ArrayList<Any?>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val vendors: ArrayList<Any?>, val context: Context) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
-
-    public val Context.picasso: Picasso
-        get() = Picasso.get()
-
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
+        override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
         return ViewHolder(v)
@@ -27,10 +23,9 @@ class RecyclerAdapter(val vendors: ArrayList<Any?>) : RecyclerView.Adapter<Recyc
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = vendors[i] as HashMap<String, Any>
-        Picasso.get().setIndicatorsEnabled(false)
 
         val img = temp.getValue("photo")?.let {
-            Picasso.get().load(temp.getValue("photo").toString()).into(viewHolder.itemImage)
+            Glide.with(context).load(temp.getValue("photo").toString()).into(viewHolder.itemImage)
         }
         viewHolder.vendorName.text = temp.getValue("name").toString()
     }

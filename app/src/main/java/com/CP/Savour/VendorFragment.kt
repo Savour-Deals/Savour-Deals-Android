@@ -87,7 +87,7 @@ class VendorFragment : Fragment() {
 
                             vendors.put(dataSnapshot.key!!,dataSnapshot.value!!)
 
-                            adapter = RecyclerAdapter(ArrayList(vendors.values))
+                            adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
 
                             vendor_list.layoutManager = layoutManager
 
@@ -97,7 +97,6 @@ class VendorFragment : Fragment() {
                     }
 
                     override fun onCancelled(databaseError: DatabaseError) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                     }
                 }
                 vendorReference.child(key).addValueEventListener(vendorListener)
@@ -106,7 +105,7 @@ class VendorFragment : Fragment() {
             override fun onKeyExited(key: String) {
                 println(String.format("Key %s is no longer in the search area", key))
                 vendors.remove(key)
-                adapter = RecyclerAdapter(ArrayList(vendors.values))
+                adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
 
                 vendor_list.layoutManager = layoutManager
 
@@ -155,7 +154,7 @@ class VendorFragment : Fragment() {
 
         }
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        if(Build.VERSION.SDK_INT >= 23 && checkPermission()) {
+        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
             getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
         }
 
