@@ -6,8 +6,8 @@ import android.support.annotation.StringRes
 import android.view.MenuItem
 
 class ToolbarFragment(@IdRes val resId: Int,
-                      @StringRes title: Int,
-                      @MenuRes menuId: Int,
+                      @StringRes val title: Int,
+                      @MenuRes val menuId: Int,
                       val menuItems: MutableList<Int>,
                       val menuClicks: MutableList<MenuItem.OnMenuItemClickListener?>) {
 
