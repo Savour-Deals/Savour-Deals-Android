@@ -20,7 +20,14 @@ class DealsFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreate(savedInstanceState)
+        setRetainInstance(true)
         // retrieving the vendors from the database
         val deals = getFirebaseData()
         layoutManager = LinearLayoutManager(context)
@@ -55,7 +62,7 @@ class DealsFragment : Fragment() {
                         deals.add(dealSnapshot.value!!)
                     }
 
-                    adapter = DealsRecyclerAdapter(deals)
+                    adapter = DealsRecyclerAdapter(deals, context!!)
 
                     deal_list.layoutManager = layoutManager
 
@@ -65,7 +72,6 @@ class DealsFragment : Fragment() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         }
         dealsReference.addValueEventListener(dealsListener)

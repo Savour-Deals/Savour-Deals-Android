@@ -7,32 +7,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class RecyclerAdapter(val vendors: ArrayList<Any?>) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val vendors: ArrayList<Vendor?>, val context: Context) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
-
-    public val Context.picasso: Picasso
-        get() = Picasso.get()
-
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
+        override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.card_layout,viewGroup, false)
         return ViewHolder(v)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
-        var temp = vendors[i] as HashMap<String, Any>
-        Picasso.get().setIndicatorsEnabled(false)
+        var temp = vendors[i]
 
-        val img = temp.getValue("photo")?.let {
-            Picasso.get().load(temp.getValue("photo").toString()).into(viewHolder.itemImage)
+        if (temp!!.photo != null){
+            Glide.with(context).load(temp.photo).into(viewHolder.itemImage)
         }
-        viewHolder.vendorName.text = temp.getValue("name").toString()
+        viewHolder.vendorName.text = temp.name
+        viewHolder.distanceLabel.text = "%.1f".format(temp.distanceMiles) + " Miles Away"
     }
     override fun getItemCount(): Int {
         println("VendorMap Size: " + vendors.size)
@@ -41,11 +37,13 @@ class RecyclerAdapter(val vendors: ArrayList<Any?>) : RecyclerView.Adapter<Recyc
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
         var vendorName: TextView
+        var distanceLabel: TextView
 
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
             vendorName = itemView.findViewById(R.id.vendorName)
+            distanceLabel = itemView.findViewById(R.id.distanceTo)
         }
     }
 }
