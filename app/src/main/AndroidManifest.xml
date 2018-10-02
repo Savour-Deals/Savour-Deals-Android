@@ -39,14 +39,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateAccountActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".CreateAccountActivity"
+            />
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            />
         <activity android:name=".ForgotPasswordActivity" />
 
-        <service
-            android:name=".LocationService"
-            android:enabled="true"
-            android:exported="true"></service>
+
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>

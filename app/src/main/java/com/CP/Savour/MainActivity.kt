@@ -21,6 +21,11 @@ import android.support.v7.app.AlertDialog
 class MainActivity : AppCompatActivity() {
     private var content: FrameLayout? = null
     val MY_PERMISSIONS_REQUEST_LOCATION = 99
+    val dealFragment = DealsFragment()
+    val favoriteFragment = FavoritesFragment()
+    var vendorFragment = VendorFragment()
+    var accountfragment = AccountFragment()
+    var active: Fragment = dealFragment
 
 
     private val mOnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
@@ -28,23 +33,47 @@ class MainActivity : AppCompatActivity() {
         override fun onNavigationItemSelected(item: MenuItem): Boolean {
             when (item.itemId) {
                 R.id.navigation_deals -> {
-                    val fragment = DealsFragment()
-                    addFragment(fragment)
+                    if(active == dealFragment) {
+                        supportFragmentManager
+                                .beginTransaction()
+                                .show(dealFragment)
+                                .commit()
+                    }
+                    else {
+                        supportFragmentManager
+                                .beginTransaction()
+                                .hide(active)
+                                .show(dealFragment)
+                                .commit()
+                    }
+                    active = dealFragment
                     return true
                 }
                 R.id.navigation_favorites -> {
-                    val fragment = FavoritesFragment()
-                    addFragment(fragment)
+                    supportFragmentManager
+                            .beginTransaction()
+                            .hide(active)
+                            .show(favoriteFragment)
+                            .commit()
+                    active = favoriteFragment
                     return true
                 }
                 R.id.navigation_vendors -> {
-                    var fragment = VendorFragment()
-                    addFragment(fragment)
+                    supportFragmentManager
+                            .beginTransaction()
+                            .hide(active)
+                            .show(vendorFragment)
+                            .commit()
+                    active = vendorFragment
                     return true
                 }
                 R.id.navigation_account -> {
-                    var fragment = AccountFragment()
-                    addFragment(fragment)
+                    supportFragmentManager
+                            .beginTransaction()
+                            .hide(active)
+                            .show(accountfragment)
+                            .commit()
+                    active = accountfragment
                     return true
                 }
             }
@@ -53,16 +82,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /**
-     * add/replace fragment in container [framelayout]
-     */
-    private fun addFragment(fragment: Fragment) {
-        supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.content, fragment, fragment.javaClass.getSimpleName())
-                .addToBackStack(fragment.javaClass.getSimpleName())
-                .commit()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,9 +91,10 @@ class MainActivity : AppCompatActivity() {
         val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-
-        val fragment = DealsFragment()
-        addFragment(fragment)
+        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
+        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
+        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
 
         checkLocationPermission()
     }

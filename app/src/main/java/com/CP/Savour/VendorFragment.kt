@@ -50,9 +50,16 @@ class VendorFragment : Fragment() {
     private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        onCreate(savedInstanceState)
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
+        setRetainInstance(true)
+
 
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)

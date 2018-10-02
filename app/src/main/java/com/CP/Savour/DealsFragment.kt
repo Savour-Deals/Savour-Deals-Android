@@ -20,7 +20,14 @@ class DealsFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreate(savedInstanceState)
+        setRetainInstance(true)
         // retrieving the vendors from the database
         val deals = getFirebaseData()
         layoutManager = LinearLayoutManager(context)
