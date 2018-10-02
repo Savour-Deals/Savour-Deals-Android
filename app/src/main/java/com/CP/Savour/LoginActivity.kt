@@ -69,7 +69,6 @@ class LoginActivity : AppCompatActivity() {
 
         facebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
-                println("OMG FACEBOOK LOGIN!!!!")
                 updateUI()
             }
 
