@@ -5,11 +5,59 @@
     android:layout_height="match_parent"
     tools:context=".DealsFragment">
 
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:background="@color/colorPrimaryDark"
+
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            >
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button"
+                android:text="BOGO"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dp" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button"
+                android:text="Drinks"
+                android:textColor="@color/colorText"
+                android:textSize="16dp" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button"
+                android:text="All"
+                android:textColor="@color/colorText"
+                android:textSize="16dp" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button"
+                android:text="Entire Meal"
+                android:textColor="@color/colorText"
+                android:textSize="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/deal_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="40dp"   />
+        android:layout_marginTop="60dp" />
 
 
 </FrameLayout>

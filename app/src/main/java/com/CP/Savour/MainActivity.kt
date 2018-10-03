@@ -94,10 +94,6 @@ class MainActivity : AppCompatActivity() {
         val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        val toolbar = findViewById(R.id.top_toolbar) as android.support.v7.widget.Toolbar
-        setSupportActionBar(toolbar)
-
-
         supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
         supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
         supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()

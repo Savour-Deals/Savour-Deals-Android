@@ -25,8 +25,6 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
-import com.google.android.gms.maps.model.LatLng
-import android.widget.Toast
 import kotlinx.android.synthetic.main.fragment_vendor.*
 
 
@@ -60,6 +58,7 @@ class VendorFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setRetainInstance(true)
+
 
 
         // retrieving the vendors from the database
@@ -100,7 +99,9 @@ class VendorFragment : Fragment() {
 
                             vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
 
-                            adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
+                            val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+
+                            adapter = RecyclerAdapter(vendorArray, context!!)
 
                             vendor_list.layoutManager = layoutManager
 
@@ -117,7 +118,10 @@ class VendorFragment : Fragment() {
             override fun onKeyExited(key: String) {
                 println(String.format("Key %s is no longer in the search area", key))
                 vendors.remove(key)
-                adapter = RecyclerAdapter(ArrayList(vendors.values), context!!)
+
+                val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+
+                adapter = RecyclerAdapter(vendorArray, context!!)
 
                 vendor_list.layoutManager = layoutManager
 
@@ -173,7 +177,7 @@ class VendorFragment : Fragment() {
 
     private fun checkPermission() : Boolean {
         if (ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true;
+            return true
         } else {
             requestPermissions()
             return false
@@ -200,7 +204,7 @@ class VendorFragment : Fragment() {
         }
 
         // add permission if android version is greater then 23
-        if(Build.VERSION.SDK_INT >= 23 && checkPermission()) {
+        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
         }
 

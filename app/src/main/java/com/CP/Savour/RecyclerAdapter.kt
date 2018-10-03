@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class RecyclerAdapter(val vendors: ArrayList<Vendor?>, val context: Context) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {

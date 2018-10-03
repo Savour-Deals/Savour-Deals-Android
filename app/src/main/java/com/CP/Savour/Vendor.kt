@@ -28,16 +28,17 @@ class Vendor {
     constructor() { }
 
     constructor(vendorSnap: DataSnapshot, myLocation: Location, vendorLocation: Location) {
-        val vendor = vendorSnap.value as  HashMap<String, Any>
+        val vendormap = vendorSnap.value as  HashMap<String?, Any?>
+        val vendor = vendormap.withDefault { null }
         this.id = vendorSnap.key
         this.address = vendor.getValue("address").toString()
         this.description = vendor.getValue("description").toString()
-        this.menu = vendor.getValue("menu").toString()
+        this.menu = vendor.getValue("menu")?.toString() ?: ""
         this.name = vendor.getValue("name").toString()
         this.photo = vendor.getValue("photo").toString()
 //        this.subscriptionId = vendor.getValue("subscription_id").toString()
         if (vendorSnap.child("daily_hours").exists()){
-            val hours = vendor.getValue("daily_hours") as HashMap<String,Any>
+            val hours = vendor.getValue("daily_hours") as HashMap<String?,Any?>
             this.dailyHours[0] = hours.getValue("sun").toString()
             this.dailyHours[1] = hours.getValue("mon").toString()
             this.dailyHours[2] = hours.getValue("tues").toString()
@@ -50,22 +51,24 @@ class Vendor {
                 this.dailyHours[i] = "Not Available"
             }
         }
-        val loyalty = vendor.getValue("loyalty") as HashMap<String?,Any?>
-//        this.loyaltyCode = loyalty.getValue("loyalty_code")?.toString()  ?: ""
-//        this.loyaltyCount = loyalty.getValue("loyalty_count") as? Int ?: 0
-//        this.loyaltyDeal = loyalty.getValue("loyalty_deal")?.toString()  ?: ""
-//        if(loyalty.getValue("loyalty_points") != null){
-//            val points = loyalty.getValue("loyalty_points") as HashMap<String,Int>
-//            this.loyaltyPoints = arrayOf(
-//                points.getValue("sun").toInt(),
-//                points.getValue("mon").toInt(),
-//                points.getValue("tues").toInt(),
-//                points.getValue("wed").toInt(),
-//                points.getValue("thurs").toInt(),
-//                points.getValue("fri").toInt(),
-//                points.getValue("sat").toInt()
-//            )
-//        }
+        val loyaltymap = vendor.getValue("loyalty") as HashMap<String?,Any?>
+        val loyalty = loyaltymap.withDefault { null }
+        this.loyaltyCode = loyalty.getValue("loyalty_code")?.toString()  ?: ""
+        this.loyaltyCount = loyalty.getValue("loyalty_count") as? Int ?: 0
+        this.loyaltyDeal = loyalty.getValue("loyalty_deal")?.toString()  ?: ""
+        if(loyalty.getValue("loyalty_points") != null){
+            val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
+            val points = pointsmap.withDefault { null }
+            this.loyaltyPoints = arrayOf(
+                    points.getValue("sun")?.toInt(),
+                    points.getValue("mon")?.toInt(),
+                    points.getValue("tues")?.toInt(),
+                    points.getValue("wed")?.toInt(),
+                    points.getValue("thurs")?.toInt(),
+                    points.getValue("fri")?.toInt(),
+                    points.getValue("sat")?.toInt()
+            )
+        }
         this.location = vendorLocation
         this.distanceMiles = myLocation.distanceTo(vendorLocation)*0.00062137f
     }
