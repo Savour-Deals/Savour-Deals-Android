@@ -30,20 +30,22 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/action_all"
                     android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/button"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="All"
                     android:layout_marginLeft="15dp"
 
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <Button
+                    android:id="@+id/action_BOGO"
                     android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/button"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="BOGO"
                     android:layout_marginLeft="5dp"
@@ -52,8 +54,8 @@
 
                 <Button
                     android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/button"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="Entire Meal"
                     android:layout_marginLeft="5dp"
@@ -62,8 +64,8 @@
 
                 <Button
                     android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/button"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="Drinks"
                     android:layout_marginLeft="5dp"
