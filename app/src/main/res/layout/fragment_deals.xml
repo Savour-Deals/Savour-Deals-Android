@@ -30,38 +30,43 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:layout_width="150dp"
+                    android:layout_width="85dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button"
                     android:gravity="center"
                     android:text="All"
+                    android:layout_marginLeft="15dp"
+
                     android:textColor="@color/colorPrimary"
                     android:textSize="12sp" />
 
                 <Button
-                    android:layout_width="150dp"
+                    android:layout_width="85dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button"
                     android:gravity="center"
                     android:text="BOGO"
+                    android:layout_marginLeft="5dp"
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <Button
-                    android:layout_width="150dp"
+                    android:layout_width="85dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button"
                     android:gravity="center"
                     android:text="Entire Meal"
+                    android:layout_marginLeft="5dp"
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <Button
-                    android:layout_width="150dp"
+                    android:layout_width="85dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/button"
                     android:gravity="center"
                     android:text="Drinks"
+                    android:layout_marginLeft="5dp"
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
