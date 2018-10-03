@@ -16,7 +16,7 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDark"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
@@ -24,10 +24,11 @@
         <Button
             android:id="@+id/logout_button"
             android:layout_width="125dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:background="@drawable/button"
             android:text="Logout"
+            android:background="@color/colorPrimaryDark"
+
             android:textColor="@color/colorText" />
     </android.support.v7.widget.Toolbar>
 
