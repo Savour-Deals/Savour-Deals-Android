@@ -6,9 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_deals.*
 import kotlinx.android.synthetic.main.fragment_vendor.*
@@ -25,15 +23,20 @@ class DealsFragment : Fragment() {
         onCreate(savedInstanceState)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setRetainInstance(true)
+
         // retrieving the vendors from the database
         val deals = getFirebaseData()
         layoutManager = LinearLayoutManager(context)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_deals, container, false)
     }
+
 
     companion object {
         fun newInstance(): DealsFragment = DealsFragment()

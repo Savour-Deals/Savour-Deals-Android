@@ -16,6 +16,10 @@ import android.content.DialogInterface
 import android.R.string.ok
 import android.R.string.ok
 import android.support.v7.app.AlertDialog
+import android.view.Menu
+import android.view.MenuInflater
+import android.widget.Toast
+import android.widget.Toolbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -99,8 +103,44 @@ class MainActivity : AppCompatActivity() {
         checkLocationPermission()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val toolbar = findViewById(R.id.top_toolbar) as Toolbar
 
+        toolbar.inflateMenu(R.menu.deals)
+        toolbar.setOnMenuItemClickListener( object : Toolbar.OnMenuItemClickListener {
+            override fun onMenuItemClick(p0: MenuItem?): Boolean {
+                return onOptionsItemSelected(p0)
+            }
 
+        })
+        val inflater : MenuInflater = menuInflater
+
+        inflater.inflate(R.menu.deals, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.action_all -> {
+                Toast.makeText(this, "All selected!", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_entire -> {
+                Toast.makeText(this, "Entire selected!", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_bogo -> {
+                Toast.makeText(this, "BOGO selected!", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_drink -> {
+                Toast.makeText(this, "Drink selected!", Toast.LENGTH_SHORT).show()
+                return true
+            }
+
+        }
+        return true
+    }
     fun checkLocationPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

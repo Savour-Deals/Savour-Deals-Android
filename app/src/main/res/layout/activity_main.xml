@@ -15,6 +15,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:paddingBottom="?android:attr/actionBarSize"/>
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/top_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        />
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation_view"
         android:layout_width="match_parent"
