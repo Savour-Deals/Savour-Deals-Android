@@ -1,32 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:title="All"
-        android:id="@+id/action_all"
-        android:icon="@drawable/button"
-        app:actionViewClass="android.support.v7.widget.AppCompatButton"
-        />
-    <item
-        android:title="Entire Order"
-        android:id="@+id/action_entire"
-        android:icon="@drawable/button"
-        app:actionViewClass="android.support.v7.widget.AppCompatButton"
 
-        />
-    <item
-        android:title="BOGO"
-        android:id="@+id/action_bogo"
-        android:icon="@drawable/button"
-        app:actionViewClass="android.support.v7.widget.AppCompatButton"
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never"/>
 
-        />
-    <item
-        android:title="Drink"
-        android:id="@+id/action_drink"
-        android:icon="@drawable/button"
-        app:actionViewClass="android.support.v7.widget.AppCompatButton"
-
-        />
 
 </menu>

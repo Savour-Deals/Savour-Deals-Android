@@ -90,10 +90,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         content = findViewById(R.id.content) as FrameLayout
         val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
+        val toolbar = findViewById(R.id.top_toolbar) as android.support.v7.widget.Toolbar
+        setSupportActionBar(toolbar)
+
 
         supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
         supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
@@ -104,43 +107,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val toolbar = findViewById(R.id.top_toolbar) as Toolbar
+        menuInflater.inflate(R.menu.deals, menu)
 
-        toolbar.inflateMenu(R.menu.deals)
-        toolbar.setOnMenuItemClickListener( object : Toolbar.OnMenuItemClickListener {
-            override fun onMenuItemClick(p0: MenuItem?): Boolean {
-                return onOptionsItemSelected(p0)
-            }
-
-        })
-        val inflater : MenuInflater = menuInflater
-
-        inflater.inflate(R.menu.deals, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId) {
-            R.id.action_all -> {
-                Toast.makeText(this, "All selected!", Toast.LENGTH_SHORT).show()
-                return true
-            }
-            R.id.action_entire -> {
-                Toast.makeText(this, "Entire selected!", Toast.LENGTH_SHORT).show()
-                return true
-            }
-            R.id.action_bogo -> {
-                Toast.makeText(this, "BOGO selected!", Toast.LENGTH_SHORT).show()
-                return true
-            }
-            R.id.action_drink -> {
-                Toast.makeText(this, "Drink selected!", Toast.LENGTH_SHORT).show()
-                return true
-            }
 
-        }
-        return true
-    }
     fun checkLocationPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
