@@ -11,6 +11,7 @@
         android:orientation="vertical">
 
         <SearchView
+            android:id="@+id/deal_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
@@ -21,7 +22,7 @@
 
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:background="@color/colorPrimaryDark">
 
             <LinearLayout
@@ -30,45 +31,52 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/action_all"
+                    android:id="@+id/button_all"
                     android:layout_width="85dp"
                     android:layout_height="35dp"
                     android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="All"
+                    android:layout_marginTop="5dp"
                     android:layout_marginLeft="15dp"
 
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <Button
-                    android:id="@+id/action_BOGO"
+                    android:id="@+id/button_bogo"
                     android:layout_width="85dp"
                     android:layout_height="35dp"
                     android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="BOGO"
+                    android:layout_marginTop="5dp"
                     android:layout_marginLeft="5dp"
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
                 <Button
+                    android:id="@+id/button_entire"
                     android:layout_width="85dp"
                     android:layout_height="35dp"
                     android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="Entire Meal"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
                     android:textColor="@color/colorText"
+
                     android:textSize="12sp" />
 
                 <Button
+                    android:id="@+id/button_drinks"
                     android:layout_width="85dp"
                     android:layout_height="35dp"
                     android:background="@drawable/deal_button"
                     android:gravity="center"
                     android:text="Drinks"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 

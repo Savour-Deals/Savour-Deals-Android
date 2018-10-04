@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.view.*
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_deals.*
@@ -30,6 +31,12 @@ class DealsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setRetainInstance(true)
 
+        // grabbing the search bar
+        //val searchBar = view!!.findViewById(R.id.deal_search) as SearchView
+
+        //val query = searchBar.query
+        // adding a listener to the search bar
+
         // retrieving the vendors from the database
         val deals = getFirebaseData()
         layoutManager = LinearLayoutManager(context)
@@ -42,6 +49,18 @@ class DealsFragment : Fragment() {
         fun newInstance(): DealsFragment = DealsFragment()
     }
 
+    private fun search(search: SearchView) {
+        search.setOnQueryTextListener( object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        })
+    }
     private fun getFirebaseData() : ArrayList<Any> {
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         var deals: ArrayList<Any> = ArrayList()
