@@ -80,6 +80,51 @@
                     android:textColor="@color/colorText"
                     android:textSize="12sp" />
 
+                <Button
+                    android:id="@+id/deal_temp1"
+                    android:layout_width="85dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
+                    android:gravity="center"
+                    android:text="Temp 1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="12sp" />
+                <Button
+                    android:id="@+id/deal_temp2"
+                    android:layout_width="85dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
+                    android:gravity="center"
+                    android:text="Temp 1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="12sp" />
+                <Button
+                    android:id="@+id/deal_temp3"
+                    android:layout_width="85dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
+                    android:gravity="center"
+                    android:text="Temp 1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="12sp" />
+                <Button
+                    android:id="@+id/deal_temp4"
+                    android:layout_width="85dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/deal_button"
+                    android:gravity="center"
+                    android:text="Temp 1"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="12sp" />
+
             </LinearLayout>
         </HorizontalScrollView>
 

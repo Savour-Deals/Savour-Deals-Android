@@ -6,10 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -20,6 +18,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var buttonSubmit: Button? = null
 
+    private var backgroundImg: ImageView? = null
 
     // Firebase references
     private var mAuth: FirebaseAuth? = null
@@ -28,6 +27,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
 
+        backgroundImg = findViewById(R.id.imageView4)
+        Glide.with(this)
+                .load(R.drawable.stil336188)
+                .into(backgroundImg!!)
         initialize()
     }
 
