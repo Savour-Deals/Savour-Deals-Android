@@ -10,123 +10,123 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <SearchView
-            android:id="@+id/deal_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:orientation="horizontal">
+        <!--<SearchView-->
+            <!--android:id="@+id/deal_search"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@color/colorPrimaryDark"-->
+            <!--android:gravity="center"-->
+            <!--android:orientation="horizontal">-->
 
-        </SearchView>
+        <!--</SearchView>-->
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:background="@color/colorPrimaryDark">
+        <!--<HorizontalScrollView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:background="@color/colorPrimaryDark">-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:orientation="horizontal">
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:orientation="horizontal">-->
 
-                <Button
-                    android:id="@+id/button_all"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="All"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="15dp"
+                <!--<Button-->
+                    <!--android:id="@+id/button_all"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="All"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:layout_marginLeft="15dp"-->
 
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
 
-                <Button
-                    android:id="@+id/button_bogo"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="BOGO"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
+                <!--<Button-->
+                    <!--android:id="@+id/button_bogo"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="BOGO"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
 
-                <Button
-                    android:id="@+id/button_entire"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Entire Meal"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
+                <!--<Button-->
+                    <!--android:id="@+id/button_entire"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Entire Meal"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
 
-                    android:textSize="12sp" />
+                    <!--android:textSize="12sp" />-->
 
-                <Button
-                    android:id="@+id/button_drinks"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Drinks"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
+                <!--<Button-->
+                    <!--android:id="@+id/button_drinks"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Drinks"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
 
-                <Button
-                    android:id="@+id/deal_temp1"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Temp 1"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
-                <Button
-                    android:id="@+id/deal_temp2"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Temp 1"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
-                <Button
-                    android:id="@+id/deal_temp3"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Temp 1"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
-                <Button
-                    android:id="@+id/deal_temp4"
-                    android:layout_width="85dp"
-                    android:layout_height="35dp"
-                    android:background="@drawable/deal_button"
-                    android:gravity="center"
-                    android:text="Temp 1"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@color/colorText"
-                    android:textSize="12sp" />
+                <!--<Button-->
+                    <!--android:id="@+id/deal_temp1"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Temp 1"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
+                <!--<Button-->
+                    <!--android:id="@+id/deal_temp2"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Temp 1"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
+                <!--<Button-->
+                    <!--android:id="@+id/deal_temp3"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Temp 1"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
+                <!--<Button-->
+                    <!--android:id="@+id/deal_temp4"-->
+                    <!--android:layout_width="85dp"-->
+                    <!--android:layout_height="35dp"-->
+                    <!--android:background="@drawable/deal_button"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Temp 1"-->
+                    <!--android:layout_marginLeft="5dp"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:textColor="@color/colorText"-->
+                    <!--android:textSize="12sp" />-->
 
-            </LinearLayout>
-        </HorizontalScrollView>
+            <!--</LinearLayout>-->
+        <!--</HorizontalScrollView>-->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/deal_list"
