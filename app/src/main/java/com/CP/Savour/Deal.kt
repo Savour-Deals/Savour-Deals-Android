@@ -52,18 +52,18 @@ class Deal {
                     ref.child(userID).removeValue()
                     ref.child(userID+"-"+randStr).setValue(time)
                     this.redeemed = false
-                    this.redeemedTime = 0
+                    this.redeemedTime = 0.0
                 }else{
                     this.redeemed = true
                     this.redeemedTime = time
                 }
             }else{
             this.redeemed = false
-            this.redeemedTime = 0
+            this.redeemedTime = 0.0
         }
         }else{
             this.redeemed = false
-            this.redeemedTime = 0
+            this.redeemedTime = 0.0
         }
 
 
