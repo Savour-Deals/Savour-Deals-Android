@@ -128,6 +128,7 @@ class DealsFragment : Fragment() {
                     favorites = dataSnapshot.value as MutableMap<String, String>
                 }
                 if (!favUpdated){ //DONT redo geofire and deals if
+                    favUpdated = true
                     geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query
 
                     geoQuery!!.addGeoQueryEventListener(object : GeoQueryEventListener {

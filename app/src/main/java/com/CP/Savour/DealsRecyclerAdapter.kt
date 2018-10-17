@@ -33,7 +33,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
         Picasso.get().setIndicatorsEnabled(false)
 
 
-            Glide.with(context).load(temp.photo)
+            Glide.with(context).load(temp.photo).thumbnail(0.5f)
                     .into(viewHolder.itemImage)
         viewHolder.vendorName.text = temp.vendorName + " - %.1f miles".format(temp.distanceMiles)
         viewHolder.dealDescription.text = temp.dealDescription

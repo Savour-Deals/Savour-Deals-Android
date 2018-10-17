@@ -15,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import com.CP.Savour.R.id.deal_list
 import com.bumptech.glide.Glide
 import com.firebase.geofire.*
 import com.google.android.gms.location.LocationRequest
@@ -32,6 +34,7 @@ class FavoritesFragment : Fragment() {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
+    var nodealsText: TextView? = null
 
     var firstLocationUpdate = true
 
@@ -65,6 +68,7 @@ class FavoritesFragment : Fragment() {
         layoutManager = LinearLayoutManager(context)
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
+        nodealsText = view.findViewById(R.id.textView2)
 
         Glide.with(this)
                 .load(R.drawable.savour_white)
@@ -97,6 +101,8 @@ class FavoritesFragment : Fragment() {
              */
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    nodealsText!!.setVisibility(View.INVISIBLE)
+
                     favorites = dataSnapshot.value as MutableMap<String, String>
                     val favoriteIDs = ArrayList(favorites.values)
                     var activedeals = mutableMapOf<String, Deal?>()
@@ -161,6 +167,15 @@ class FavoritesFragment : Fragment() {
                         }
                         dealsReference.child(favid).addValueEventListener(dealsListener)
                     }
+                }else{//If no favorites
+                    nodealsText!!.setVisibility(View.VISIBLE)
+                    dealsArray = ArrayList()
+
+                    adapter = DealsRecyclerAdapter(dealsArray, context!!)
+
+                    deal_list.layoutManager = layoutManager
+
+                    deal_list.adapter = adapter
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

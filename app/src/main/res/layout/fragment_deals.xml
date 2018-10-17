@@ -7,7 +7,21 @@
     tools:context=".DealsFragment">
 
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        >
 
+        <TextView
+            android:id="@+id/nodeals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No deals found nearby."
+            android:textAlignment="center"
+            android:visibility="invisible" />
+    </RelativeLayout>
 
 
     <LinearLayout
