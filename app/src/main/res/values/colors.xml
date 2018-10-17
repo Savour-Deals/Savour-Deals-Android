@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorIcon">#777777</color>
     <color name="colorText">#FFFFFF</color>
+    <color name="red_tint">#FF2600</color>
 </resources>

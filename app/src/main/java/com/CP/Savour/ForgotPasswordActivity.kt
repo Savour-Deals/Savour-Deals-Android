@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.WindowManager
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -41,6 +42,16 @@ class ForgotPasswordActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         buttonSubmit!!.setOnClickListener { sendPasswordResetEmail() }
+        makeTransparentStatusBar(true)
+
+    }
+
+    private fun makeTransparentStatusBar(isTransperant: Boolean) {
+        if (isTransperant) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
     }
 
     private fun sendPasswordResetEmail() {
