@@ -16,7 +16,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_create_account.view.*
 import org.w3c.dom.Text
+import android.support.v4.content.ContextCompat.startActivity
+import android.content.Intent
 
+
+private const val ARG_DEAL = "deal"
+private const val ARG_VENDOR = "vendor"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
@@ -30,6 +35,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = deals[i]!!
+        viewHolder.deal = temp
         Picasso.get().setIndicatorsEnabled(false)
 
 
@@ -79,6 +85,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
         var days : TextView
         var dots : TextView
         var favorite : ImageButton
+        var deal : Deal? = null
 
 
         init {
@@ -88,6 +95,11 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
             days = itemView.findViewById(R.id.days)
             dots = itemView.findViewById(R.id.dots)
             favorite = itemView.findViewById(R.id.favButton)
+            itemView.setOnClickListener {
+                val intent = Intent(context, DealActivity::class.java)
+                intent.putExtra(ARG_DEAL, deal)
+                context.startActivity(intent)
+            }
         }
     }
 }

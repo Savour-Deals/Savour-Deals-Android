@@ -6,4 +6,5 @@
     <color name="colorIcon">#777777</color>
     <color name="colorText">#FFFFFF</color>
     <color name="red_tint">#FF2600</color>
+    <color name="white">#FFFFFF</color>
 </resources>

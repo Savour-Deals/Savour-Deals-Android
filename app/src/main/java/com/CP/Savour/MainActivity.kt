@@ -20,6 +20,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.widget.Toast
 import android.widget.Toolbar
+import android.content.Intent
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -89,6 +92,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        super.onResume()
+
+        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+
         setContentView(R.layout.activity_main)
         content = findViewById(R.id.content) as FrameLayout
         val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
@@ -143,6 +150,30 @@ class MainActivity : AppCompatActivity() {
         } else {
             return true
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        onLeaveThisActivity()
+    }
+
+    protected fun onLeaveThisActivity() {
+//        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+    }
+
+
+    override fun startActivity(intent: Intent) {
+        super.startActivity(intent)
+        onStartNewActivity()
+    }
+
+    override fun startActivity(intent: Intent, options: Bundle?) {
+        super.startActivity(intent, options)
+        onStartNewActivity()
+    }
+
+    protected fun onStartNewActivity() {
+        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
 

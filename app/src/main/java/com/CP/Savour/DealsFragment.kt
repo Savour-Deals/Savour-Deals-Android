@@ -117,6 +117,9 @@ class DealsFragment : Fragment() {
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
         val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+        var first = true
+        var dealsArray : List<Deal?>
+
 
         val favoritesListener = object : ValueEventListener {//Get favorites
             /**
@@ -126,6 +129,15 @@ class DealsFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     favorites = dataSnapshot.value as MutableMap<String, String>
+                    for (deal in activedeals){
+                        deal.value!!.favorited = favorites.containsKey(deal.key)
+                    }
+                    for (deal in inactivedeals){
+                        deal.value!!.favorited = favorites.containsKey(deal.key)
+                    }
+                    if (favUpdated){
+                        deal_list.adapter!!.notifyDataSetChanged()
+                    }
                 }
                 if (!favUpdated){ //DONT redo geofire and deals if
                     favUpdated = true
@@ -179,13 +191,16 @@ class DealsFragment : Fragment() {
                                                             inactivedeals.remove(temp.id!!)
                                                         }
                                                     }
-                                                    val dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+                                                    dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+
 
                                                     adapter = DealsRecyclerAdapter(dealsArray, context!!)
 
                                                     deal_list.layoutManager = layoutManager
 
                                                     deal_list.adapter = adapter
+
+
                                                 }
                                             }
 
@@ -217,14 +232,13 @@ class DealsFragment : Fragment() {
                                 }
                             }
 
-                            val dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+                            dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
                             adapter = DealsRecyclerAdapter(dealsArray, context!!)
 
                             deal_list.layoutManager = layoutManager
 
                             deal_list.adapter = adapter
-
                         }
 
                         override fun onKeyMoved(key: String, location: GeoLocation) {

@@ -1,6 +1,8 @@
 package com.CP.Savour
 
 import android.location.Location
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import java.util.*
@@ -11,7 +13,7 @@ import org.joda.time.format.DateTimeFormat
 
 
 
-class Deal {
+class Deal : Parcelable {
     var vendorName: String? = null
     var id: String? = null
     var vendorID: String? = null
@@ -31,6 +33,27 @@ class Deal {
     var countdown: String? = null
     var daysLeft: Int? = null
     var distanceMiles: Float? = null
+
+    constructor(parcel: Parcel) : this() {
+        vendorName = parcel.readString()
+        id = parcel.readString()
+        vendorID = parcel.readString()
+        photo = parcel.readString()
+        dealDescription = parcel.readString()
+        startTime = parcel.readValue(Long::class.java.classLoader) as? Long
+        endTime = parcel.readValue(Long::class.java.classLoader) as? Long
+        favorited = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        redeemed = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        redeemedTime = parcel.readValue(Long::class.java.classLoader) as? Long
+        type = parcel.readString()
+        code = parcel.readString()
+        activeHours = parcel.readString()
+        inactiveString = parcel.readString()
+        active = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        countdown = parcel.readString()
+        daysLeft = parcel.readValue(Int::class.java.classLoader) as? Int
+        distanceMiles = parcel.readValue(Float::class.java.classLoader) as? Float
+    }
 
     constructor() {}
 
@@ -213,6 +236,41 @@ class Deal {
             }
         }else{
             print("Could not update distance. Vendor or myLocation not present")
+        }
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(vendorName)
+        parcel.writeString(id)
+        parcel.writeString(vendorID)
+        parcel.writeString(photo)
+        parcel.writeString(dealDescription)
+        parcel.writeValue(startTime)
+        parcel.writeValue(endTime)
+        parcel.writeValue(favorited)
+        parcel.writeValue(redeemed)
+        parcel.writeValue(redeemedTime)
+        parcel.writeString(type)
+        parcel.writeString(code)
+        parcel.writeString(activeHours)
+        parcel.writeString(inactiveString)
+        parcel.writeValue(active)
+        parcel.writeString(countdown)
+        parcel.writeValue(daysLeft)
+        parcel.writeValue(distanceMiles)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Deal> {
+        override fun createFromParcel(parcel: Parcel): Deal {
+            return Deal(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Deal?> {
+            return arrayOfNulls(size)
         }
     }
 }

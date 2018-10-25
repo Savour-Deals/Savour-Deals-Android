@@ -145,6 +145,10 @@ class FavoritesFragment : Fragment() {
 
                                               dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
+                                              if(dealsArray.count() <1){
+                                                  nodealsText!!.setVisibility(View.VISIBLE)
+                                                  dealsArray = ArrayList()
+                                              }
                                               adapter = DealsRecyclerAdapter(dealsArray, context!!)
 
                                               deal_list.layoutManager = layoutManager
