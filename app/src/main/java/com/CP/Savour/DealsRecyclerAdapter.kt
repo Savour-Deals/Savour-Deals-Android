@@ -13,11 +13,13 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_create_account.view.*
 import org.w3c.dom.Text
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
+import com.CP.Savour.R.id.textView
+
+
 
 
 private const val ARG_DEAL = "deal"
@@ -36,10 +38,8 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = deals[i]!!
         viewHolder.deal = temp
-        Picasso.get().setIndicatorsEnabled(false)
 
-
-            Glide.with(context).load(temp.photo).thumbnail(0.5f)
+        Glide.with(context).load(temp.photo).thumbnail(0.5f)
                     .into(viewHolder.itemImage)
         viewHolder.vendorName.text = temp.vendorName + " - %.1f miles".format(temp.distanceMiles)
         viewHolder.dealDescription.text = temp.dealDescription
@@ -59,6 +59,31 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
         }else{
             viewHolder.favorite.setBackgroundResource(R.drawable.icon_heart)
         }
+
+        if (temp.active!!){
+            viewHolder.activeText.visibility = View.INVISIBLE
+        }else{
+            viewHolder.activeText.text = "Deal is currently unavailable. This deal is valid " + temp.inactiveString
+            viewHolder.activeText.visibility = View.VISIBLE
+        }
+        if (temp.activeHours != ""){
+            viewHolder.timeText.text = "valid from " + temp.activeHours
+            viewHolder.timeText.height = 0
+        }else{
+            viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
+
+//        if (temp.redeemed!!) {
+//            viewHolder.Countdown.text = "Deal Already Redeemed!"
+//            viewHolder.validHours.text = ""
+//            viewHolder.countdownView.visibility = View.VISIBLE
+//        }
+//        else if (temp.daysLeft!! < 8){
+//            viewHolder.countdownView.visibility = View.INVISIBLE
+//            viewHolder.Countdown.text = temp.countdown
+//        }else{
+//            viewHolder.countdownView.visibility = true
+//        }
 
         viewHolder.favorite.setOnClickListener {
             val user = FirebaseAuth.getInstance().currentUser
@@ -86,6 +111,8 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
         var dots : TextView
         var favorite : ImageButton
         var deal : Deal? = null
+        var activeText: TextView
+        var timeText: TextView
 
 
         init {
@@ -95,6 +122,8 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
             days = itemView.findViewById(R.id.days)
             dots = itemView.findViewById(R.id.dots)
             favorite = itemView.findViewById(R.id.favButton)
+            activeText = itemView.findViewById(R.id.activetext)
+            timeText = itemView.findViewById(R.id.time)
             itemView.setOnClickListener {
                 val intent = Intent(context, DealActivity::class.java)
                 intent.putExtra(ARG_DEAL, deal)

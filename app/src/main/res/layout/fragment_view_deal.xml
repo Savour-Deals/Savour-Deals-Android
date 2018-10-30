@@ -31,22 +31,45 @@
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/dealImg"
+
+        <pl.bclogic.pulsator4droid.library.PulsatorLayout
+            android:id="@+id/pulsator"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:layout_weight=".50"
-            android:src="#00000000" />
+            android:layout_height="0dp"
+            android:layout_weight=".70"
+            app:pulse_color="@color/colorPrimary"
+            app:pulse_count="6"
+            app:pulse_duration="1000"
+            app:pulse_interpolator="Decelerate"
+            app:pulse_repeat="0"
+            app:pulse_startFromScratch="false">
+
+            <ImageView
+                android:id="@+id/dealImg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_margin="40dp"
+                android:src="#00000000" />
+        </pl.bclogic.pulsator4droid.library.PulsatorLayout>
 
         <TextView
-            android:id="@+id/info"
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:layout_weight=".10"
+        android:text="For dine in and carry out only. Not redeemable with any other promotions unless otherwise mentioned. This deal is only valid for one person. BOGO free items are for equal or lesser value. This deal has no cash value. You must be 21+ to redeem any alcohol deals."
+        android:textAlignment="center"
+        android:textSize="10sp" />
+        <TextView
+            android:id="@+id/timer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginVertical="10dp"
-            android:layout_weight=".10"
-            android:text="For dine in and carry out only. Not redeemable with any other promotions unless otherwise mentioned. This deal is only valid for one person. BOGO free items are for equal or lesser value. This deal has no cash value. You must be 21+ to redeem any alcohol deals."
+            android:layout_marginVertical="0dp"
+            android:layout_weight=".05"
             android:textAlignment="center"
             android:textSize="10sp" />
 
@@ -60,7 +83,9 @@
             android:background="@drawable/primary_rounded"
             android:radius="20dp"
             android:text="See More"
-            android:textColor="@color/colorText" />
+            android:textColor="@color/colorText"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/redeem"
@@ -72,7 +97,9 @@
             android:background="@drawable/primary_rounded"
             android:radius="20dp"
             android:text="Redeem"
-            android:textColor="@color/colorText" />
+            android:textColor="@color/colorText"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

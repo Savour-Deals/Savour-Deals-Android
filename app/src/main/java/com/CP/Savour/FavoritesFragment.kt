@@ -148,6 +148,8 @@ class FavoritesFragment : Fragment() {
                                               if(dealsArray.count() <1){
                                                   nodealsText!!.setVisibility(View.VISIBLE)
                                                   dealsArray = ArrayList()
+                                              }else{
+                                                  nodealsText!!.setVisibility(View.INVISIBLE)
                                               }
                                               adapter = DealsRecyclerAdapter(dealsArray, context!!)
 

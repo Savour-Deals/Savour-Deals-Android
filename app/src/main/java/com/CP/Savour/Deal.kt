@@ -104,8 +104,9 @@ class Deal : Parcelable {
         this.activeDays[4] = activeSnap.getValue("fri")
         this.activeDays[5] = activeSnap.getValue("sat")
 
-        val startDateTime = LocalDateTime(this.startTime)
-        val endDateTime = LocalDateTime(this.endTime)
+
+        val startDateTime = LocalDateTime(this.startTime!!*1000L)
+        val endDateTime = LocalDateTime(this.endTime!!*1000L)
         val dtf = DateTimeFormat.forPattern("h:mm a")
 
         var now = LocalDateTime()
@@ -118,7 +119,7 @@ class Deal : Parcelable {
         if (start.hourOfDay > end.hourOfDay){//Deal goes past midnight (might be typical of bar's drink deals)
             end = end.plusDays(1)
         }
-        if (this.activeDays[now.dayOfWeek]!!){//Active today
+        if (this.activeDays[now.dayOfWeek-1]!!){//Active today
             if (now > start && now < end){
                 this.activeHours = "valid until " + endDateTime.toString(dtf)
                 this.active = true

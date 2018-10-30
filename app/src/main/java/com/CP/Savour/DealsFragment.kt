@@ -136,7 +136,9 @@ class DealsFragment : Fragment() {
                         deal.value!!.favorited = favorites.containsKey(deal.key)
                     }
                     if (favUpdated){
-                        deal_list.adapter!!.notifyDataSetChanged()
+                        if(deal_list != null){
+                            deal_list.adapter!!.notifyDataSetChanged()
+                        }
                     }
                 }
                 if (!favUpdated){ //DONT redo geofire and deals if
