@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     var vendorFragment = VendorFragment()
     var accountfragment = AccountFragment()
     var active: Fragment = dealFragment
+    var leaving = false
 
 
     private val mOnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
@@ -158,7 +159,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     protected fun onLeaveThisActivity() {
-//        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+        overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
 

@@ -293,6 +293,8 @@ class DealsFragment : Fragment() {
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+        }else{
+            //location denied. Tell user to turn it on
         }
 
     }
