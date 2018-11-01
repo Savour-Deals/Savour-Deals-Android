@@ -90,27 +90,20 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.onResume()
+        
+        val permission = checkLocationPermission()
+        setContentView(R.layout.activity_main)
+
 
         if (!firstEnter){
             overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
         }
-        firstEnter = false
 
-        setContentView(R.layout.activity_main)
-        content = findViewById(R.id.content) as FrameLayout
-        val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
-        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
-        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
-        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
 
-        checkLocationPermission()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -119,7 +112,21 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        firstEnter = false
+        content = findViewById(R.id.content) as FrameLayout
+        val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
+        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
+        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
+        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+
+        println("HELLO WORLD PLEASE HELLO!")
+
+    }
     fun checkLocationPermission(): Boolean {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -159,6 +166,11 @@ class MainActivity : AppCompatActivity() {
     override fun finish() {
         super.finish()
         onLeaveThisActivity()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
     }
 
     protected fun onLeaveThisActivity() {

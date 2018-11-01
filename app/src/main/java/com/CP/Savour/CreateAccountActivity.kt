@@ -137,7 +137,6 @@ class CreateAccountActivity : AppCompatActivity() {
 
         // validating the register form...
         if (!TextUtils.isEmpty(fullName)  && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-            // TODO: Create a working progress bar.
 
             mAuth!!
                     .createUserWithEmailAndPassword(email!!,password!!)
