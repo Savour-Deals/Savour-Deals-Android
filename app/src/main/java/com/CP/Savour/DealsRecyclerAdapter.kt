@@ -6,9 +6,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -17,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_create_account.view.*
 import org.w3c.dom.Text
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
+import android.widget.*
 import com.CP.Savour.R.id.textView
 
 
@@ -27,7 +25,7 @@ private const val ARG_VENDOR = "vendor"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
+class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         
@@ -38,6 +36,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = deals[i]!!
         viewHolder.deal = temp
+        viewHolder.vendor = vendors[temp.vendorID]
 
         Glide.with(context).load(temp.photo).thumbnail(0.5f)
                     .into(viewHolder.itemImage)
@@ -73,17 +72,17 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
             viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
         }
 
-//        if (temp.redeemed!!) {
-//            viewHolder.Countdown.text = "Deal Already Redeemed!"
-//            viewHolder.validHours.text = ""
-//            viewHolder.countdownView.visibility = View.VISIBLE
-//        }
-//        else if (temp.daysLeft!! < 8){
-//            viewHolder.countdownView.visibility = View.INVISIBLE
-//            viewHolder.Countdown.text = temp.countdown
-//        }else{
-//            viewHolder.countdownView.visibility = true
-//        }
+        if (temp.redeemed!!) {
+            viewHolder.countdownText.text = "Deal Already Redeemed!"
+            viewHolder.timeText.text = ""
+            viewHolder.countdownView.visibility = View.VISIBLE
+        }
+        else if (temp.daysLeft!! < 8){
+            viewHolder.countdownView.visibility = View.VISIBLE
+            viewHolder.countdownText.text = temp.countdown
+        }else{
+            viewHolder.countdownView.visibility = View.INVISIBLE
+        }
 
         viewHolder.favorite.setOnClickListener {
             val user = FirebaseAuth.getInstance().currentUser
@@ -111,9 +110,11 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
         var dots : TextView
         var favorite : ImageButton
         var deal : Deal? = null
+        var vendor: Vendor? = null
         var activeText: TextView
         var timeText: TextView
-
+        var countdownView: LinearLayout
+        var countdownText: TextView
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
@@ -124,9 +125,13 @@ class DealsRecyclerAdapter(val deals: List<Deal?>, val context: Context) : Recyc
             favorite = itemView.findViewById(R.id.favButton)
             activeText = itemView.findViewById(R.id.activetext)
             timeText = itemView.findViewById(R.id.time)
+            countdownView = itemView.findViewById(R.id.countdown_view)
+            countdownText = itemView.findViewById(R.id.countdown_text)
+
             itemView.setOnClickListener {
                 val intent = Intent(context, DealActivity::class.java)
                 intent.putExtra(ARG_DEAL, deal)
+                intent.putExtra(ARG_VENDOR, vendor)
                 context.startActivity(intent)
             }
         }

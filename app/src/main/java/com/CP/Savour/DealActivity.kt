@@ -26,9 +26,13 @@ class DealActivity : AppCompatActivity() {
         content = findViewById(R.id.content) as FrameLayout
 
         val deal = getIntent().getParcelableExtra(ARG_DEAL) as? Deal
+        val vendor = getIntent().getParcelableExtra(ARG_VENDOR) as? Vendor
+
 
         val bundle = Bundle()
         bundle.putParcelable(ARG_DEAL, deal)
+        bundle.putParcelable(ARG_VENDOR, vendor)
+
 
         savourImg = findViewById(R.id.imageView3) as ImageView
         val toolbar = findViewById(R.id.toolbar) as Toolbar

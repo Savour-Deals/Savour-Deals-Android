@@ -39,15 +39,15 @@
             android:layout_weight=".70"
             app:pulse_color="@color/colorPrimary"
             app:pulse_count="6"
-            app:pulse_duration="1000"
+            app:pulse_duration="3000"
             app:pulse_interpolator="Decelerate"
             app:pulse_repeat="0"
             app:pulse_startFromScratch="false">
 
             <ImageView
                 android:id="@+id/dealImg"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
                 android:layout_centerInParent="true"
                 android:layout_margin="40dp"
                 android:src="#00000000" />

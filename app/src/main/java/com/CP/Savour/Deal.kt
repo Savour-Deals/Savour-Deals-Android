@@ -110,8 +110,8 @@ class Deal : Parcelable {
         val dtf = DateTimeFormat.forPattern("h:mm a")
 
         var now = LocalDateTime()
-        var start = LocalDateTime().plusHours(startDateTime.hourOfDay).plusMinutes(startDateTime.minuteOfHour)
-        var end = LocalDateTime().plusHours(endDateTime.hourOfDay).plusMinutes(endDateTime.minuteOfHour)
+        var start = now.plusHours(startDateTime.hourOfDay).plusMinutes(startDateTime.minuteOfHour)
+        var end = now.plusHours(endDateTime.hourOfDay).plusMinutes(endDateTime.minuteOfHour)
         if (now.hourOfDay < 5){//To solve problem with checking for deals after midnight... might have better way
             start = start.minusDays(1)
             end = end.minusDays(1)
@@ -169,8 +169,8 @@ class Deal : Parcelable {
         val dtf = DateTimeFormat.forPattern("h:mm a")
 
         var now = LocalDateTime()
-        var start = LocalDateTime().plusHours(startDateTime.hourOfDay)
-        var end = LocalDateTime().plusHours(endDateTime.hourOfDay)
+        var start = LocalDateTime().plusHours(startDateTime.hourOfDay).plusMinutes(startDateTime.minuteOfHour)
+        var end = LocalDateTime().plusHours(endDateTime.hourOfDay).plusMinutes(endDateTime.minuteOfHour)
         if (now.hourOfDay < 5){//To solve problem with checking for deals after midnight... might have better way
             start = start.minusDays(1)
             end = end.minusDays(1)

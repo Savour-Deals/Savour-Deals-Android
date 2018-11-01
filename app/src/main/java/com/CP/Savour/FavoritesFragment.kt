@@ -32,14 +32,19 @@ class FavoritesFragment : Fragment() {
 
     private var savourImg: ImageView? = null
     private var layoutManager : RecyclerView.LayoutManager? = null
+    val vendors = mutableMapOf<String, Vendor?>()
+
     private var adapter : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
     var nodealsText: TextView? = null
 
     var firstLocationUpdate = true
 
+
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
-    var geoFire = GeoFire(geoRef);
+    var geoFire = GeoFire(geoRef)
+    var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
+
 
     var geoQuery: GeoQuery? = null
 
@@ -124,38 +129,55 @@ class FavoritesFragment : Fragment() {
                                               vendorLocation.longitude = location!!.longitude
                                               val temp = Deal(dataSnapshot,myLocation!!,vendorLocation,userID, favorites)
 
-                                              //if the deal is not expired or redeemed less than half an hour ago, show it
-                                              if (temp.isAvailable()){
-                                                  if (temp.active!!){
-                                                      activedeals[temp.id!!] = temp
-                                                      inactivedeals.remove(temp.id!!)
-                                                  }else{
-                                                      inactivedeals[temp.id!!] = temp
-                                                      activedeals.remove(temp.id!!)
+                                              val dealsListener = object : ValueEventListener {//Now  get its deals!
+                                                  /**
+                                                   * Listening for when the data has been changed
+                                                   * and also when we want to access f
+                                                   */
+                                                  override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                                      vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
+                                                      if (dataSnapshot.exists()) {
+
+                                                          //if the deal is not expired or redeemed less than half an hour ago, show it
+                                                          if (temp.isAvailable()) {
+                                                              if (temp.active!!) {
+                                                                  activedeals[temp.id!!] = temp
+                                                                  inactivedeals.remove(temp.id!!)
+                                                              } else {
+                                                                  inactivedeals[temp.id!!] = temp
+                                                                  activedeals.remove(temp.id!!)
+                                                              }
+                                                          } else if (temp.redeemedTime != null) {
+                                                              if (((DateTime().millis / 1000) - temp.redeemedTime!!) < 1800) {
+                                                                  activedeals[temp.id!!] = temp
+                                                                  inactivedeals.remove(temp.id!!)
+                                                              }
+                                                          } else {
+                                                              activedeals.remove(temp.id!!)
+                                                              inactivedeals.remove(temp.id!!)
+                                                          }
+
+                                                          dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+
+                                                          if (dealsArray.count() < 1) {
+                                                              nodealsText!!.setVisibility(View.VISIBLE)
+                                                              dealsArray = ArrayList()
+                                                          } else {
+                                                              nodealsText!!.setVisibility(View.INVISIBLE)
+                                                          }
+                                                          adapter = DealsRecyclerAdapter(dealsArray, vendors, context!!)
+
+                                                          deal_list.layoutManager = layoutManager
+
+                                                          deal_list.adapter = adapter
+                                                      }
                                                   }
-                                              }else if (temp.redeemedTime != null){
-                                                  if (((DateTime().millis/1000) - temp.redeemedTime!!) < 1800){
-                                                      activedeals[temp.id!!] = temp
-                                                      inactivedeals.remove(temp.id!!)
+
+                                                  override fun onCancelled(databaseError: DatabaseError) {
                                                   }
-                                              }else{
-                                                  activedeals.remove(temp.id!!)
-                                                  inactivedeals.remove(temp.id!!)
                                               }
+                                              vendorReference.child(key!!).addValueEventListener(dealsListener)
 
-                                              dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
-
-                                              if(dealsArray.count() <1){
-                                                  nodealsText!!.setVisibility(View.VISIBLE)
-                                                  dealsArray = ArrayList()
-                                              }else{
-                                                  nodealsText!!.setVisibility(View.INVISIBLE)
-                                              }
-                                              adapter = DealsRecyclerAdapter(dealsArray, context!!)
-
-                                              deal_list.layoutManager = layoutManager
-
-                                              deal_list.adapter = adapter
                                           }
                                         }
 
@@ -177,7 +199,7 @@ class FavoritesFragment : Fragment() {
                     nodealsText!!.setVisibility(View.VISIBLE)
                     dealsArray = ArrayList()
 
-                    adapter = DealsRecyclerAdapter(dealsArray, context!!)
+                    adapter = DealsRecyclerAdapter(dealsArray,vendors,context!!)
 
                     deal_list.layoutManager = layoutManager
 
@@ -285,3 +307,4 @@ class FavoritesFragment : Fragment() {
         }
     }
 }
+

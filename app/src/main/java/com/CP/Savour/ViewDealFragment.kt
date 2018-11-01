@@ -21,9 +21,12 @@ import android.text.InputType
 import android.widget.EditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.functions.FirebaseFunctions
+import com.onesignal.OneSignal
 import org.joda.time.LocalDateTime
 import pl.bclogic.pulsator4droid.library.PulsatorLayout
 import java.util.*
+import kotlin.collections.HashMap
 
 
 private const val ARG_DEAL = "deal"
@@ -46,13 +49,16 @@ class ViewDealFragment : Fragment() {
     private var termsText: TextView? = null
     private var pulsator: PulsatorLayout? = null
 
+    private var mFunctions: FirebaseFunctions? = null
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             deal = it.getParcelable(ARG_DEAL) as Deal
-//            vendor = it.getParcelable(ARG_VENDOR) as Vendor
+            vendor = it.getParcelable(ARG_VENDOR) as Vendor
         }
     }
 
@@ -67,6 +73,9 @@ class ViewDealFragment : Fragment() {
         retainInstance = true
 
         val view = inflater.inflate(R.layout.fragment_view_deal, container, false)
+
+        mFunctions = FirebaseFunctions.getInstance()
+
 
         dealImg = view.findViewById(R.id.dealImg) as? ImageView
         vendorName = view.findViewById(R.id.name) as? TextView
@@ -83,7 +92,7 @@ class ViewDealFragment : Fragment() {
         Glide.with(this)
                 .load(deal!!.photo)
                 .apply(RequestOptions.circleCropTransform())
-                .into(dealImg!!)
+                .into((dealImg!!))
 
         vendorName!!.text = deal!!.vendorName
         description!!.text = deal!!.dealDescription
@@ -134,14 +143,57 @@ class ViewDealFragment : Fragment() {
                     "The deal is not guaranteed if the vendor does not see this message.")
             /* Set up the buttons */
             builder.setPositiveButton("Approve") { dialogInterface, which->
-                val time = Date().time/1000
-                var ref = FirebaseDatabase.getInstance().getReference("Deals").child(deal!!.id!!).child("redeemed")
-                ref.child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(time)
-                redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.green_rounded))
-                redemptionButton!!.text = "Deal Already Redeemed"
+                val currTime = Date().time/1000
+                val uID = FirebaseAuth.getInstance().currentUser!!.uid
+                val dataRef = FirebaseDatabase.getInstance().getReference()
+
+
+                //Note redemption time
+                dataRef.child("Deals").child(deal!!.id!!).child("redeemed").child(uID).setValue(currTime)
+
+
+                //Call Firebase cloud functions to increment stripe counter
+
+                val sub_id = if (vendor!!.subscriptionId != null) vendor!!.subscriptionId!! else ""
+                val vendor_id = if (vendor!!.id != null) vendor!!.id!! else ""
+                var data =  HashMap<String, Any>()
+                data.put("subscription_id", sub_id)
+                data.put("vendor_id", vendor_id)
+                data.put("deal_type",0)
+                mFunctions!!
+                    .getHttpsCallable("incrementStripe")
+                    .call(data)
+                        .continueWith {
+                            if (!it.isSuccessful){
+                                val e = it.exception
+                                print(e!!.localizedMessage)
+                            }else{
+                                print(it.result!!.data)
+                            }
+                        }
+
+                //set and draw checkmark
                 pulsator!!.color = resources.getColor(R.color.green)
-                deal!!.redeemedTime = time
+
+                redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
+                redemptionButton!!.text = "Already Redeemed!"
+                deal!!.redeemedTime = currTime
                 deal!!.redeemed = true
+
+
+                dataRef.child("Users").child(uID).child("favorites").child(deal!!.id!!).removeValue()
+                if (deal!!.code != null){
+                    termsText!!.text = deal!!.code
+                    termsText!!.setTextColor(resources.getColor(R.color.black))
+                }
+                runTimer()
+
+                val status = OneSignal.getPermissionSubscriptionState()
+                if (status.subscriptionStatus.userId != null){
+                    //Redundant following for user and rest
+                    dataRef.child("Vendors").child(vendor!!.id!!).child("followers").child(uID).setValue(status.subscriptionStatus.userId)
+                    dataRef.child("Users").child(uID).child("following").child(vendor!!.id!!).setValue(true)
+                }
             }
             builder.setNegativeButton("Cancel") { dialogInterface, which->
                 //Cancelled redemption

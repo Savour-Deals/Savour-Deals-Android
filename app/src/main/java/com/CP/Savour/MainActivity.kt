@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     var vendorFragment = VendorFragment()
     var accountfragment = AccountFragment()
     var active: Fragment = dealFragment
-    var leaving = false
+    var firstEnter = true
 
 
     private val mOnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
@@ -95,7 +95,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         super.onResume()
 
-        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+        if (!firstEnter){
+            overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+        }
+        firstEnter = false
 
         setContentView(R.layout.activity_main)
         content = findViewById(R.id.content) as FrameLayout

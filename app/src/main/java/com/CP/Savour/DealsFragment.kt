@@ -140,6 +140,19 @@ class DealsFragment : Fragment() {
                             deal_list.adapter!!.notifyDataSetChanged()
                         }
                     }
+                }else{
+                    favorites.clear()
+                    for (deal in activedeals){
+                        deal.value!!.favorited = false
+                    }
+                    for (deal in inactivedeals){
+                        deal.value!!.favorited = false
+                    }
+                    if (favUpdated){
+                        if(deal_list != null){
+                            deal_list.adapter!!.notifyDataSetChanged()
+                        }
+                    }
                 }
                 if (!favUpdated){ //DONT redo geofire and deals if
                     favUpdated = true
@@ -196,7 +209,7 @@ class DealsFragment : Fragment() {
                                                     dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
 
-                                                    adapter = DealsRecyclerAdapter(dealsArray, context!!)
+                                                    adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
 
                                                     deal_list.layoutManager = layoutManager
 
@@ -236,7 +249,7 @@ class DealsFragment : Fragment() {
 
                             dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
-                            adapter = DealsRecyclerAdapter(dealsArray, context!!)
+                            adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
 
                             deal_list.layoutManager = layoutManager
 

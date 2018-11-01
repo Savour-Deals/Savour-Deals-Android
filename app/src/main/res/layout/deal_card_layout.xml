@@ -18,12 +18,13 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
+            android:layout_height="fill_parent">
 
             <ImageView
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
+                android:contentDescription="@string/deal_image"
                 android:scaleType="centerCrop" />
 
             <TextView
@@ -32,18 +33,50 @@
                 android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerInParent="true"
-                android:layout_margin="1dp"
                 android:alpha=".9"
                 android:background="@color/gray"
                 android:gravity="center"
-                android:text="Deal Inactive"
+                android:text="@string/deal_inactive"
                 android:textAlignment="center"
                 android:textColor="@color/colorText"
                 android:textSize="18sp"
                 android:visibility="visible" />
 
-        </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/countdown_view"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="15dp"
+                android:alpha=".9"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp">
 
+                <ImageView
+                    android:id="@+id/tag_image"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="tag @string/com_facebook_image_download_unknown_error"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_tag"
+                    android:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/countdown_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:gravity="center|right"
+                    android:text="@string/deal_inactive"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+        </RelativeLayout>
 
 
         <TextView
@@ -79,13 +112,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingRight="10dp">
+            android:paddingEnd="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="0.50">
+                android:layout_weight="0.50"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/days"
@@ -105,8 +138,7 @@
                     android:gravity="top"
                     android:textColor="@color/colorPrimary"
                     android:textSize="40sp"
-                    android:textStyle="bold"
-                    />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -115,11 +147,10 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:adjustViewBounds="true"
-                android:cropToPadding="false"
-                android:visibility="visible"
-
                 android:backgroundTint="@color/red_tint"
-                />
+                android:cropToPadding="false"
+
+                android:visibility="visible" />
 
         </LinearLayout>
 
