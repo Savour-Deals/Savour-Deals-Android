@@ -179,15 +179,15 @@ class MainActivity : AppCompatActivity() {
                     // contacts-related task you need to do.
                     println("Second")
 
-                    //refreshFragments()
-                    finish()
-                    startActivity(intent)
+                    refreshFragments()
+                    //finish()
+                    //startActivity(intent)
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     //refreshFragments()
-                    finish()
-                    startActivity(intent)
+                    //finish()
+                    //startActivity(intent)
                 }
                 return
             }
