@@ -90,20 +90,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.onResume()
-        
-        val permission = checkLocationPermission()
-        setContentView(R.layout.activity_main)
-
 
         if (!firstEnter){
             overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
         }
+        firstEnter = false
 
+        setContentView(R.layout.activity_main)
+        content = findViewById(R.id.content) as FrameLayout
+        val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
+        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
+        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
 
+        checkLocationPermission()
+        //refreshFragments()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -112,19 +120,16 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        firstEnter = false
-        content = findViewById(R.id.content) as FrameLayout
-        val navigation = findViewById(R.id.navigation_view) as BottomNavigationView
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
-        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
-        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
-        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+    private fun refreshFragments() {
+        //supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
+        //supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
+        //supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+        //supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
 
-        println("HELLO WORLD PLEASE HELLO!")
+        supportFragmentManager.beginTransaction().detach(vendorFragment).attach(vendorFragment).commit()
+        supportFragmentManager.beginTransaction().detach(favoriteFragment).attach(favoriteFragment).commit()
+        supportFragmentManager.beginTransaction().detach(dealFragment).attach(dealFragment).commit()
 
     }
     fun checkLocationPermission(): Boolean {
@@ -163,14 +168,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        println("First")
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    println("Second")
+
+                    //refreshFragments()
+                    finish()
+                    startActivity(intent)
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    //refreshFragments()
+                    finish()
+                    startActivity(intent)
+                }
+                return
+            }
+
+            // Add other 'when' lines to check for other
+            // permissions this app might request.
+            else -> {
+                // Ignore all other requests.
+                }
+            }
+        }
+
     override fun finish() {
         super.finish()
         onLeaveThisActivity()
-    }
-
-    override fun onStart() {
-        super.onStart()
-
     }
 
     protected fun onLeaveThisActivity() {
