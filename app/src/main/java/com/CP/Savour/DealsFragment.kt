@@ -17,6 +17,7 @@ import android.support.v7.widget.SearchView
 import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
@@ -28,6 +29,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.zxing.client.result.TextParsedResult
 import kotlinx.android.synthetic.main.fragment_deals.*
 import kotlinx.android.synthetic.main.fragment_vendor.*
 import org.joda.time.DateTime
@@ -40,6 +42,7 @@ class DealsFragment : Fragment() {
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
     private var savourImg: ImageView? = null
+    private var locationMessage: TextView? = null
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef);
 
@@ -77,6 +80,7 @@ class DealsFragment : Fragment() {
         // adding a listener to the search bar
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
+        locationMessage = view.findViewById(R.id.locationMessage) as TextView
 
         Glide.with(this)
                 .load(R.drawable.savour_white)
@@ -305,9 +309,14 @@ class DealsFragment : Fragment() {
         }
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+            locationMessage!!.visibility = View.INVISIBLE
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+            registerLocationListner()
+
         }else{
             //location denied. Tell user to turn it on
+            locationMessage!!.visibility = View.VISIBLE
+
         }
 
     }
@@ -323,13 +332,18 @@ class DealsFragment : Fragment() {
 
     fun onLocationChanged(location: Location) {
         // New location has now been determined
-        this.myLocation = location
-        if(firstLocationUpdate){
-            firstLocationUpdate = false
-            getFirebaseData(location.latitude,location.longitude)
-        }else{
-            geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+        myLocation = location
+        if (myLocation != null){
+            if(firstLocationUpdate){
+                firstLocationUpdate = false
+                getFirebaseData(location.latitude,location.longitude)
+            }else{
+                if (geoQuery != null){
+                    geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+                }
+            }
         }
+
     }
 
     private fun registerLocationListner() {
