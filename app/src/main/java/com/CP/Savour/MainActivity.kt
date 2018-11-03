@@ -28,8 +28,8 @@ import android.content.Intent
 class MainActivity : AppCompatActivity() {
     private var content: FrameLayout? = null
     val MY_PERMISSIONS_REQUEST_LOCATION = 99
-    val dealFragment = DealsFragment()
-    val favoriteFragment = FavoritesFragment()
+    var dealFragment = DealsFragment()
+    var favoriteFragment = FavoritesFragment()
     var vendorFragment = VendorFragment()
     var accountfragment = AccountFragment()
     var active: Fragment = dealFragment
@@ -122,10 +122,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun refreshFragments() {
-        //supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
-        //supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
-        //supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
-        //supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
+//        supportFragmentManager.beginTransaction().add(R.id.content,accountfragment).commit()
+//        supportFragmentManager.beginTransaction().hide(accountfragment).add(R.id.content, vendorFragment).commit()
+//        supportFragmentManager.beginTransaction().hide(vendorFragment).add(R.id.content, favoriteFragment).commit()
+//        supportFragmentManager.beginTransaction().hide(favoriteFragment).add(R.id.content, dealFragment).commit()
 
         supportFragmentManager.beginTransaction().detach(vendorFragment).attach(vendorFragment).commit()
         supportFragmentManager.beginTransaction().detach(favoriteFragment).attach(favoriteFragment).commit()
