@@ -135,7 +135,7 @@ class ViewDealFragment : Fragment() {
     }
 
     private fun redeemPressed(){
-        if (deal!!.active!! && !deal!!.redeemed!!/*&& inRange*/){//perform redemption process
+        if (deal!!.active!! && !deal!!.redeemed!! && inRange){//perform redemption process
             val builder = AlertDialog.Builder(this.context!!)
             builder.setTitle("Vendor Approval")
             builder.setMessage("This deal is intended for one person only. " +

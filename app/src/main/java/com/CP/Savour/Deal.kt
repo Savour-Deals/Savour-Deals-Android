@@ -73,7 +73,7 @@ class Deal : Parcelable {
         if (deal.containsKey("redeemed")){
             val redemptions = deal.getValue("redeemed") as HashMap<String?, Double?>
             if (redemptions.containsKey(userID)){
-                val time = redemptions.get(userID) as Long
+                val time = redemptions.get(userID) as Double
                 if ((Date().time/1000 - time) > 60*60*24*7*2) {
                     //If redeemed 2 weeks ago, allow user to use deal again - Should be changed in the future
                     val randStr = java.util.UUID.randomUUID().toString().substring(0,9)
@@ -84,7 +84,7 @@ class Deal : Parcelable {
                     this.redeemedTime = 0
                 }else{
                     this.redeemed = true
-                    this.redeemedTime = time
+                    this.redeemedTime = time.toLong()
                 }
             }else{
             this.redeemed = false
@@ -110,13 +110,13 @@ class Deal : Parcelable {
         val dtf = DateTimeFormat.forPattern("h:mm a")
 
         var now = LocalDateTime()
-        var start = now.plusHours(startDateTime.hourOfDay).plusMinutes(startDateTime.minuteOfHour)
-        var end = now.plusHours(endDateTime.hourOfDay).plusMinutes(endDateTime.minuteOfHour)
+        var start = now.withTime(startDateTime.hourOfDay,startDateTime.minuteOfHour,0,0)
+        var end = now.withTime(endDateTime.hourOfDay,endDateTime.minuteOfHour,0,0)
         if (now.hourOfDay < 5){//To solve problem with checking for deals after midnight... might have better way
             start = start.minusDays(1)
             end = end.minusDays(1)
         }
-        if (start.hourOfDay > end.hourOfDay){//Deal goes past midnight (might be typical of bar's drink deals)
+        if (start > end){//Deal goes past midnight (might be typical of bar's drink deals)
             end = end.plusDays(1)
         }
         if (this.activeDays[now.dayOfWeek-1]!!){//Active today
@@ -169,8 +169,8 @@ class Deal : Parcelable {
         val dtf = DateTimeFormat.forPattern("h:mm a")
 
         var now = LocalDateTime()
-        var start = LocalDateTime().plusHours(startDateTime.hourOfDay).plusMinutes(startDateTime.minuteOfHour)
-        var end = LocalDateTime().plusHours(endDateTime.hourOfDay).plusMinutes(endDateTime.minuteOfHour)
+        var start = now.withTime(startDateTime.hourOfDay,startDateTime.minuteOfHour,0,0)
+        var end = now.withTime(endDateTime.hourOfDay,endDateTime.minuteOfHour,0,0)
         if (now.hourOfDay < 5){//To solve problem with checking for deals after midnight... might have better way
             start = start.minusDays(1)
             end = end.minusDays(1)
