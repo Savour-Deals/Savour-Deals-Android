@@ -73,7 +73,7 @@ class Deal : Parcelable {
         if (deal.containsKey("redeemed")){
             val redemptions = deal.getValue("redeemed") as HashMap<String?, Double?>
             if (redemptions.containsKey(userID)){
-                val time = redemptions.get(userID) as Double
+                val time = redemptions.get(userID)!!.toDouble()
                 if ((Date().time/1000 - time) > 60*60*24*7*2) {
                     //If redeemed 2 weeks ago, allow user to use deal again - Should be changed in the future
                     val randStr = java.util.UUID.randomUUID().toString().substring(0,9)
