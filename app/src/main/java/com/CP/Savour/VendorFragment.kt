@@ -23,6 +23,8 @@ import com.firebase.geofire.GeoQueryEventListener
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import kotlinx.android.synthetic.main.fragment_vendor.*
@@ -33,9 +35,10 @@ class VendorFragment : Fragment() {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
+    private var savourImg: ImageView? = null
     private var toolbar : ActionBar? = null
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
-    var geoFire = GeoFire(geoRef);
+    var geoFire = GeoFire(geoRef)
 
     val vendors = mutableMapOf<String, Vendor?>()
 
@@ -60,13 +63,21 @@ class VendorFragment : Fragment() {
         setRetainInstance(true)
 
 
+        val view = inflater.inflate(R.layout.fragment_vendor, container, false)
+
+
+        savourImg = view.findViewById(R.id.imageView5) as ImageView
+
+        Glide.with(this)
+                .load(R.drawable.savour_white)
+                .into(savourImg!!)
 
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
 
         startLocationUpdates()
 
-        return inflater.inflate(R.layout.fragment_vendor, container, false)
+        return view
     }
 
     companion object {

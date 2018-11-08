@@ -1,15 +1,20 @@
 package com.CP.Savour
 
+import android.annotation.SuppressLint
 import android.location.Location
+import android.os.Parcel
+import android.os.Parcelable
+import android.support.design.internal.ParcelableSparseArray
 import com.firebase.geofire.GeoLocation
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 
+@SuppressLint("ParcelCreator")
 /**
  * This data class will be used to parse the Vendor datasnapshot from the firebase calls
  * In the Recycler adapter.
  */
-class Vendor {
+class Vendor : Parcelable {
     var name: String? = null
     var id: String? = null
     var photo: String? = null
@@ -24,6 +29,22 @@ class Vendor {
     var loyaltyCount: Int? = null
     var loyaltyDeal: String? = null
     var loyaltyPoints = arrayOfNulls<Int>(7)
+
+    constructor(parcel: Parcel) : this() {
+        name = parcel.readString()
+        id = parcel.readString()
+        photo = parcel.readString()
+        description = parcel.readString()
+        address = parcel.readString()
+        location = parcel.readParcelable(Location::class.java.classLoader)
+        distanceMiles = parcel.readValue(Float::class.java.classLoader) as? Float
+        menu = parcel.readString()
+        subscriptionId = parcel.readString()
+        dailyHours = parcel.createStringArray()
+        loyaltyCode = parcel.readString()
+        loyaltyCount = parcel.readValue(Int::class.java.classLoader) as? Int
+        loyaltyDeal = parcel.readString()
+    }
 
     constructor() { }
 
@@ -75,5 +96,35 @@ class Vendor {
 
     fun updateDistance(myLocation: Location){
         this.distanceMiles  = myLocation.distanceTo(this.location)*0.00062137f
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(id)
+        parcel.writeString(photo)
+        parcel.writeString(description)
+        parcel.writeString(address)
+        parcel.writeParcelable(location, flags)
+        parcel.writeValue(distanceMiles)
+        parcel.writeString(menu)
+        parcel.writeString(subscriptionId)
+        parcel.writeStringArray(dailyHours)
+        parcel.writeString(loyaltyCode)
+        parcel.writeValue(loyaltyCount)
+        parcel.writeString(loyaltyDeal)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Vendor> {
+        override fun createFromParcel(parcel: Parcel): Vendor {
+            return Vendor(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Vendor?> {
+            return arrayOfNulls(size)
+        }
     }
 }

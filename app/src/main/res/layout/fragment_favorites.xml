@@ -4,19 +4,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FavoritesFragment">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        >
 
-    <android.support.v7.widget.Toolbar
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No favorites found. Press a deal's heart to add it here!"
+            android:textAlignment="center"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDark"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        />
-    <TextView
+        >
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+    </android.support.v7.widget.Toolbar>
+
+
+
+        <android.support.v7.widget.RecyclerView
+        android:id="@+id/deal_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-    android:text="No Favorites!" />
+        android:layout_marginTop="0dp" />
+    </LinearLayout>
+
+
 
 </FrameLayout>

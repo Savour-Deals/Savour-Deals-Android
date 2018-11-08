@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
+import com.CP.Savour.R.id.backgroundImg
 import com.bumptech.glide.Glide
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -53,7 +54,7 @@ class CreateAccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
         logoImg = findViewById(R.id.imageView)
-        backgroundImg = findViewById(R.id.imageView3)
+        backgroundImg = findViewById(R.id.backgroundImg)
         Glide.with(this)
                 .load(R.drawable.stil336188)
                 .into(backgroundImg!!)
@@ -106,7 +107,7 @@ class CreateAccountActivity : AppCompatActivity() {
             }
 
             override fun onError(error: FacebookException?) {
-                println("OMGGGGG")
+                println(error)
             }
 
         })
@@ -136,7 +137,6 @@ class CreateAccountActivity : AppCompatActivity() {
 
         // validating the register form...
         if (!TextUtils.isEmpty(fullName)  && !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password)) {
-            // TODO: Create a working progress bar.
 
             mAuth!!
                     .createUserWithEmailAndPassword(email!!,password!!)
