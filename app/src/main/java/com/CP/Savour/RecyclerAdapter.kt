@@ -10,6 +10,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 
+
+private const val ARG_DEAL = "deal"
+private const val ARG_VENDOR = "vendor"
+
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
@@ -24,7 +28,7 @@ class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : Recycl
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = vendors[i]
-
+        viewHolder.vendor = temp
         if (temp!!.photo != null){
             Glide.with(context).load(temp.photo).into(viewHolder.itemImage)
         }
@@ -39,7 +43,8 @@ class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : Recycl
         var itemImage: ImageView
         var vendorName: TextView
         var distanceLabel: TextView
-
+        var deal : Deal? = null
+        var vendor: Vendor? = null
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
@@ -48,6 +53,7 @@ class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : Recycl
 
             itemView.setOnClickListener {
                 val intent = Intent(context, VendorActivity::class.java)
+                intent.putExtra(ARG_VENDOR,vendor)
                 context.startActivity(intent)
             }
         }
