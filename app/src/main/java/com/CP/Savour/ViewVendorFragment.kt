@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
 
 
@@ -29,6 +30,7 @@ class ViewVendorFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var vendor: Vendor
     private lateinit var dealImage: ImageView
+    private lateinit var vendorName: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,9 @@ class ViewVendorFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_view_vendor, container, false)
 
         dealImage = view.findViewById(R.id.view_vendor_image)
+        vendorName = view.findViewById(R.id.view_vendor_name)
+
+        vendorName.text = vendor.name
 
         Glide.with(this)
                 .load(vendor!!.photo)
