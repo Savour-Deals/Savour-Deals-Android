@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -25,12 +27,13 @@ private const val ARG_VENDOR = "vendor"
  */
 class ViewVendorFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private var vendor: Vendor? = null
+    private lateinit var vendor: Vendor
+    private lateinit var dealImage: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            vendor = it.getParcelable(ARG_VENDOR) as? Vendor
+            vendor = it.getParcelable(ARG_VENDOR) as Vendor
         }
     }
 
@@ -38,7 +41,15 @@ class ViewVendorFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_view_vendor, container, false)
+        val view = inflater.inflate(R.layout.fragment_view_vendor, container, false)
+
+        dealImage = view.findViewById(R.id.view_vendor_image)
+
+        Glide.with(this)
+                .load(vendor!!.photo)
+                .into(dealImage!!)
+
+        return view
     }
 
 
