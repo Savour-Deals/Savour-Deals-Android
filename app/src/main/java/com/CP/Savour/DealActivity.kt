@@ -34,9 +34,11 @@ class DealActivity : AppCompatActivity() {
         bundle.putParcelable(ARG_VENDOR, vendor)
 
 
-        savourImg = findViewById(R.id.imageView3) as ImageView
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        savourImg = findViewById(R.id.deal_toolbar_image) as ImageView
+        val toolbar = findViewById(R.id.deal_toolbar) as Toolbar
         setSupportActionBar(toolbar)
+
+        toolbar.setNavigationIcon(R.drawable.savour_white)
         //Your toolbar is now an action bar and you can use it like you always do, for example:
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
         toolbar.getNavigationIcon()!!.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP)
@@ -48,7 +50,8 @@ class DealActivity : AppCompatActivity() {
 
         val fragobj = ViewDealFragment()
 
-        fragobj.setArguments(bundle)
+        fragobj.arguments = bundle
+
         supportFragmentManager.beginTransaction().add(R.id.content,fragobj).commit()
     }
 
