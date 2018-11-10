@@ -81,18 +81,18 @@ class Deal : Parcelable {
                     ref.child(userID).removeValue()
                     ref.child(userID+"-"+randStr).setValue(time)
                     this.redeemed = false
-                    this.redeemedTime = 0.0
+                    this.redeemedTime = 0
                 }else{
                     this.redeemed = true
                     this.redeemedTime = time.toLong()
                 }
             }else{
             this.redeemed = false
-            this.redeemedTime = 0.0
+            this.redeemedTime = 0
         }
         }else{
             this.redeemed = false
-            this.redeemedTime = 0.0
+            this.redeemedTime = 0
         }
         this.distanceMiles = myLocation.distanceTo(dealLocation)*0.00062137f
         val activeSnap = deal.getValue("active_days") as HashMap<String,Boolean>

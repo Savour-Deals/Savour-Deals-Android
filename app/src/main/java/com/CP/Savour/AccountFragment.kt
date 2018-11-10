@@ -42,25 +42,10 @@ class AccountFragment : Fragment() {
 
         val currentUser = mAuth.currentUser
 
-/**
-        if (currentUser!!.photoUrl != null) {
-            var profileImage = frameLayout!!.findViewById(R.id.profile_image) as ImageView
-            Glide.with(this)
-                    .load(currentUser!!.photoUrl)
-                    .apply(RequestOptions().circleCrop())
-                    .into(profileImage!!)
-        }
-        */
-        for(data in currentUser!!.providerData) {
-            println("Photo stuff! " + data.photoUrl)
-        }
-        println("Current User information: " + currentUser!!.providerData.toString())
+
     }
     companion object {
         fun newInstance(): AccountFragment = AccountFragment()
     }
-
-
-
 
 }

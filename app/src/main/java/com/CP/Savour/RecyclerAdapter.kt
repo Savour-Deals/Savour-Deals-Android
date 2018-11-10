@@ -1,6 +1,7 @@
 package com.CP.Savour
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +45,11 @@ class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : Recycl
             itemImage = itemView.findViewById(R.id.item_image)
             vendorName = itemView.findViewById(R.id.vendorName)
             distanceLabel = itemView.findViewById(R.id.distanceTo)
+
+            itemView.setOnClickListener {
+                val intent = Intent(context, VendorActivity::class.java)
+                context.startActivity(intent)
+            }
         }
     }
 }
