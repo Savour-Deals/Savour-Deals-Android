@@ -3,6 +3,7 @@ package com.CP.Savour
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.FrameLayout
 
@@ -23,6 +24,13 @@ class VendorActivity : AppCompatActivity() {
         val bundle = Bundle()
 
         bundle.putParcelable(ARG_VENDOR, vendor)
+
+        // load images into the toolbar
+        val toolbar = findViewById<Toolbar>(R.id.vendor_toolbar)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationIcon(R.drawable.savour_white)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
 
         val fragment = ViewVendorFragment()
 

@@ -1,12 +1,15 @@
 package com.CP.Savour
 
 import android.content.Context
+import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -31,6 +34,9 @@ class ViewVendorFragment : Fragment() {
     private lateinit var vendor: Vendor
     private lateinit var dealImage: ImageView
     private lateinit var vendorName: TextView
+    private lateinit var directionsButton: Button
+    private lateinit var followButton: Button
+    private lateinit var menuButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +57,16 @@ class ViewVendorFragment : Fragment() {
         vendorName.text = vendor.name
 
         Glide.with(this)
-                .load(vendor!!.photo)
-                .into(dealImage!!)
+                .load(vendor.photo)
+                .into(dealImage)
 
+
+        // getting the buttons, and scaling their logo
+        val scaledMap = ScaleDrawable(ContextCompat.getDrawable(context!!, R.drawable.icon_business),0, 5f,5f)
+        val directionsButton = view.findViewById<Button>(R.id.vendor_directions)
+        directionsButton.setCompoundDrawables(null, null,null,scaledMap)
         return view
+
     }
 
 
