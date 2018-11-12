@@ -1,11 +1,13 @@
 package com.CP.Savour
 
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.FrameLayout
+import android.widget.ImageView
 
 private const val ARG_VENDOR = "vendor"
 /**
@@ -13,6 +15,8 @@ private const val ARG_VENDOR = "vendor"
  */
 class VendorActivity : AppCompatActivity() {
     private var content: FrameLayout? = null
+    var savourImg: ImageView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vendor)
@@ -26,10 +30,13 @@ class VendorActivity : AppCompatActivity() {
         bundle.putParcelable(ARG_VENDOR, vendor)
 
         // load images into the toolbar
-        val toolbar = findViewById<Toolbar>(R.id.vendor_toolbar)
+        savourImg = findViewById(R.id.vendor_toolbar_image) as ImageView
+        val toolbar = findViewById(R.id.vendor_toolbar) as Toolbar
         setSupportActionBar(toolbar)
+
         toolbar.setNavigationIcon(R.drawable.savour_white)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
+        toolbar.getNavigationIcon()!!.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP)
 
 
         val fragment = ViewVendorFragment()

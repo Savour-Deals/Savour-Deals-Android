@@ -39,7 +39,6 @@ class DealActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         toolbar.setNavigationIcon(R.drawable.savour_white)
-        //Your toolbar is now an action bar and you can use it like you always do, for example:
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
         toolbar.getNavigationIcon()!!.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP)
 
