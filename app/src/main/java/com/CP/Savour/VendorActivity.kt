@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 
 private const val ARG_VENDOR = "vendor"
 /**
@@ -30,14 +31,16 @@ class VendorActivity : AppCompatActivity() {
         bundle.putParcelable(ARG_VENDOR, vendor)
 
         // load images into the toolbar
-        savourImg = findViewById(R.id.vendor_toolbar_image) as ImageView
+        savourImg = findViewById(R.id.logo) as ImageView
         val toolbar = findViewById(R.id.vendor_toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        toolbar.setNavigationIcon(R.drawable.savour_white)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
         toolbar.getNavigationIcon()!!.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP)
 
+        Glide.with(this)
+                .load(R.drawable.savour_white)
+                .into(savourImg!!)
 
         val fragment = ViewVendorFragment()
 

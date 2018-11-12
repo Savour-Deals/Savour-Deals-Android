@@ -14,19 +14,19 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/vendor_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             >
-
             <ImageView
-                android:id="@+id/vendor_toolbar_image"
+                android:id="@+id/logo"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/bck_rounded"
+                android:layout_height="wrap_content"
+                android:src="@drawable/savour_white"
+                android:layout_marginRight="?android:attr/actionBarSize"
+                android:layout_gravity="center"
                 />
-
         </android.support.v7.widget.Toolbar>
 
 

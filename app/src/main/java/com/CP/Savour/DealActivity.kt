@@ -34,11 +34,10 @@ class DealActivity : AppCompatActivity() {
         bundle.putParcelable(ARG_VENDOR, vendor)
 
 
-        savourImg = findViewById(R.id.deal_toolbar_image) as ImageView
+        savourImg = findViewById(R.id.logo) as ImageView
         val toolbar = findViewById(R.id.deal_toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        toolbar.setNavigationIcon(R.drawable.savour_white)
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
         toolbar.getNavigationIcon()!!.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP)
 
