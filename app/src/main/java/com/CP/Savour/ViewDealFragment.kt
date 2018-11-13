@@ -13,6 +13,8 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 import android.widget.EditText
@@ -127,6 +129,7 @@ class ViewDealFragment : Fragment() {
         }
 
         redemptionButton!!.setOnClickListener {redeemPressed()}
+        moreButton!!.setOnClickListener {morePressed()}
 
         return view
     }
@@ -197,9 +200,19 @@ class ViewDealFragment : Fragment() {
             }
             builder.show()
         }else if(!inRange){//Open Maps
-
+            val url = "http://maps.google.com/maps?daddr="+ vendor!!.address +"&mode=driving"
+            val intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+            intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity")
+            startActivity(intent)
         }//else do nothing
     }
+
+    private fun morePressed(){
+        val intent = Intent(context, VendorActivity::class.java)
+        intent.putExtra(ARG_VENDOR,vendor)
+        activity!!.startActivity(intent)
+    }
+
 
     fun runTimer(){
         timer = Timer()
