@@ -36,13 +36,13 @@
             android:id="@+id/pulsator"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".70"
+            android:layout_weight=".80"
             app:pulse_color="@color/colorPrimary"
             app:pulse_count="6"
-            app:pulse_duration="1000"
+            app:pulse_duration="200"
             app:pulse_interpolator="Decelerate"
             app:pulse_repeat="0"
-            app:pulse_startFromScratch="false">
+            app:pulse_startFromScratch="true">
 
             <ImageView
                 android:id="@+id/dealImg"

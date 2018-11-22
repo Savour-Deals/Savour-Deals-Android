@@ -39,7 +39,7 @@
                 android:text="@string/deal_inactive"
                 android:textAlignment="center"
                 android:textColor="@color/colorText"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:visibility="visible" />
 
             <LinearLayout
@@ -86,7 +86,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="1dp"
-            android:textSize="14sp" />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/description"
@@ -96,7 +96,7 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="1dp"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -106,7 +106,7 @@
             android:layout_marginHorizontal="10dp"
 
             android:textColor="@color/orange"
-            android:textSize="14sp" />
+            android:textSize="10sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -127,7 +127,7 @@
                     android:layout_marginHorizontal="10dp"
 
                     android:textColor="@color/colorPrimary"
-                    android:textSize="14sp" />
+                    android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/dots"
@@ -137,15 +137,15 @@
                     android:layout_marginVertical="-10dp"
                     android:gravity="top"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="40sp"
+                    android:textSize="29sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
 
             <ImageButton
                 android:id="@+id/favButton"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:adjustViewBounds="true"
                 android:backgroundTint="@color/red_tint"
                 android:cropToPadding="false"
