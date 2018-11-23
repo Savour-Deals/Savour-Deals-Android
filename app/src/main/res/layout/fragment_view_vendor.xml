@@ -22,6 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="203dp"
                 android:adjustViewBounds="false"
+                android:alpha=".6"
                 android:background="@drawable/bck_rounded"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -87,6 +88,7 @@
                 tools:layout_editor_absoluteY="8dp">
 
                 <TextView
+                    android:id="@+id/view_vendor_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -96,7 +98,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/view_vendor_hours"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
