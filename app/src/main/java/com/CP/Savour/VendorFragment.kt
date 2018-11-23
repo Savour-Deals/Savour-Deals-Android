@@ -89,8 +89,8 @@ class VendorFragment : Fragment() {
     }
 
     override fun onPause() {
+
         super.onPause()
-        geoQuery!!.removeAllListeners()
     }
 
     private fun getFirebaseData(lat:Double, lng:Double) {
