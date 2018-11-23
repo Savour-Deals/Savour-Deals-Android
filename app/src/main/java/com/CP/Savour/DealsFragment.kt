@@ -44,7 +44,11 @@ class DealsFragment : Fragment() {
     private var savourImg: ImageView? = null
     private var locationMessage: TextView? = null
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
-    var geoFire = GeoFire(geoRef);
+    var geoFire = GeoFire(geoRef)
+
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var authStateListner: FirebaseAuth.AuthStateListener
+
 
     val vendors = mutableMapOf<String, Vendor?>()
 
@@ -64,13 +68,14 @@ class DealsFragment : Fragment() {
         onCreate(savedInstanceState)
     }
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         setRetainInstance(true)
+
 
         val view = inflater.inflate(R.layout.fragment_deals, container, false)
         // grabbing the search bar
@@ -88,10 +93,26 @@ class DealsFragment : Fragment() {
 
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
-        startLocationUpdates()
 
         // Inflate the layout for this fragment
         return view
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mAuth = FirebaseAuth.getInstance()
+        authStateListner = FirebaseAuth.AuthStateListener { auth ->
+            val user = auth.currentUser
+            if(user != null){
+                startLocationUpdates()
+            }
+        }
+        mAuth.addAuthStateListener(authStateListner)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mAuth.removeAuthStateListener(authStateListner)
     }
 
 

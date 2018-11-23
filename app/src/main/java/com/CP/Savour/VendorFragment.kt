@@ -75,8 +75,6 @@ class VendorFragment : Fragment() {
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
 
-        startLocationUpdates()
-
         return view
     }
 
@@ -84,9 +82,16 @@ class VendorFragment : Fragment() {
         fun newInstance(): VendorFragment = VendorFragment()
     }
 
+    override fun onStart() {
+        super.onStart()
+        firstLocationUpdate = true
+        startLocationUpdates()
+    }
 
-
-
+    override fun onPause() {
+        super.onPause()
+        geoQuery!!.removeAllListeners()
+    }
 
     private fun getFirebaseData(lat:Double, lng:Double) {
         geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query

@@ -202,13 +202,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun finish() {
         super.finish()
+        supportFragmentManager.beginTransaction().detach(dealFragment).commit()
+        supportFragmentManager.beginTransaction().detach(favoriteFragment).commit()
+        supportFragmentManager.beginTransaction().detach(vendorFragment).commit()
+        supportFragmentManager.beginTransaction().detach(accountfragment).commit()
         onLeaveThisActivity()
     }
 
     protected fun onLeaveThisActivity() {
         overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
-
 
     override fun startActivity(intent: Intent) {
         super.startActivity(intent)

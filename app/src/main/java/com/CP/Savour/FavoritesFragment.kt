@@ -40,6 +40,8 @@ class FavoritesFragment : Fragment() {
 
     var firstLocationUpdate = true
 
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var authStateListner: FirebaseAuth.AuthStateListener
 
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
@@ -58,10 +60,6 @@ class FavoritesFragment : Fragment() {
         super.onViewStateRestored(savedInstanceState)
         onCreate(savedInstanceState)
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -78,11 +76,25 @@ class FavoritesFragment : Fragment() {
         Glide.with(this)
                 .load(R.drawable.savour_white)
                 .into(savourImg!!)
-
-        startLocationUpdates()
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        mAuth = FirebaseAuth.getInstance()
+        authStateListner = FirebaseAuth.AuthStateListener { auth ->
+            val user = auth.currentUser
+            if(user != null){
+                startLocationUpdates()
+            }
+        }
+        mAuth.addAuthStateListener(authStateListner)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mAuth.removeAuthStateListener(authStateListner)
+    }
     companion object {
         fun newInstance(): FavoritesFragment = FavoritesFragment()
     }
@@ -120,7 +132,6 @@ class FavoritesFragment : Fragment() {
                              */
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 if (dataSnapshot.exists()) {
-
                                     geoFire.getLocation(dataSnapshot.child("vendor_id").value.toString(),  object: LocationCallback {
                                         override fun onLocationResult(key: String?, location: GeoLocation?) {
                                           if (location != null){

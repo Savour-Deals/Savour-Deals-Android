@@ -91,7 +91,6 @@ class LoginActivity : AppCompatActivity() {
 
         facebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
-                updateUI()
                 println("OMG FACEBOOK LOGIN!!!!")
                 progressBarHolder!!.visibility = View.VISIBLE
 
