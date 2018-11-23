@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginHorizontal="20dp"
             android:text="No favorites found. Press a deal's heart to add it here!"
             android:textAlignment="center"
             android:visibility="invisible" />

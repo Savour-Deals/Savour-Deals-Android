@@ -39,7 +39,7 @@
             android:layout_weight=".80"
             app:pulse_color="@color/colorPrimary"
             app:pulse_count="6"
-            app:pulse_duration="200"
+            app:pulse_duration="2000"
             app:pulse_interpolator="Decelerate"
             app:pulse_repeat="0"
             app:pulse_startFromScratch="true">
