@@ -55,7 +55,6 @@ class ViewVendorFragment : Fragment() {
         vendorName = view.findViewById(R.id.view_vendor_name)
 
         vendorName.text = vendor.name
-
         Glide.with(this)
                 .load(vendor.photo)
                 .into(dealImage)
