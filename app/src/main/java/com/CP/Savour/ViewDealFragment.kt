@@ -48,7 +48,7 @@ class ViewDealFragment : Fragment() {
     private var termsText: TextView? = null
     private var pulsator: PulsatorLayout? = null
 
-    private var mFunctions: FirebaseFunctions? = null
+//    private var mFunctions: FirebaseFunctions? = null
 
 
 
@@ -73,7 +73,7 @@ class ViewDealFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_view_deal, container, false)
 
-        mFunctions = FirebaseFunctions.getInstance()
+//        mFunctions = FirebaseFunctions.getInstance()
 
 
         dealImg = view.findViewById(R.id.dealImg) as? ImageView
@@ -160,17 +160,17 @@ class ViewDealFragment : Fragment() {
                 data.put("subscription_id", sub_id)
                 data.put("vendor_id", vendor_id)
                 data.put("deal_type",0)
-                mFunctions!!
-                    .getHttpsCallable("incrementStripe")
-                    .call(data)
-                        .continueWith {
-                            if (!it.isSuccessful){
-                                val e = it.exception
-                                print(e!!.localizedMessage)
-                            }else{
-                                print(it.result!!.data)
-                            }
-                        }
+//                mFunctions!!
+//                    .getHttpsCallable("incrementStripe")
+//                    .call(data)
+//                        .continueWith {
+//                            if (!it.isSuccessful){
+//                                val e = it.exception
+//                                print(e!!.localizedMessage)
+//                            }else{
+//                                print(it.result!!.data)
+//                            }
+//                        }
 
                 //set and draw checkmark
                 pulsator!!.color = resources.getColor(R.color.green)
