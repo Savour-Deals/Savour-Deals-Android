@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.github.debop.kodatimes.today
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,6 +40,15 @@ class ViewVendorFragment : Fragment() {
     private lateinit var directionsButton: Button
     private lateinit var followButton: Button
     private lateinit var menuButton: Button
+    private lateinit var address: TextView
+    private lateinit var hours: TextView
+    private lateinit var description: TextView
+    private lateinit var seeMore: TextView
+    private lateinit var descriptionContainer: ConstraintLayout
+    private var descriptionExpanded = false
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,11 +65,39 @@ class ViewVendorFragment : Fragment() {
 
         dealImage = view.findViewById(R.id.view_vendor_image)
         vendorName = view.findViewById(R.id.view_vendor_name)
+        address = view.findViewById(R.id.vendor_address)
+        hours = view.findViewById(R.id.vendor_hours)
+        description = view.findViewById(R.id.description)
+        seeMore = view.findViewById(R.id.see_more)
+        descriptionContainer = view.findViewById(R.id.description_container)
 
         vendorName.text = vendor.name
+        address.text = vendor.address
+        hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK-1]
+        description.text = vendor.description
+
         Glide.with(this)
                 .load(vendor.photo)
                 .into(dealImage)
+
+        descriptionContainer.setOnClickListener {
+            if (!descriptionExpanded){
+                descriptionExpanded = true
+                seeMore.text = "tap to see less..."
+                val params = description.layoutParams
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                description.layoutParams = params
+            }else{
+                descriptionExpanded = false
+                val scale = resources.displayMetrics.density
+                seeMore.text = "tap to see more..."
+                val params = description.layoutParams
+                params.height = (38 * scale).toInt()
+                description.layoutParams = params
+            }
+        }
+
+
 
 
         // getting the buttons, and scaling their logo
