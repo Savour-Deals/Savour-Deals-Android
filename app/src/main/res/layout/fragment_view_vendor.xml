@@ -100,97 +100,114 @@
 
             </LinearLayout>
 
-            <LinearLayout
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/info_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="8dp">
+                android:background="@drawable/border">
+
 
                 <TextView
                     android:id="@+id/view_vendor_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Address"
-                    android:textAlignment="center"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:id="@+id/view_vendor_hours"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Today's Hours"
-                    android:textAlignment="center"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                tools:layout_editor_absoluteX="8dp"
-                tools:layout_editor_absoluteY="8dp">
-
-                <TextView
-                    android:id="@+id/vendor_address"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Address"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/vendor_hours"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Hours"
-                    android:textAlignment="center"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/description_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="38dp"
-                    android:layout_margin="10dp"
-                    android:layout_marginBottom="1dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toTopOf="@+id/see_more"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="Address"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/view_vendor_hours"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/see_more"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/view_vendor_hours"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="tap to see more..."
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/description" />
-            </android.support.constraint.ConstraintLayout>
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Today's Hours"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/vendor_hours"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/view_vendor_address"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+
+                <TextView
+                    android:id="@+id/vendor_address"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Address"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toTopOf="@+id/description_container"
+                    app:layout_constraintEnd_toStartOf="@+id/vendor_hours"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/view_vendor_address" />
+
+                <TextView
+                    android:id="@+id/vendor_hours"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Hours"
+                    android:textAlignment="center"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/vendor_address"
+                    app:layout_constraintTop_toBottomOf="@+id/view_vendor_hours" />
+
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/description_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <TextView
+                        android:id="@+id/description"
+                        android:layout_width="0dp"
+                        android:layout_height="36sp"
+                        android:ellipsize="end"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toTopOf="@+id/see_more"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/see_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:text="tap to see more..."
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+
+
+            </android.support.constraint.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
 

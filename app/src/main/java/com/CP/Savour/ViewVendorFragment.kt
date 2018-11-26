@@ -16,6 +16,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.debop.kodatimes.today
 import java.util.*
+import android.content.Intent
+
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -69,7 +72,12 @@ class ViewVendorFragment : Fragment() {
         hours = view.findViewById(R.id.vendor_hours)
         description = view.findViewById(R.id.description)
         seeMore = view.findViewById(R.id.see_more)
-        descriptionContainer = view.findViewById(R.id.description_container)
+        descriptionContainer = view.findViewById(R.id.info_container)
+
+        menuButton = view.findViewById(R.id.vendor_menu)
+        directionsButton = view.findViewById(R.id.vendor_directions)
+        followButton = view.findViewById(R.id.vendor_follow)
+
 
         vendorName.text = vendor.name
         address.text = vendor.address
@@ -89,14 +97,25 @@ class ViewVendorFragment : Fragment() {
                 description.layoutParams = params
             }else{
                 descriptionExpanded = false
-                val scale = resources.displayMetrics.density
+                val scale = resources.displayMetrics.scaledDensity
                 seeMore.text = "tap to see more..."
                 val params = description.layoutParams
-                params.height = (38 * scale).toInt()
+                params.height = (36 * scale).toInt()
                 description.layoutParams = params
             }
         }
 
+        menuButton.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(vendor.menu))
+            startActivity(browserIntent)
+        }
+
+        directionsButton.setOnClickListener {
+            val url = "http://maps.google.com/maps?daddr="+ vendor.address +"&mode=driving"
+            val intent = Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+            intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity")
+            startActivity(intent)
+        }
 
 
 
