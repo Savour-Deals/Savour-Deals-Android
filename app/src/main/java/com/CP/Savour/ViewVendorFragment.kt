@@ -17,8 +17,12 @@ import com.bumptech.glide.Glide
 import com.github.debop.kodatimes.today
 import java.util.*
 import android.content.Intent
-
-
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -48,9 +52,14 @@ class ViewVendorFragment : Fragment() {
     private lateinit var description: TextView
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
+    private lateinit var auth: FirebaseAuth
+    private lateinit var userListener: ValueEventListener
+
+    private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
 
+    val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +67,12 @@ class ViewVendorFragment : Fragment() {
         arguments?.let {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
         }
+
+
+
+        println("User Info")
     }
+
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -79,6 +93,41 @@ class ViewVendorFragment : Fragment() {
         followButton = view.findViewById(R.id.vendor_follow)
 
 
+
+        userListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                println("triggered")
+                if (snapshot.child("following").child(vendor.id!!).exists()) {
+                    followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button)
+                    followButton.text = "Following"
+                    println("Following")
+
+                } else {
+                    followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button_selected)
+                    followButton.text = "Follow"
+                    println("Follow")
+
+                }
+            }
+
+            override fun onCancelled(dbError: DatabaseError) {
+                println("Ballsack")
+            }
+        }
+
+        userInfoRef.addValueEventListener(userListener)
+
+        followButton.setOnClickListener {
+            if (followButton.text == "Follow") {
+
+                userInfoRef.child("following").child(vendor.id!!).setValue(true)
+                println("set value")
+
+            } else {
+                userInfoRef.child("following").child(vendor.id!!).removeValue()
+                println("remove")
+            }
+        }
         vendorName.text = vendor.name
         address.text = vendor.address
         hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK-1]
@@ -127,6 +176,12 @@ class ViewVendorFragment : Fragment() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        followButton.setOnClickListener(null)
+        userInfoRef.removeEventListener(userListener)
+    }
 
 
     companion object {
