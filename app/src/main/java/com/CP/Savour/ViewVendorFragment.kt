@@ -97,10 +97,19 @@ class ViewVendorFragment : Fragment() {
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 println("triggered")
+
+                println(snapshot.toString())
+
                 if (snapshot.child("following").child(vendor.id!!).exists()) {
                     followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button)
                     followButton.text = "Following"
                     println("Following")
+                    println(snapshot.child("loyalty").child(vendor.id!!).exists())
+                    if (!snapshot.child("loyalty").child(vendor.id!!).exists()) {
+                        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
+                        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(Date().time)
+                        println("Added Loyalty")
+                    }
 
                 } else {
                     followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button_selected)
@@ -111,7 +120,6 @@ class ViewVendorFragment : Fragment() {
             }
 
             override fun onCancelled(dbError: DatabaseError) {
-                println("Ballsack")
             }
         }
 
@@ -122,6 +130,8 @@ class ViewVendorFragment : Fragment() {
 
                 userInfoRef.child("following").child(vendor.id!!).setValue(true)
                 println("set value")
+
+
 
             } else {
                 userInfoRef.child("following").child(vendor.id!!).removeValue()
