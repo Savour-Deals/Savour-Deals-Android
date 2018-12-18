@@ -208,6 +208,22 @@
 
 
             </android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/deals_header"
+                android:layout_width="wrap_content"
+                android:layout_height="20sp"
+                android:textColor="@color/black"
+                android:text=""
+                android:layout_margin="10dp"
+                android:textSize="14sp"
+                 />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/deal_list"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="horizontal"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
         </LinearLayout>
     </ScrollView>
 

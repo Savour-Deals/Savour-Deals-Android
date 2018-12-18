@@ -24,33 +24,23 @@ private const val ARG_VENDOR = "vendor"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
+class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, val context: Context) : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.deal_card_layout,viewGroup, false)
+        val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.deal_view_vendor_card_layout,viewGroup, false)
         return ViewHolder(v)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         var temp = deals[i]!!
         viewHolder.deal = temp
-        viewHolder.vendor = vendors[temp.vendorID]
+        viewHolder.vendor = vendor
 
         Glide.with(context).load(temp.photo).thumbnail(0.5f)
-                    .into(viewHolder.itemImage)
-        viewHolder.vendorName.text = temp.vendorName + " - %.1f miles".format(temp.distanceMiles)
+                .into(viewHolder.itemImage)
         viewHolder.dealDescription.text = temp.dealDescription
 
-        var dots = ""
-        for (day in temp.activeDays){
-            if (day!!){
-                dots +=  "• "
-            }else{
-                dots += "◦"
-            }
-        }
-        viewHolder.dots.text = dots
-        viewHolder.days.text = "Su. Mo. Tu. We. Th. Fr. Sa."
+
         if (temp.favorited!!){
             viewHolder.favorite.setBackgroundResource(R.drawable.filled_heart)
         }else{
@@ -60,7 +50,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         if (temp.active!!){
             viewHolder.activeText.visibility = View.INVISIBLE
         }else{
-            viewHolder.activeText.text = "Deal is currently unavailable. This deal is valid " + temp.inactiveString
+            viewHolder.activeText.text = "Deal unavailable"
             viewHolder.activeText.visibility = View.VISIBLE
         }
         if (temp.activeHours != ""){
@@ -71,16 +61,10 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         }
 
         if (temp.redeemed!!) {
-            viewHolder.countdownText.text = "Deal Already Redeemed!"
-            viewHolder.timeText.text = ""
-            viewHolder.countdownView.visibility = View.VISIBLE
+            viewHolder.activeText.text = "Deal Already Redeemed!"
+            viewHolder.activeText.visibility = View.VISIBLE
         }
-        else if (temp.daysLeft!! < 8){
-            viewHolder.countdownView.visibility = View.VISIBLE
-            viewHolder.countdownText.text = temp.countdown
-        }else{
-            viewHolder.countdownView.visibility = View.INVISIBLE
-        }
+
 
         viewHolder.favorite.setOnClickListener {
             val user = FirebaseAuth.getInstance().currentUser
@@ -102,29 +86,19 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
-        var vendorName: TextView
         var dealDescription: TextView
-        var days : TextView
-        var dots : TextView
         var favorite : ImageButton
         var deal : Deal? = null
         var vendor: Vendor? = null
         var activeText: TextView
         var timeText: TextView
-        var countdownView: LinearLayout
-        var countdownText: TextView
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
-            vendorName = itemView.findViewById(R.id.vendorName)
             dealDescription = itemView.findViewById(R.id.description)
-            days = itemView.findViewById(R.id.days)
-            dots = itemView.findViewById(R.id.dots)
             favorite = itemView.findViewById(R.id.favButton)
             activeText = itemView.findViewById(R.id.activetext)
             timeText = itemView.findViewById(R.id.time)
-            countdownView = itemView.findViewById(R.id.countdown_view)
-            countdownText = itemView.findViewById(R.id.countdown_text)
 
             itemView.setOnClickListener {
                 val intent = Intent(context, DealActivity::class.java)

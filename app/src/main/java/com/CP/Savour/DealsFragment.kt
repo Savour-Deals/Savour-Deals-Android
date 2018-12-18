@@ -142,7 +142,6 @@ class DealsFragment : Fragment() {
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
         val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
-        var first = true
         var dealsArray : List<Deal?>
 
 

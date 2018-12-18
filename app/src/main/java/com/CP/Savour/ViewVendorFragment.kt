@@ -1,5 +1,6 @@
 package com.CP.Savour
 
+import android.Manifest
 import android.content.Context
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
@@ -17,12 +18,26 @@ import com.bumptech.glide.Glide
 import com.github.debop.kodatimes.today
 import java.util.*
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.os.Build
+import android.os.Looper
+import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import com.firebase.geofire.GeoLocation
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.android.synthetic.main.fragment_deals.*
+import org.joda.time.DateTime
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,7 +57,9 @@ private const val ARG_VENDOR = "vendor"
 class ViewVendorFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var vendor: Vendor
+
     private lateinit var dealImage: ImageView
+    private lateinit var dealsHeader: TextView
     private lateinit var vendorName: TextView
     private lateinit var directionsButton: Button
     private lateinit var followButton: Button
@@ -54,6 +71,18 @@ class ViewVendorFragment : Fragment() {
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var auth: FirebaseAuth
     private lateinit var userListener: ValueEventListener
+
+
+    private var layoutManager : RecyclerView.LayoutManager? = null
+    private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
+
+    var firstLocationUpdate = true
+
+    private var mLocationRequest: LocationRequest? = null
+    private var myLocation: Location? = null
+
+    private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
+    private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
 
     private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
@@ -67,8 +96,7 @@ class ViewVendorFragment : Fragment() {
         arguments?.let {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
         }
-
-
+        startLocationUpdates()
 
         println("User Info")
     }
@@ -87,10 +115,13 @@ class ViewVendorFragment : Fragment() {
         description = view.findViewById(R.id.description)
         seeMore = view.findViewById(R.id.see_more)
         descriptionContainer = view.findViewById(R.id.info_container)
+        dealsHeader = view.findViewById(R.id.deals_header)
 
         menuButton = view.findViewById(R.id.vendor_menu)
         directionsButton = view.findViewById(R.id.vendor_directions)
         followButton = view.findViewById(R.id.vendor_follow)
+
+        layoutManager = LinearLayoutManager(context)
 
 
 
@@ -120,10 +151,13 @@ class ViewVendorFragment : Fragment() {
             }
 
             override fun onCancelled(dbError: DatabaseError) {
+                println("cancelled userListener")
             }
         }
-
         userInfoRef.addValueEventListener(userListener)
+
+
+
 
         followButton.setOnClickListener {
             if (followButton.text == "Follow") {
@@ -185,6 +219,172 @@ class ViewVendorFragment : Fragment() {
         return view
 
     }
+
+    fun getFirebaseData(){
+        var activedeals = mutableMapOf<String, Deal?>()
+        var inactivedeals = mutableMapOf<String, Deal?>()
+        var dealsArray : List<Deal?>
+        var vendors = mutableMapOf<String, Vendor?>()
+        vendors[vendor.id!!] = vendor
+        val dealsListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val fav_holder =  mutableMapOf<String,String>()
+
+                    for (dealSnapshot in dataSnapshot.children) {
+                        val temp = Deal(dealSnapshot,myLocation!!,vendor.location!!,user!!.uid, fav_holder)
+
+                        //if the deal is not expired or redeemed less than half an hour ago, show it
+                        if (temp.isAvailable()){
+                            if (temp.active!!){
+                                activedeals[temp.id!!] = temp
+                                inactivedeals.remove(temp.id!!)
+                            }else{
+                                inactivedeals[temp.id!!] = temp
+                                activedeals.remove(temp.id!!)
+                            }
+                        }else if (temp.redeemedTime != null){
+                            if (((DateTime().millis/1000) - temp.redeemedTime!!) < 1800){
+                                activedeals[temp.id!!] = temp
+                                inactivedeals.remove(temp.id!!)
+                            }
+                        }else{
+                            activedeals.remove(temp.id!!)
+                            inactivedeals.remove(temp.id!!)
+                        }
+                    }
+                    dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
+                    if (dealsArray.isEmpty()){
+                        dealsHeader.text = "No Current Deals"
+                    }else{
+                        dealsHeader.text = "Current Deals"
+                    }
+
+                    adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
+
+                    deal_list.layoutManager = layoutManager
+
+                    deal_list.adapter = adapter
+                }else{
+                    dealsHeader.text = "No Current Deals"
+                }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("cancelled userListener")
+            }
+        }
+        var dealsRef = FirebaseDatabase.getInstance().reference.child("Deals").orderByChild("vendor_id").equalTo(vendor.id)
+        dealsRef.addValueEventListener(dealsListener)
+
+    }
+
+    // Trigger new location updates at interval
+    protected fun startLocationUpdates() {
+
+        // Create the location request to start receiving updates
+        mLocationRequest = LocationRequest()
+        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
+        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+
+        // Create LocationSettingsRequest object using location request
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(mLocationRequest!!)
+        val locationSettingsRequest = builder.build()
+
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult) {
+                onLocationChanged(locationResult!!.getLastLocation())
+            }
+
+        }
+        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+            registerLocationListner()
+
+        }else{
+            //location denied. Tell user to turn it on
+            //we actually should have location here. Can't get here without it
+//            locationMessage!!.visibility = View.VISIBLE
+
+        }
+
+    }
+
+    private fun checkPermission() : Boolean {
+        if (ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return true
+        } else {
+            requestPermissions()
+            return false
+        }
+    }
+
+    fun onLocationChanged(location: Location) {
+        // New location has now been determined
+        myLocation = location
+        if (myLocation != null){
+            if(firstLocationUpdate){
+                firstLocationUpdate = false
+                getFirebaseData()
+            }
+        }
+
+    }
+
+    private fun registerLocationListner() {
+        // Create the location request to start receiving updates
+        mLocationRequest = LocationRequest()
+        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
+        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+
+        // Create LocationSettingsRequest object using location request
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(mLocationRequest!!)
+        val locationSettingsRequest = builder.build()
+
+        // Check whether location settings are satisfied
+        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        // initialize location callback object
+        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult) {
+                onLocationChanged(locationResult!!.getLastLocation())
+            }
+
+        }
+
+        // add permission if android version is greater then 23
+        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
+        }
+
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(this.activity!!, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"),1)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 1) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION ) {
+                registerLocationListner()
+            }
+        }
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

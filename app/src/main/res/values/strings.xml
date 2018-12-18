@@ -18,4 +18,5 @@
     <string name="deal_image">Deal Image</string>
     <string name="tag_string_com_facebook_image_download_unknown_error">tag @string/com_facebook_image_download_unknown_error</string>
     <string name="favorite_string_deal_image">favorite @string/deal_image</string>
+    <string name="deal_img">deal_img</string>
 </resources>
