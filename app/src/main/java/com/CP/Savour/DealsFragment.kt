@@ -133,16 +133,20 @@ class DealsFragment : Fragment() {
         })
     }
     private fun getFirebaseData(lat:Double, lng:Double) {
-        var favUpdated = false
+
+
+
         val userID = FirebaseAuth.getInstance().currentUser!!.uid
         var activedeals = mutableMapOf<String, Deal?>()
         var inactivedeals = mutableMapOf<String, Deal?>()
-        var favorites = mutableMapOf<String,String>()
 
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
-        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
         var dealsArray : List<Deal?>
+
+        var favUpdated = false
+        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+        var favorites = mutableMapOf<String,String>()
 
 
         val favoritesListener = object : ValueEventListener {//Get favorites

@@ -132,7 +132,7 @@ class ViewVendorFragment : Fragment() {
                 println(snapshot.toString())
 
                 if (snapshot.child("following").child(vendor.id!!).exists()) {
-                    followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button)
+                    followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button)
                     followButton.text = "Following"
                     println("Following")
                     println(snapshot.child("loyalty").child(vendor.id!!).exists())
@@ -143,7 +143,7 @@ class ViewVendorFragment : Fragment() {
                     }
 
                 } else {
-                    followButton.background = ContextCompat.getDrawable(context!!,  R.drawable.vendor_button_selected)
+                    followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button_selected)
                     followButton.text = "Follow"
                     println("Follow")
 
@@ -226,57 +226,104 @@ class ViewVendorFragment : Fragment() {
         var dealsArray : List<Deal?>
         var vendors = mutableMapOf<String, Vendor?>()
         vendors[vendor.id!!] = vendor
-        val dealsListener = object : ValueEventListener {
+
+
+        var favUpdated = false
+        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+        var favorites = mutableMapOf<String,String>()
+
+        val favoritesListener = object : ValueEventListener {//Get favorites
+            /**
+             * Listening for when the data has been changed
+             * and also when we want to access f
+             */
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    val fav_holder =  mutableMapOf<String,String>()
-
-                    for (dealSnapshot in dataSnapshot.children) {
-                        val temp = Deal(dealSnapshot,myLocation!!,vendor.location!!,user!!.uid, fav_holder)
-
-                        //if the deal is not expired or redeemed less than half an hour ago, show it
-                        if (temp.isAvailable()){
-                            if (temp.active!!){
-                                activedeals[temp.id!!] = temp
-                                inactivedeals.remove(temp.id!!)
-                            }else{
-                                inactivedeals[temp.id!!] = temp
-                                activedeals.remove(temp.id!!)
-                            }
-                        }else if (temp.redeemedTime != null){
-                            if (((DateTime().millis/1000) - temp.redeemedTime!!) < 1800){
-                                activedeals[temp.id!!] = temp
-                                inactivedeals.remove(temp.id!!)
-                            }
-                        }else{
-                            activedeals.remove(temp.id!!)
-                            inactivedeals.remove(temp.id!!)
+                    favorites = dataSnapshot.value as MutableMap<String, String>
+                    for (deal in activedeals) {
+                        deal.value!!.favorited = favorites.containsKey(deal.key)
+                    }
+                    for (deal in inactivedeals) {
+                        deal.value!!.favorited = favorites.containsKey(deal.key)
+                    }
+                    if (favUpdated) {
+                        if (deal_list != null) {
+                            deal_list.adapter!!.notifyDataSetChanged()
                         }
                     }
-                    dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
-                    if (dealsArray.isEmpty()){
-                        dealsHeader.text = "No Current Deals"
-                    }else{
-                        dealsHeader.text = "Current Deals"
+                } else {
+                    favorites.clear()
+                    for (deal in activedeals) {
+                        deal.value!!.favorited = false
                     }
-
-                    adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
-
-                    deal_list.layoutManager = layoutManager
-
-                    deal_list.adapter = adapter
-                }else{
-                    dealsHeader.text = "No Current Deals"
+                    for (deal in inactivedeals) {
+                        deal.value!!.favorited = false
+                    }
+                    if (favUpdated) {
+                        if (deal_list != null) {
+                            deal_list.adapter!!.notifyDataSetChanged()
+                        }
+                    }
                 }
+                if (!favUpdated) { //DONT redo deals if
+                    val dealsListener = object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.exists()) {
 
+                                for (dealSnapshot in dataSnapshot.children) {
+                                    val temp = Deal(dealSnapshot,myLocation!!,vendor.location!!,user!!.uid, favorites)
+
+                                    //if the deal is not expired or redeemed less than half an hour ago, show it
+                                    if (temp.isAvailable()){
+                                        if (temp.active!!){
+                                            activedeals[temp.id!!] = temp
+                                            inactivedeals.remove(temp.id!!)
+                                        }else{
+                                            inactivedeals[temp.id!!] = temp
+                                            activedeals.remove(temp.id!!)
+                                        }
+                                    }else if (temp.redeemedTime != null){
+                                        if (((DateTime().millis/1000) - temp.redeemedTime!!) < 1800){
+                                            activedeals[temp.id!!] = temp
+                                            inactivedeals.remove(temp.id!!)
+                                        }
+                                    }else{
+                                        activedeals.remove(temp.id!!)
+                                        inactivedeals.remove(temp.id!!)
+                                    }
+                                }
+                                dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
+                                if (dealsArray.isEmpty()){
+                                    dealsHeader.text = "No Current Deals"
+                                }else{
+                                    dealsHeader.text = "Current Deals"
+                                }
+
+                                adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
+
+                                deal_list.layoutManager = layoutManager
+
+                                deal_list.adapter = adapter
+                            }else{
+                                dealsHeader.text = "No Current Deals"
+                            }
+
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            println("cancelled userListener")
+                        }
+                    }
+                    var dealsRef = FirebaseDatabase.getInstance().reference.child("Deals").orderByChild("vendor_id").equalTo(vendor.id)
+                    dealsRef.addValueEventListener(dealsListener)
+
+                }
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
-                println("cancelled userListener")
             }
         }
-        var dealsRef = FirebaseDatabase.getInstance().reference.child("Deals").orderByChild("vendor_id").equalTo(vendor.id)
-        dealsRef.addValueEventListener(dealsListener)
+        favoriteRef.addValueEventListener(favoritesListener)
+
 
     }
 
