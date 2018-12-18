@@ -25,6 +25,7 @@ import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.widget.ProgressBar
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -61,14 +62,17 @@ class ViewVendorFragment : Fragment() {
     private lateinit var dealImage: ImageView
     private lateinit var dealsHeader: TextView
     private lateinit var vendorName: TextView
+    private lateinit var loyaltyText: TextView
     private lateinit var directionsButton: Button
     private lateinit var followButton: Button
     private lateinit var menuButton: Button
+    private lateinit var loyaltyButton: Button
     private lateinit var address: TextView
     private lateinit var hours: TextView
     private lateinit var description: TextView
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
+    private lateinit var loyaltyProgress: ProgressBar
     private lateinit var auth: FirebaseAuth
     private lateinit var userListener: ValueEventListener
 
@@ -84,7 +88,7 @@ class ViewVendorFragment : Fragment() {
     private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
 
-    private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
+    private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
 
@@ -120,6 +124,11 @@ class ViewVendorFragment : Fragment() {
         menuButton = view.findViewById(R.id.vendor_menu)
         directionsButton = view.findViewById(R.id.vendor_directions)
         followButton = view.findViewById(R.id.vendor_follow)
+
+        loyaltyButton = view.findViewById(R.id.loyalty_checkin)
+        loyaltyProgress = view.findViewById(R.id.loyalty_progress)
+        loyaltyText = view.findViewById(R.id.loyalty_text)
+
 
         layoutManager = LinearLayoutManager(context)
 
