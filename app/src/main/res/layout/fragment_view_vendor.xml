@@ -209,15 +209,6 @@
 
 
             </android.support.constraint.ConstraintLayout>
-            <TextView
-                android:id="@+id/deals_header"
-                android:layout_width="wrap_content"
-                android:layout_height="20sp"
-                android:textColor="@color/black"
-                android:text=""
-                android:layout_margin="10dp"
-                android:textSize="14sp"
-                 />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/loyalty_checkin"
@@ -228,12 +219,12 @@
                     android:id="@+id/checkin_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:textColor="@color/colorText"
                     android:background="@drawable/loyalty_button"
                     android:text="Loyalty Check-In"
+                    android:textColor="@color/colorText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -243,10 +234,10 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="250dp"
                     android:layout_height="25dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
                     android:progress="50"
                     android:progressDrawable="@drawable/green_progress_bar"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -265,12 +256,24 @@
                     app:layout_constraintTop_toTopOf="@+id/loyalty_progress" />
             </android.support.constraint.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/deals_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/deal_list"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:orientation="horizontal"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+
+
         </LinearLayout>
     </ScrollView>
 

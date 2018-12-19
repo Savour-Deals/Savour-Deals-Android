@@ -45,15 +45,26 @@ class DealsFragment : Fragment() {
     private var locationMessage: TextView? = null
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
+    val user = FirebaseAuth.getInstance().currentUser
+
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var authStateListner: FirebaseAuth.AuthStateListener
 
 
+
+
     val vendors = mutableMapOf<String, Vendor?>()
 
     var geoQuery: GeoQuery? = null
-    var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
+
+    var dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
+    val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+    var vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
+
+    private lateinit var dealsListener: ValueEventListener
+    private lateinit var favoritesListener: ValueEventListener
+    private lateinit var vendorListener: ValueEventListener
 
     var firstLocationUpdate = true
 
@@ -113,6 +124,12 @@ class DealsFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mAuth.removeAuthStateListener(authStateListner)
+        favoriteRef.removeEventListener(favoritesListener)
+        vendorReference.removeEventListener(vendorListener)
+        dealsReference.removeEventListener(dealsListener)
+        if (geoQuery != null) {
+            geoQuery!!.removeAllListeners()
+        }
     }
 
 
@@ -134,22 +151,17 @@ class DealsFragment : Fragment() {
     }
     private fun getFirebaseData(lat:Double, lng:Double) {
 
-
-
-        val userID = FirebaseAuth.getInstance().currentUser!!.uid
+        val userID = user!!.uid
         var activedeals = mutableMapOf<String, Deal?>()
         var inactivedeals = mutableMapOf<String, Deal?>()
 
-        var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
-        val user = FirebaseAuth.getInstance().currentUser
         var dealsArray : List<Deal?>
 
         var favUpdated = false
-        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
         var favorites = mutableMapOf<String,String>()
 
 
-        val favoritesListener = object : ValueEventListener {//Get favorites
+        favoritesListener = object : ValueEventListener {//Get favorites
             /**
              * Listening for when the data has been changed
              * and also when we want to access f
@@ -189,7 +201,7 @@ class DealsFragment : Fragment() {
                     geoQuery!!.addGeoQueryEventListener(object : GeoQueryEventListener {
                         override fun onKeyEntered(key: String, location: GeoLocation) { //Location Entered! Get its info!
                             println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude))
-                            val vendorListener = object : ValueEventListener {
+                            vendorListener = object : ValueEventListener {
                                 /**
                                  * Listening for when the data has been changed
                                  * and also when we want to access f
@@ -204,7 +216,7 @@ class DealsFragment : Fragment() {
 
                                         vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
 
-                                        val dealsListener = object : ValueEventListener {//Now  get its deals!
+                                        dealsListener = object : ValueEventListener {//Now  get its deals!
                                             /**
                                              * Listening for when the data has been changed
                                              * and also when we want to access f

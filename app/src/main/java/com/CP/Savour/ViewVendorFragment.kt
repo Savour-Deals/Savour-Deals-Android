@@ -33,10 +33,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
 
@@ -58,7 +55,6 @@ private const val ARG_VENDOR = "vendor"
 class ViewVendorFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var vendor: Vendor
-
     private lateinit var dealImage: ImageView
     private lateinit var dealsHeader: TextView
     private lateinit var vendorName: TextView
@@ -73,9 +69,6 @@ class ViewVendorFragment : Fragment() {
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
-    private lateinit var auth: FirebaseAuth
-    private lateinit var userListener: ValueEventListener
-
 
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
@@ -91,14 +84,20 @@ class ViewVendorFragment : Fragment() {
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
-
+    val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+    private lateinit var dealsRef: Query
     val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
+
+    private lateinit var favoritesListener: ValueEventListener
+    private lateinit var userListener: ValueEventListener
+    private lateinit var dealsListener: ValueEventListener
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
+            dealsRef = FirebaseDatabase.getInstance().getReference("Deals").orderByChild("vendor_id").equalTo(vendor.id)
         }
         startLocationUpdates()
 
@@ -125,14 +124,12 @@ class ViewVendorFragment : Fragment() {
         directionsButton = view.findViewById(R.id.vendor_directions)
         followButton = view.findViewById(R.id.vendor_follow)
 
-        loyaltyButton = view.findViewById(R.id.loyalty_checkin)
+        loyaltyButton = view.findViewById(R.id.checkin_button)
         loyaltyProgress = view.findViewById(R.id.loyalty_progress)
         loyaltyText = view.findViewById(R.id.loyalty_text)
 
 
         layoutManager = LinearLayoutManager(context)
-
-
 
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -238,10 +235,9 @@ class ViewVendorFragment : Fragment() {
 
 
         var favUpdated = false
-        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
         var favorites = mutableMapOf<String,String>()
 
-        val favoritesListener = object : ValueEventListener {//Get favorites
+        favoritesListener = object : ValueEventListener {//Get favorites
             /**
              * Listening for when the data has been changed
              * and also when we want to access f
@@ -274,8 +270,8 @@ class ViewVendorFragment : Fragment() {
                         }
                     }
                 }
-                if (!favUpdated) { //DONT redo deals if
-                    val dealsListener = object : ValueEventListener {
+                if (!favUpdated) { //DONT redo deals if already just updating favorites
+                    dealsListener = object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.exists()) {
 
@@ -303,9 +299,9 @@ class ViewVendorFragment : Fragment() {
                                 }
                                 dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
                                 if (dealsArray.isEmpty()){
-                                    dealsHeader.text = "No Current Deals"
+                                    dealsHeader.text = "No Current Offers"
                                 }else{
-                                    dealsHeader.text = "Current Deals"
+                                    dealsHeader.text = "Current Offers"
                                 }
 
                                 adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
@@ -314,7 +310,7 @@ class ViewVendorFragment : Fragment() {
 
                                 deal_list.adapter = adapter
                             }else{
-                                dealsHeader.text = "No Current Deals"
+                                dealsHeader.text = "No Current Offers"
                             }
 
                         }
@@ -323,7 +319,6 @@ class ViewVendorFragment : Fragment() {
                             println("cancelled userListener")
                         }
                     }
-                    var dealsRef = FirebaseDatabase.getInstance().reference.child("Deals").orderByChild("vendor_id").equalTo(vendor.id)
                     dealsRef.addValueEventListener(dealsListener)
 
                 }
@@ -447,6 +442,8 @@ class ViewVendorFragment : Fragment() {
 
         followButton.setOnClickListener(null)
         userInfoRef.removeEventListener(userListener)
+        favoriteRef.removeEventListener(favoritesListener)
+        dealsRef.removeEventListener(dealsListener)
     }
 
 

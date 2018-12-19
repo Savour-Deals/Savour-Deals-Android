@@ -13,6 +13,8 @@ import android.widget.ImageView
 
 private const val ARG_DEAL = "deal"
 private const val ARG_VENDOR = "vendor"
+private const val ARG_FROM = "from"
+
 
 class DealActivity : AppCompatActivity() {
     var savourImg: ImageView? = null
@@ -27,11 +29,13 @@ class DealActivity : AppCompatActivity() {
 
         val deal = getIntent().getParcelableExtra(ARG_DEAL) as? Deal
         val vendor = getIntent().getParcelableExtra(ARG_VENDOR) as? Vendor
+        val from = getIntent().getStringExtra(ARG_FROM)
 
 
         val bundle = Bundle()
         bundle.putParcelable(ARG_DEAL, deal)
         bundle.putParcelable(ARG_VENDOR, vendor)
+        bundle.putString(ARG_FROM, from)
 
 
         savourImg = findViewById(R.id.logo) as ImageView

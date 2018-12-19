@@ -11,6 +11,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 
 private const val ARG_VENDOR = "vendor"
+
 /**
  * This activity displays the individual vendor page
  */
@@ -29,6 +30,7 @@ class VendorActivity : AppCompatActivity() {
         val bundle = Bundle()
 
         bundle.putParcelable(ARG_VENDOR, vendor)
+
 
         // load images into the toolbar
         savourImg = findViewById(R.id.logo) as ImageView

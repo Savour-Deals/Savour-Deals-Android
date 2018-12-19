@@ -21,6 +21,7 @@ import android.widget.*
 
 private const val ARG_DEAL = "deal"
 private const val ARG_VENDOR = "vendor"
+private const val ARG_FROM = "from"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
@@ -130,6 +131,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
                 val intent = Intent(context, DealActivity::class.java)
                 intent.putExtra(ARG_DEAL, deal)
                 intent.putExtra(ARG_VENDOR, vendor)
+                intent.putExtra(ARG_FROM, "main")
                 context.startActivity(intent)
             }
         }

@@ -30,11 +30,13 @@ import kotlin.collections.HashMap
 
 private const val ARG_DEAL = "deal"
 private const val ARG_VENDOR = "vendor"
+private const val ARG_FROM = "from"
 
 
 class ViewDealFragment : Fragment() {
     private var deal: Deal? = null
     private var vendor: Vendor? = null
+    private var from: String? = null
 
     private var timer: Timer? = null
 
@@ -58,6 +60,7 @@ class ViewDealFragment : Fragment() {
         arguments?.let {
             deal = it.getParcelable(ARG_DEAL) as Deal
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
+            from = it.getString(ARG_FROM)
         }
     }
 
@@ -99,7 +102,12 @@ class ViewDealFragment : Fragment() {
         //TODO: Get location to update distance when loading!
 //        deal.updateDistance()
 
-        moreButton!!.text = "See More From " + deal!!.vendorName
+        if (from != "main"){
+            moreButton!!.visibility = View.INVISIBLE
+        }else{
+            moreButton!!.visibility = View.VISIBLE
+            moreButton!!.text = "See More From " + deal!!.vendorName
+        }
         if (deal!!.redeemed!!) { //deal is active right now
             redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.green_rounded))
             redemptionButton!!.text = "Deal Already Redeemed"
