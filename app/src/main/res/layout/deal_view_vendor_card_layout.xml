@@ -19,7 +19,7 @@
         android:layout_height="125sp"
         android:alpha="0.6"
         android:contentDescription="@string/deal_img"
-        android:scaleType="fitXY" />
+        android:scaleType="centerCrop" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="125sp"

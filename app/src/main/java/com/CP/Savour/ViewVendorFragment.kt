@@ -129,7 +129,7 @@ class ViewVendorFragment : Fragment() {
         loyaltyText = view.findViewById(R.id.loyalty_text)
 
 
-        layoutManager = LinearLayoutManager(context)
+        layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
 
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

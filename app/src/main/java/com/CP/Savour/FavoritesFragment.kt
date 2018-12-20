@@ -47,6 +47,7 @@ class FavoritesFragment : Fragment() {
     var geoFire = GeoFire(geoRef)
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
+    private lateinit var dealsListener: ValueEventListener
 
     var geoQuery: GeoQuery? = null
 
@@ -102,14 +103,14 @@ class FavoritesFragment : Fragment() {
     private fun getFirebaseData(lat:Double, lng:Double) {
         val userID = FirebaseAuth.getInstance().currentUser!!.uid
 
-        var favorites = mutableMapOf<String,String>()
-
         var dealsArray: List<Deal?>
-
+        var oldFavs = ArrayList<String>()
 
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
         val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
+        var activedeals = mutableMapOf<String, Deal?>()
+        var inactivedeals = mutableMapOf<String, Deal?>()
 
         val favoritesListener = object : ValueEventListener {//Get favorites
             /**
@@ -119,13 +120,12 @@ class FavoritesFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     nodealsText!!.setVisibility(View.INVISIBLE)
+                    var favorites = dataSnapshot.value as MutableMap<String, String>
+                    var newFavs = ArrayList(favorites.values)
 
-                    favorites = dataSnapshot.value as MutableMap<String, String>
-                    val favoriteIDs = ArrayList(favorites.values)
-                    var activedeals = mutableMapOf<String, Deal?>()
-                    var inactivedeals = mutableMapOf<String, Deal?>()
-                    for (favid in favoriteIDs) {
-                        val dealsListener = object : ValueEventListener {//Now  get its deals!
+
+                    for (favid in newFavs) {
+                        dealsListener = object : ValueEventListener {//Now  get its deals!
                             /**
                              * Listening for when the data has been changed
                              * and also when we want to access f
@@ -206,6 +206,26 @@ class FavoritesFragment : Fragment() {
                         }
                         dealsReference.child(favid).addValueEventListener(dealsListener)
                     }
+                    for (favid in oldFavs){
+                        if (!newFavs.contains(favid)){
+                            dealsReference.child(favid).removeEventListener(dealsListener)
+                            activedeals.remove(favid)
+                            inactivedeals.remove(favid)
+                            dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+
+                            if (dealsArray.count() < 1) {
+                                nodealsText!!.setVisibility(View.VISIBLE)
+                                dealsArray = ArrayList()
+                            } else {
+                                nodealsText!!.setVisibility(View.INVISIBLE)
+                            }
+                            adapter = DealsRecyclerAdapter(dealsArray, vendors, context!!)
+
+                            deal_list.layoutManager = layoutManager
+                            deal_list.adapter!!.notifyDataSetChanged()
+                        }
+                    }
+                    oldFavs = newFavs
                 }else{//If no favorites
                     nodealsText!!.setVisibility(View.VISIBLE)
                     dealsArray = ArrayList()

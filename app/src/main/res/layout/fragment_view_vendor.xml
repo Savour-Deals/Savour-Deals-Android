@@ -263,7 +263,7 @@
                 android:layout_margin="10dp"
                 android:text=""
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <android.support.v7.widget.RecyclerView
