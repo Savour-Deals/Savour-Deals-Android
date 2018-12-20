@@ -232,8 +232,8 @@
                 <ProgressBar
                     android:id="@+id/loyalty_progress"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="250dp"
-                    android:layout_height="25dp"
+                    android:layout_width="250sp"
+                    android:layout_height="25sp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"

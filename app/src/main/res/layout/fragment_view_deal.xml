@@ -80,11 +80,14 @@
             android:layout_height="20sp"
             android:layout_margin="5dp"
             android:layout_weight=".050"
+            android:autoSizeMaxTextSize="18sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
             android:background="@drawable/primary_rounded"
             android:radius="20dp"
             android:text="See More"
             android:textColor="@color/colorText"
-            android:textSize="18sp"
             android:textStyle="bold" />
 
         <Button
@@ -98,7 +101,10 @@
             android:radius="20dp"
             android:text="Redeem"
             android:textColor="@color/colorText"
-            android:textSize="18sp"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeMaxTextSize="18sp"
+            android:autoSizeStepGranularity="2sp"
             android:textStyle="bold" />
     </LinearLayout>
 
