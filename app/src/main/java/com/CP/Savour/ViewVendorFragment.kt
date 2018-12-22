@@ -135,7 +135,7 @@ class ViewVendorFragment : Fragment() {
             print("vendor deal is not present")
             loyaltyButton!!.visibility = View.INVISIBLE
             loyaltyProgress!!.visibility = View.INVISIBLE
-            loyaltyButton!!.visibility = View.INVISIBLE
+            loyaltyText!!.visibility = View.INVISIBLE
         }
         layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
 
@@ -156,6 +156,19 @@ class ViewVendorFragment : Fragment() {
                     followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button_selected)
                     followButton.text = "Follow"
                     println("Follow")
+
+                }
+
+                if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
+                    println("userPoints with loyalty already: ")
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("count").toString())
+                    val points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString() + ""
+
+                } else {
+                    println("no userPoints with loyalty already: ")
+                    println("vendor info: ")
+                    println(vendor.loyaltyCount)
+                    loyaltyText.text = "0/" + vendor.loyaltyCount
 
                 }
             }
