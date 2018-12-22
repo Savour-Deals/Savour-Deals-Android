@@ -124,7 +124,9 @@ class DealsFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mAuth.removeAuthStateListener(authStateListner)
-        favoriteRef.removeEventListener(favoritesListener)
+        if (favoritesListener != null) {
+            favoriteRef.removeEventListener(favoritesListener)
+        }
         vendorReference.removeEventListener(vendorListener)
         dealsReference.removeEventListener(dealsListener)
         if (geoQuery != null) {
