@@ -26,7 +26,8 @@ class Vendor : Parcelable {
     var subscriptionId: String? = null
     var dailyHours = arrayOfNulls<String>(7)
     var loyaltyCode: String? = null
-    var loyaltyCount: Int? = null
+    // want this to be an int but for whatever reason it is not working that way, so casting it as a string instead
+    var loyaltyCount: String? = null
     var loyaltyDeal: String? = null
     var loyaltyPoints = arrayOfNulls<Int>(7)
 
@@ -42,7 +43,7 @@ class Vendor : Parcelable {
         subscriptionId = parcel.readString()
         dailyHours = parcel.createStringArray()
         loyaltyCode = parcel.readString()
-        loyaltyCount = parcel.readValue(Int::class.java.classLoader) as? Int
+        loyaltyCount = parcel.readString()
         loyaltyDeal = parcel.readString()
     }
 
@@ -75,7 +76,7 @@ class Vendor : Parcelable {
         val loyaltymap = vendor.getValue("loyalty") as HashMap<String?,Any?>
         val loyalty = loyaltymap.withDefault { null }
         this.loyaltyCode = loyalty.getValue("loyalty_code")?.toString()  ?: ""
-        this.loyaltyCount = loyalty.getValue("loyalty_count") as? Int ?: 0
+        this.loyaltyCount = loyalty.getValue("loyalty_count")?.toString()  ?: ""
         this.loyaltyDeal = loyalty.getValue("loyalty_deal")?.toString()  ?: ""
         if(loyalty.getValue("loyalty_points") != null){
             val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
@@ -110,7 +111,7 @@ class Vendor : Parcelable {
         parcel.writeString(subscriptionId)
         parcel.writeStringArray(dailyHours)
         parcel.writeString(loyaltyCode)
-        parcel.writeValue(loyaltyCount)
+        parcel.writeString(loyaltyCount)
         parcel.writeString(loyaltyDeal)
     }
 
