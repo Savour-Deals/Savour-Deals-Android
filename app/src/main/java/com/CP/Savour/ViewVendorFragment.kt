@@ -456,11 +456,16 @@ class ViewVendorFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-
         followButton.setOnClickListener(null)
-        userInfoRef.removeEventListener(userListener)
-        favoriteRef.removeEventListener(favoritesListener)
-        dealsRef.removeEventListener(dealsListener)
+        if (userListener != null){
+            userInfoRef.removeEventListener(userListener)
+        }
+        if (favoritesListener != null){
+            favoriteRef.removeEventListener(favoritesListener)
+        }
+        if (dealsListener != null){
+            dealsRef.removeEventListener(dealsListener)
+        }
     }
 
 
