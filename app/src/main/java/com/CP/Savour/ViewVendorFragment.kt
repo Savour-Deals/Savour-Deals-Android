@@ -26,6 +26,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
+
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -34,6 +35,10 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
 
@@ -70,6 +75,7 @@ class ViewVendorFragment : Fragment() {
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
 
+
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
 
@@ -80,6 +86,9 @@ class ViewVendorFragment : Fragment() {
 
     private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
+
+    private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
+    private var descriptionExpanded = false
 
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
@@ -249,7 +258,6 @@ class ViewVendorFragment : Fragment() {
         var dealsArray : List<Deal?>
         var vendors = mutableMapOf<String, Vendor?>()
         vendors[vendor.id!!] = vendor
-
 
         var favUpdated = false
         var favorites = mutableMapOf<String,String>()

@@ -177,6 +177,9 @@ class DealsFragment : Fragment() {
         var activedeals = mutableMapOf<String, Deal?>()
         var inactivedeals = mutableMapOf<String, Deal?>()
 
+        var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
+        val user = FirebaseAuth.getInstance().currentUser
+        val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
         var dealsArray : List<Deal?>
 
         var favUpdated = false

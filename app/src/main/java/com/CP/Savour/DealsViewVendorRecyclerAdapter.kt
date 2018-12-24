@@ -107,6 +107,7 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
                 intent.putExtra(ARG_DEAL, deal)
                 intent.putExtra(ARG_VENDOR, vendor)
                 intent.putExtra(ARG_FROM, "vendor")
+
                 context.startActivity(intent)
             }
         }
