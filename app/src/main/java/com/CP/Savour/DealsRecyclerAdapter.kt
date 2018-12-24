@@ -47,7 +47,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
             if (day!!){
                 dots +=  "• "
             }else{
-                dots += "◦"
+                dots += "◦ "
             }
         }
         viewHolder.dots.text = dots

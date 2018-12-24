@@ -11,6 +11,8 @@ import android.widget.Button
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -20,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.net.URL
 import android.os.StrictMode
+import android.view.WindowManager
 import android.widget.TextView
 
 

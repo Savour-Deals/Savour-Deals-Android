@@ -238,7 +238,7 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="#00ffffff"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
@@ -248,10 +248,10 @@
             android:layout_width="125dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="Logout"
             android:background="?android:attr/selectableItemBackground"
+            android:text="Logout"
 
-            android:textColor="@color/colorText" />
+            android:textColor="@color/red_tint" />
     </android.support.v7.widget.Toolbar>
 
 </FrameLayout>
