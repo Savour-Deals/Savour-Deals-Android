@@ -26,6 +26,7 @@ class VendorActivity : AppCompatActivity() {
         // To get to this page, an intent is used with extras to pass data about the vendor
         val vendor = intent.getParcelableExtra<Vendor>(ARG_VENDOR)
 
+        println("VendorActivity loyalty count " + vendor.loyaltyCount)
         // passing data to the fragment
         val bundle = Bundle()
 

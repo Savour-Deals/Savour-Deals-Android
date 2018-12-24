@@ -128,7 +128,15 @@ class ViewVendorFragment : Fragment() {
         loyaltyProgress = view.findViewById(R.id.loyalty_progress)
         loyaltyText = view.findViewById(R.id.loyalty_text)
 
-
+        if(vendor.loyaltyDeal != "") {
+            println("Deal Present!")
+            println(vendor.loyaltyDeal)
+        } else {
+            print("vendor deal is not present")
+            loyaltyButton!!.visibility = View.INVISIBLE
+            loyaltyProgress!!.visibility = View.INVISIBLE
+            loyaltyText!!.visibility = View.INVISIBLE
+        }
         layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
 
         userListener = object : ValueEventListener {
@@ -141,17 +149,26 @@ class ViewVendorFragment : Fragment() {
                     followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button)
                     followButton.text = "Following"
                     println("Following")
-                    println(snapshot.child("loyalty").child(vendor.id!!).exists())
-                    if (!snapshot.child("loyalty").child(vendor.id!!).exists()) {
-                        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
-                        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(Date().time)
-                        println("Added Loyalty")
-                    }
+
+
 
                 } else {
                     followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button_selected)
                     followButton.text = "Follow"
                     println("Follow")
+
+                }
+
+                if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
+                    println("userPoints with loyalty already: ")
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("count").toString())
+                    val points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString() + ""
+
+                } else {
+                    println("no userPoints with loyalty already: ")
+                    println("vendor info: ")
+                    println(vendor.loyaltyCount)
+                    loyaltyText.text = "0/" + vendor.loyaltyCount
 
                 }
             }
@@ -180,7 +197,7 @@ class ViewVendorFragment : Fragment() {
         }
         vendorName.text = vendor.name
         address.text = vendor.address
-        hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK-1]
+        hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK - 1]
         description.text = vendor.description
 
         Glide.with(this)
