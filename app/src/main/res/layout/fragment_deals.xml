@@ -7,10 +7,11 @@
     tools:context=".DealsFragment">
 
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
+        android:orientation="vertical"
         >
 
         <TextView
@@ -26,10 +27,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Please enable location to see deals."
+            android:text="Please enable location under\n App Settings -> Permissions -> Location \nto see deals."
             android:textAlignment="center"
             android:visibility="invisible" />
-    </RelativeLayout>
+
+        <Button
+            android:id="@+id/location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20sp"
+            android:layout_centerInParent="true"
+            android:background="@color/colorPrimaryDark"
+            android:padding="10sp"
+            android:text="Turn On Location"
+            android:textColor="@color/colorText"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+    </LinearLayout>
 
 
     <LinearLayout

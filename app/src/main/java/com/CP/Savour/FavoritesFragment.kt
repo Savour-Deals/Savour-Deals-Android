@@ -1,11 +1,14 @@
 package com.CP.Savour
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -14,6 +17,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.CP.Savour.R.id.deal_list
@@ -35,8 +39,9 @@ class FavoritesFragment : Fragment() {
     val vendors = mutableMapOf<String, Vendor?>()
 
     private var adapter : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>? = null
-    private lateinit var recyclerView : RecyclerView
     var nodealsText: TextView? = null
+    private lateinit var locationMessage: TextView
+    private lateinit var locationButton: Button
 
     var firstLocationUpdate = true
 
@@ -48,8 +53,6 @@ class FavoritesFragment : Fragment() {
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
     private lateinit var dealsListener: ValueEventListener
-
-    var geoQuery: GeoQuery? = null
 
     private var mLocationRequest: LocationRequest? = null
     private var myLocation: Location? = null
@@ -68,11 +71,20 @@ class FavoritesFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_favorites, container, false)
 
-
         layoutManager = LinearLayoutManager(context)
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
         nodealsText = view.findViewById(R.id.textView2)
+        locationMessage = view.findViewById(R.id.locationMessage) as TextView
+        locationButton = view.findViewById(R.id.location_button) as Button
+
+        locationButton.setOnClickListener {
+            var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            activity!!.startActivity(intent)
+        }
 
         Glide.with(this)
                 .load(R.drawable.savour_white)
@@ -94,7 +106,9 @@ class FavoritesFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        mAuth.removeAuthStateListener(authStateListner)
+        if (authStateListner != null){
+            mAuth.removeAuthStateListener(authStateListner)
+        }
     }
     companion object {
         fun newInstance(): FavoritesFragment = FavoritesFragment()
@@ -270,7 +284,13 @@ class FavoritesFragment : Fragment() {
         }
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+            locationMessage!!.visibility = View.INVISIBLE
+            locationButton!!.visibility = View.INVISIBLE
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+        }else{
+            //location not on. Tell user to turn it on
+            locationMessage!!.visibility = View.VISIBLE
+            locationButton!!.visibility = View.VISIBLE
         }
 
     }
