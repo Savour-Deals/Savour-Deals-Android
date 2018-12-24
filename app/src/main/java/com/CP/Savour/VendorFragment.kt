@@ -1,8 +1,10 @@
 package com.CP.Savour
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -21,9 +23,12 @@ import com.firebase.geofire.GeoLocation
 import com.google.firebase.database.DatabaseError
 import com.firebase.geofire.GeoQueryEventListener
 import android.os.Looper
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
@@ -31,12 +36,13 @@ import kotlinx.android.synthetic.main.fragment_vendor.*
 
 
 class VendorFragment : Fragment() {
-
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
-    private lateinit var recyclerView : RecyclerView
+
     private var savourImg: ImageView? = null
-    private var toolbar : ActionBar? = null
+    private lateinit var locationMessage: TextView
+    private lateinit var locationButton: Button
+
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
 
@@ -67,6 +73,16 @@ class VendorFragment : Fragment() {
 
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
+        locationMessage = view.findViewById(R.id.locationMessage) as TextView
+        locationButton = view.findViewById(R.id.location_button) as Button
+
+        locationButton.setOnClickListener {
+            var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            activity!!.startActivity(intent)
+        }
 
         Glide.with(this)
                 .load(R.drawable.savour_white)
@@ -184,9 +200,16 @@ class VendorFragment : Fragment() {
             }
 
         }
+
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
-            getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+            locationMessage!!.visibility = View.INVISIBLE
+            locationButton!!.visibility = View.INVISIBLE
+            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+        }else{
+            //location not on. Tell user to turn it on
+            locationMessage!!.visibility = View.VISIBLE
+            locationButton!!.visibility = View.VISIBLE
         }
 
     }

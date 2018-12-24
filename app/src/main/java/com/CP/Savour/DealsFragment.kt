@@ -2,11 +2,14 @@ package com.CP.Savour
 
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -15,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.*
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -41,8 +45,9 @@ class DealsFragment : Fragment() {
     private var adapter : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>? = null
     private lateinit var recyclerView : RecyclerView
     private var toolbar : ActionBar? = null
-    private var savourImg: ImageView? = null
-    private var locationMessage: TextView? = null
+    private lateinit var savourImg: ImageView
+    private lateinit var locationMessage: TextView
+    private lateinit var locationButton: Button
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
     val user = FirebaseAuth.getInstance().currentUser
@@ -62,9 +67,9 @@ class DealsFragment : Fragment() {
     val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
     var vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
-    private lateinit var dealsListener: ValueEventListener
-    private lateinit var favoritesListener: ValueEventListener
-    private lateinit var vendorListener: ValueEventListener
+    private var dealsListener: ValueEventListener? = null
+    private var favoritesListener: ValueEventListener? = null
+    private var vendorListener: ValueEventListener? = null
 
     var firstLocationUpdate = true
 
@@ -97,6 +102,15 @@ class DealsFragment : Fragment() {
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
+        locationButton = view.findViewById(R.id.location_button) as Button
+
+        locationButton.setOnClickListener {
+            var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+                addCategory(Intent.CATEGORY_DEFAULT)
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            activity!!.startActivity(intent)
+        }
 
         Glide.with(this)
                 .load(R.drawable.savour_white)
@@ -123,12 +137,18 @@ class DealsFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        mAuth.removeAuthStateListener(authStateListner)
-        if (favoritesListener != null) {
-            favoriteRef.removeEventListener(favoritesListener)
+        if (authStateListner != null){
+            mAuth.removeAuthStateListener(authStateListner)
         }
-        vendorReference.removeEventListener(vendorListener)
-        dealsReference.removeEventListener(dealsListener)
+        if (favoritesListener != null){
+            favoriteRef.removeEventListener(favoritesListener!!)
+        }
+        if (vendorListener != null){
+            vendorReference.removeEventListener(vendorListener!!)
+        }
+        if (dealsListener != null){
+            dealsReference.removeEventListener(dealsListener!!)
+        }
         if (geoQuery != null) {
             geoQuery!!.removeAllListeners()
         }
@@ -264,14 +284,14 @@ class DealsFragment : Fragment() {
                                             override fun onCancelled(databaseError: DatabaseError) {
                                             }
                                         }
-                                        dealsReference.orderByChild("vendor_id").equalTo(dataSnapshot.key!!).addValueEventListener(dealsListener)
+                                        dealsReference.orderByChild("vendor_id").equalTo(dataSnapshot.key!!).addValueEventListener(dealsListener!!)
                                     }
                                 }
 
                                 override fun onCancelled(databaseError: DatabaseError) {
                                 }
                             }
-                            vendorReference.child(key).addValueEventListener(vendorListener)
+                            vendorReference.child(key).addValueEventListener(vendorListener!!)
                         }
 
                         override fun onKeyExited(key: String) {
@@ -316,7 +336,7 @@ class DealsFragment : Fragment() {
             override fun onCancelled(databaseError: DatabaseError) {
             }
         }
-        favoriteRef.addValueEventListener(favoritesListener)
+        favoriteRef.addValueEventListener(favoritesListener!!)
     }
 
 
@@ -348,13 +368,14 @@ class DealsFragment : Fragment() {
         // new Google API SDK v11 uses getFusedLocationProviderClient(this)
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
             locationMessage!!.visibility = View.INVISIBLE
+            locationButton!!.visibility = View.INVISIBLE
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
             registerLocationListner()
 
         }else{
-            //location denied. Tell user to turn it on
+            //location not on. Tell user to turn it on
             locationMessage!!.visibility = View.VISIBLE
-
+            locationButton!!.visibility = View.VISIBLE
         }
 
     }
@@ -391,6 +412,9 @@ class DealsFragment : Fragment() {
         mLocationRequest!!.setInterval(UPDATE_INTERVAL)
         mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
 
+        locationMessage!!.visibility = View.INVISIBLE
+        locationButton!!.visibility = View.INVISIBLE
+
         // Create LocationSettingsRequest object using location request
         val builder = LocationSettingsRequest.Builder()
         builder.addLocationRequest(mLocationRequest!!)
@@ -406,7 +430,6 @@ class DealsFragment : Fragment() {
             override fun onLocationResult(locationResult: LocationResult) {
                 onLocationChanged(locationResult!!.getLastLocation())
             }
-
         }
 
         // add permission if android version is greater then 23

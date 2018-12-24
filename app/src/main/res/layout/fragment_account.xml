@@ -17,10 +17,10 @@
             android:layout_width="100sp"
             android:layout_height="100sp"
             android:layout_marginTop="64dp"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="centerCrop"
             tools:src="@tools:sample/avatars" />
 
         <TextView
@@ -36,6 +36,201 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/light_gray"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/noti_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/friend_share"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#efeff4"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintTop_toBottomOf="@+id/divider2">
+
+            <ImageView
+                android:id="@+id/friend_img"
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/friends_full_color"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:text="Click here to invite your friends to Savour Deals"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/friend_img"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16sp"
+            android:background="@color/light_gray"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/friend_share"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/noti_view"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            app:layout_constraintBottom_toTopOf="@id/divider3"
+            app:layout_constraintTop_toBottomOf="@+id/divider2">
+
+            <ImageView
+                android:id="@+id/noti_img"
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/appointment_reminders"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/noti_switch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="sans-serif"
+                android:text="Notifications"
+                android:textColor="@color/browser_actions_title_color"
+                android:theme="@style/SCBSwitch"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/noti_img"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/light_gray"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/contact_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/noti_view" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/contact_view"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            app:layout_constraintBottom_toTopOf="@id/divider3"
+            app:layout_constraintTop_toBottomOf="@+id/divider">
+
+            <ImageView
+                android:id="@+id/contact_img"
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/filled_message"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:text="Contact Us"
+                android:textAlignment="textStart"
+                android:textColor="@color/browser_actions_title_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/contact_img"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/contact_view" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/vendor_view"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            app:layout_constraintBottom_toTopOf="@id/divider5"
+            app:layout_constraintTop_toBottomOf="@+id/divider4">
+
+            <ImageView
+                android:id="@+id/vendor_img"
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/small_business"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/vendor_text"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:text="Want to become a vendor?"
+                android:textAlignment="textStart"
+                android:textColor="@color/browser_actions_title_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/vendor_img"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+        <View
+            android:id="@+id/divider5"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_gray"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/vendor_view" />
+
     </android.support.constraint.ConstraintLayout>
 
 

@@ -3,7 +3,7 @@
     <color name="colorPrimary">#49abaa</color>
     <color name="colorPrimaryDark">#389A99</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorIcon">#777777</color>
+    <color name="colorIcon">#34777777</color>
     <color name="colorText">#ffffff</color>
     <color name="red_tint">#FF2600</color>
     <color name="white">#FFFFFF</color>
@@ -11,4 +11,5 @@
     <color name="green">#00EE00</color>
     <color name="orange">#F18162</color>
     <color name="black">#000000</color>
+    <color name="light_gray">#D3D3D3</color>
 </resources>
