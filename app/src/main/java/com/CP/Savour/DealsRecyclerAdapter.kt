@@ -65,10 +65,14 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
             viewHolder.activeText.visibility = View.VISIBLE
         }
         if (temp.activeHours != ""){
-            viewHolder.timeText.text = "valid from " + temp.activeHours
-            viewHolder.timeText.height = 0
+            viewHolder.timeText.text =  temp.activeHours
+            val params = viewHolder.timeText.layoutParams
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            viewHolder.timeText.layoutParams = params
         }else{
-            viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            val params = viewHolder.timeText.layoutParams
+            params.height = 0
+            viewHolder.timeText.layoutParams = params
         }
 
         if (temp.redeemed!!) {

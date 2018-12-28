@@ -88,7 +88,7 @@ class ViewVendorFragment : Fragment() {
     private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
     private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
 
-    private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
+    private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
     val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
