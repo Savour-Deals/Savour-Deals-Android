@@ -1,6 +1,7 @@
 package com.CP.Savour
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -21,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.net.URL
 import android.os.StrictMode
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AlertDialog.*
 import android.util.Log
 import android.widget.TextView
 import com.facebook.login.LoginManager
@@ -46,6 +49,7 @@ class AccountFragment : Fragment() {
         var userName: TextView = view.findViewById(R.id.name)
         var contactButton: View = view.findViewById(R.id.contact_view)
         var shareButton: View = view.findViewById(R.id.friend_share)
+        var vendorButton: View = view.findViewById(R.id.vendor_view)
 
         if (mAuth.currentUser != null) {
             if (mAuth.currentUser!!.displayName != null) {
@@ -77,9 +81,36 @@ class AccountFragment : Fragment() {
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub)
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody)
             startActivityForResult(Intent.createChooser(sharingIntent, "Share using"),1)
-
         }
 
+        vendorButton.setOnClickListener{
+            val btnArr = arrayOf("Learn More", "Sign Up")
+            val alertDialog: AlertDialog? = activity?.let {
+                val builder = Builder(it)
+                builder.setTitle("Want to become a vendor?")
+                        .setItems(btnArr,
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    if (which == 0){
+                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.savourdeals.com/vendorsinfo/")))
+                                    }else{
+                                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://savour-deals.firebaseapp.com/")))
+                                    }
+                                })
+                builder.apply {
+                    setNegativeButton("Cancel",
+                            DialogInterface.OnClickListener { dialog, id ->
+                                // User cancelled the dialog
+                            })
+                }
+
+                // Set other dialog properties
+
+
+                // Create the AlertDialog
+                builder.create()
+            }
+            alertDialog!!.show()
+        }
 
 
         val SDK_INT = android.os.Build.VERSION.SDK_INT
