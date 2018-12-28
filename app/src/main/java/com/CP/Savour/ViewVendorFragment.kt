@@ -75,6 +75,7 @@ class ViewVendorFragment : Fragment() {
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
 
+    private var redeem: Boolean = false
 
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
@@ -90,13 +91,11 @@ class ViewVendorFragment : Fragment() {
     private  var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
-    private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
-    private var descriptionExpanded = false
-
     val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
     private lateinit var dealsRef: Query
     val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
+    private lateinit var points: String
     private lateinit var favoritesListener: ValueEventListener
     private lateinit var userListener: ValueEventListener
     private lateinit var dealsListener: ValueEventListener
@@ -152,6 +151,7 @@ class ViewVendorFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 println("triggered")
 
+
                 println(snapshot.toString())
 
                 if (snapshot.child("following").child(vendor.id!!).exists()) {
@@ -171,13 +171,16 @@ class ViewVendorFragment : Fragment() {
                 if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
                     println("userPoints with loyalty already: ")
                     println(snapshot.child("loyalty").child(vendor.id!!).child("count").toString())
-                    val points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString() + ""
+                    points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString()
+                    loyaltyText.text = points + "/" + vendor.loyaltyCount
+                    loyaltyProgress.progress = points.toInt()
 
                 } else {
                     println("no userPoints with loyalty already: ")
                     println("vendor info: ")
                     println(vendor.loyaltyCount)
                     loyaltyText.text = "0/" + vendor.loyaltyCount
+                    loyaltyProgress.progress = 0
 
                 }
             }
@@ -377,7 +380,7 @@ class ViewVendorFragment : Fragment() {
 
         val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
-                onLocationChanged(locationResult!!.getLastLocation())
+                onLocationChanged(locationResult.getLastLocation())
             }
 
         }
@@ -461,6 +464,12 @@ class ViewVendorFragment : Fragment() {
         }
     }
 
+    /**
+     * This function is called when the loyalty checkin is pressed
+     */
+
+    protected fun readQRCode() {
+    }
 
     override fun onDestroy() {
         super.onDestroy()
