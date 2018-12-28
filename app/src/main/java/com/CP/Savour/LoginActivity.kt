@@ -21,6 +21,10 @@ import android.widget.Toast
 import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.bumptech.glide.Glide
+import com.facebook.login.LoginManager
+import com.google.firebase.auth.UserInfo
+
+
 
 
 class LoginActivity : AppCompatActivity() {
@@ -95,11 +99,11 @@ class LoginActivity : AppCompatActivity() {
                 progressBarHolder!!.visibility = View.VISIBLE
 
 
-                handleFacebookAccessToken(result!!.getAccessToken());
+                handleFacebookAccessToken(result!!.getAccessToken())
             }
 
             override fun onCancel() {
-                Log.d(TAG, "facebook:onCancel");
+                Log.d(TAG, "facebook:onCancel")
             }
 
             override fun onError(error: FacebookException?) {
@@ -121,13 +125,12 @@ class LoginActivity : AppCompatActivity() {
         buttonLogin!!.setOnClickListener { loginUser() }
 
 
-
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            // User is signed in
             updateUI()
-        } else {
-            // User is signed out
+        }else{
+            FirebaseAuth.getInstance().signOut()
+            LoginManager.getInstance().logOut()
             Log.d(TAG, "onAuthStateChanged:signed_out")
         }
     }

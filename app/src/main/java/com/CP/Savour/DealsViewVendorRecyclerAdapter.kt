@@ -55,12 +55,6 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
             viewHolder.activeText.text = "Deal unavailable"
             viewHolder.activeText.visibility = View.VISIBLE
         }
-        if (temp.activeHours != ""){
-            viewHolder.timeText.text = "valid from " + temp.activeHours
-            viewHolder.timeText.height = 0
-        }else{
-            viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        }
 
         if (temp.redeemed!!) {
             viewHolder.activeText.text = "Deal Already Redeemed!"
@@ -93,14 +87,12 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
         var deal : Deal? = null
         var vendor: Vendor? = null
         var activeText: TextView
-        var timeText: TextView
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
             dealDescription = itemView.findViewById(R.id.description)
             favorite = itemView.findViewById(R.id.favButton)
             activeText = itemView.findViewById(R.id.activetext)
-            timeText = itemView.findViewById(R.id.time)
 
             itemView.setOnClickListener {
                 val intent = Intent(context, DealActivity::class.java)
