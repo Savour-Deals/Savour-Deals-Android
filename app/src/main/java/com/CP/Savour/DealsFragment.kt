@@ -56,8 +56,9 @@ class DealsFragment : Fragment() {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var authStateListner: FirebaseAuth.AuthStateListener
 
-
-
+    var dealsArray : List<Deal?> = arrayListOf()
+    var activedeals = mutableMapOf<String, Deal?>()
+    var inactivedeals = mutableMapOf<String, Deal?>()
 
     val vendors = mutableMapOf<String, Vendor?>()
 
@@ -174,13 +175,10 @@ class DealsFragment : Fragment() {
     private fun getFirebaseData(lat:Double, lng:Double) {
 
         val userID = user!!.uid
-        var activedeals = mutableMapOf<String, Deal?>()
-        var inactivedeals = mutableMapOf<String, Deal?>()
 
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
         val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
-        var dealsArray : List<Deal?>
 
         var favUpdated = false
         var favorites = mutableMapOf<String,String>()
@@ -202,6 +200,7 @@ class DealsFragment : Fragment() {
                     }
                     if (favUpdated){
                         if(deal_list != null){
+                            dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
                             deal_list.adapter!!.notifyDataSetChanged()
                         }
                     }
@@ -215,6 +214,7 @@ class DealsFragment : Fragment() {
                     }
                     if (favUpdated){
                         if(deal_list != null){
+                            dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
                             deal_list.adapter!!.notifyDataSetChanged()
                         }
                     }
@@ -400,8 +400,25 @@ class DealsFragment : Fragment() {
                 firstLocationUpdate = false
                 getFirebaseData(location.latitude,location.longitude)
             }else{
-                if (geoQuery != null){
+                //recalculate distances and update recycler
+                if (geoQuery != null) {
                     geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+                    for (deal in activedeals){
+                        if (vendors[deal.value!!.vendorID] != null){
+                            deal.value!!.updateDistance(vendors[deal.value!!.vendorID]!!, location)
+                        }
+                    }
+                    for (deal in inactivedeals){
+                        if (vendors[deal.value!!.vendorID] != null){
+                            deal.value!!.updateDistance(vendors[deal.value!!.vendorID]!!, location)
+                        }
+                    }
+                    if (deal_list != null){
+                        dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+                        adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
+                        deal_list.layoutManager = layoutManager
+
+                        deal_list.adapter = adapter                    }
                 }
             }
         }

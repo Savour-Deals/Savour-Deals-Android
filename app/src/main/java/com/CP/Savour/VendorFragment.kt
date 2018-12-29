@@ -105,7 +105,6 @@ class VendorFragment : Fragment() {
     }
 
     override fun onPause() {
-
         super.onPause()
     }
 
@@ -230,7 +229,18 @@ class VendorFragment : Fragment() {
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
         }else{
+            //recalculate distances and update recycler
             geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+            if (vendor_list != null){
+                for (vendor in vendors){
+                    vendor.value!!.updateDistance(location)
+                }
+                val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+
+                adapter = RecyclerAdapter(vendorArray, context!!)
+                vendor_list.layoutManager = layoutManager
+                vendor_list.adapter = adapter
+            }
         }
     }
 
