@@ -3,6 +3,7 @@ package com.CP.Savour
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -155,32 +156,30 @@ class CreateAccountActivity : AppCompatActivity() {
                             val currentUserDb = mDatabaseReference!!.child(userId)
                             currentUserDb.child("full_name").setValue(fullName)
 
-                            updateUserInfoAndUI()
+                            //we dont want to login yet!
+//                            updateUserInfoAndUI()
                         } else {
                             // if log in fails, display a message to the user
                             Log.w(TAG, "createUserWithEmail:failure",task.exception)
-                            Toast.makeText(this@CreateAccountActivity, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+                            messagePopup( task.exception!!.localizedMessage,"User creation failed!")
                         }
+                        progressBar!!.visibility = View.INVISIBLE
                     }
         } else {
-            Toast.makeText(this, "Enter all details please", Toast.LENGTH_SHORT).show()
+            messagePopup("Please enter all details ","Information Missing!")
+            progressBar!!.visibility = View.INVISIBLE
         }
-        progressBar!!.visibility = View.GONE
     }
 
     private fun verifyEmail() {
-        val mUser = mAuth!!.currentUser;
+        val mUser = mAuth!!.currentUser
         mUser!!.sendEmailVerification()
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(this@CreateAccountActivity,
-                                "Verification email sent to " + mUser.getEmail(),
-                                Toast.LENGTH_SHORT).show()
+                        messagePopup("Verification email sent to " + mUser.getEmail() + ". Please check your email to verify your account. Then come back to login!","Verify Email")
                     } else {
                         Log.e(TAG, "sendEmailVerification", task.exception)
-                        Toast.makeText(this@CreateAccountActivity,
-                                "Failed to send verification email.",
-                                Toast.LENGTH_SHORT).show()
+                        messagePopup("Please try again. If this problem persists, contact us.","Failed to send verification email.")
                     }
                 }
     }
@@ -206,10 +205,23 @@ class CreateAccountActivity : AppCompatActivity() {
 
                     } else {
                         Log.e(TAG,"signInWithFacebook:failure",task.exception)
-                        Toast.makeText(this@CreateAccountActivity,"Authentication failed.",Toast.LENGTH_SHORT).show()
+                        messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
                         progressBarHolder!!.visibility = View.INVISIBLE
                     }
                 }
 
+    }
+
+    fun messagePopup(message: String, title: String){
+        val alertDialog: AlertDialog? = this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Ok",null)
+            }
+            builder?.setMessage(message)
+                    .setTitle(title)
+            builder.create()
+        }
+        alertDialog!!.show()
     }
 }

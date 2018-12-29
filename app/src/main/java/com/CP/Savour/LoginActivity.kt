@@ -1,9 +1,10 @@
 package com.CP.Savour
 
-import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
@@ -22,9 +23,6 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.bumptech.glide.Glide
 import com.facebook.login.LoginManager
-import com.google.firebase.auth.UserInfo
-
-
 
 
 class LoginActivity : AppCompatActivity() {
@@ -75,8 +73,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -97,8 +93,6 @@ class LoginActivity : AppCompatActivity() {
             override fun onSuccess(result: LoginResult?) {
                 println("OMG FACEBOOK LOGIN!!!!")
                 progressBarHolder!!.visibility = View.VISIBLE
-
-
                 handleFacebookAccessToken(result!!.getAccessToken())
             }
 
@@ -127,8 +121,15 @@ class LoginActivity : AppCompatActivity() {
 
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
-            updateUI()
+            if(user.isEmailVerified){
+                Log.d(TAG, "userAlreadySignedin:success")
+                updateUI()
+            }else{
+                //user not verified but we can wait until they try to login to tell them
+            }
         }else{
+            //sometimes FB still shows logged in
+            //maybe a credential caching issue, this ensures we are fine
             FirebaseAuth.getInstance().signOut()
             LoginManager.getInstance().logOut()
             Log.d(TAG, "onAuthStateChanged:signed_out")
@@ -153,18 +154,21 @@ class LoginActivity : AppCompatActivity() {
 
             mAuth!!.signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(this) { task ->
-
                         if(task.isSuccessful) {
                             // Sign in success, update UI with signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success")
-                            updateUI()
+                            if(mAuth!!.currentUser!!.isEmailVerified){
+                                Log.d(TAG, "signInWithEmail:success")
+                                updateUI()
+                            }else{
+                                promptPopup()
+                            }
                         } else {
                             Log.e(TAG,"signInWithEmail:failure",task.exception)
-                            Toast.makeText(this@LoginActivity,"Authentication failed.",Toast.LENGTH_SHORT).show()
+                            errorPopup("Check that your username and password are correct and try again.","Authentication failed.")
                         }
                     }
         } else {
-            Toast.makeText(this, "Enter all details", Toast.LENGTH_SHORT).show()
+            errorPopup("Please enter both your user name and password to proceed.","Missing fields")
         }
     }
 
@@ -185,15 +189,45 @@ class LoginActivity : AppCompatActivity() {
                         // Sign in success, update UI with signed-in user's information
                         Log.d(TAG, "signInWithFacebook:success")
                         updateUI()
-                        progressBarHolder!!.visibility = View.INVISIBLE
+//                        progressBarHolder!!.visibility = View.INVISIBLE
 
                     } else {
                         Log.e(TAG,"signInWithFacebook:failure",task.exception)
-                        Toast.makeText(this@LoginActivity,"Authentication failed.",Toast.LENGTH_SHORT).show()
+                        errorPopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
                         progressBarHolder!!.visibility = View.INVISIBLE
                     }
                 }
 
+    }
+
+    fun errorPopup(message: String, title: String){
+        val alertDialog: AlertDialog? = this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Ok",null)
+            }
+            builder?.setMessage(message)
+                    .setTitle(title)
+            builder.create()
+        }
+        alertDialog!!.show()
+    }
+
+    fun promptPopup(){
+        val alertDialog: AlertDialog? = this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Resend email", DialogInterface.OnClickListener { dialog, id ->
+                    val mUser = mAuth!!.currentUser
+                    mUser!!.sendEmailVerification()
+                })
+                setPositiveButton("Ok",null)
+            }
+            builder?.setMessage("Please check your email to verify your account. Then come back and try again.")
+                    .setTitle("Unverified Account!")
+            builder.create()
+        }
+        alertDialog!!.show()
     }
 
 }

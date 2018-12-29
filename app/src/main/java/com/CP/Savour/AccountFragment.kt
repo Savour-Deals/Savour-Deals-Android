@@ -24,7 +24,6 @@ import java.net.URL
 import android.os.StrictMode
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AlertDialog.*
-import android.util.Log
 import android.widget.TextView
 import com.facebook.login.LoginManager
 import com.google.android.gms.appinvite.AppInviteInvitation
@@ -36,12 +35,12 @@ class AccountFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         mAuth = FirebaseAuth.getInstance()
-        authStateListner = FirebaseAuth.AuthStateListener { auth ->
-            val user = auth.currentUser
-            if(user != null){
-            }
-        }
-        mAuth.addAuthStateListener(authStateListner)
+//        authStateListner = FirebaseAuth.AuthStateListener { auth ->
+//            val user = auth.currentUser
+//            if(user != null){
+//            }
+//        }
+//        mAuth.addAuthStateListener(authStateListner)
 
         val view = inflater.inflate(R.layout.fragment_account, container, false)
         var logoutButton: Button = view.findViewById(R.id.logout_button)
@@ -122,7 +121,7 @@ class AccountFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        mAuth.removeAuthStateListener(authStateListner)
+//        mAuth.removeAuthStateListener(authStateListner)
     }
 
     companion object {
