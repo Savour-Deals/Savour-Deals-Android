@@ -71,6 +71,13 @@ class ViewDealFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (timer != null){
+            timer!!.cancel()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         retainInstance = true
 
@@ -181,8 +188,9 @@ class ViewDealFragment : Fragment() {
 //                            }
 //                        }
 
-                //set and draw checkmark
-                pulsator!!.color = resources.getColor(R.color.green)
+                pulsator.apply {
+                    this!!.color =resources.getColor(R.color.green)
+                }
 
                 redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
                 redemptionButton!!.text = "Already Redeemed!"
@@ -195,7 +203,6 @@ class ViewDealFragment : Fragment() {
                     termsText!!.text = deal!!.code
                     termsText!!.setTextColor(resources.getColor(R.color.black))
                 }
-                runTimer()
 
                 val status = OneSignal.getPermissionSubscriptionState()
                 if (status.subscriptionStatus.userId != null){
@@ -203,6 +210,8 @@ class ViewDealFragment : Fragment() {
                     dataRef.child("Vendors").child(vendor!!.id!!).child("followers").child(uID).setValue(status.subscriptionStatus.userId)
                     dataRef.child("Users").child(uID).child("following").child(vendor!!.id!!).setValue(true)
                 }
+                val ft = fragmentManager!!.beginTransaction()
+                ft.detach(this).attach(this).commit()
             }
             builder.setNegativeButton("Cancel") { dialogInterface, which->
                 //Cancelled redemption
