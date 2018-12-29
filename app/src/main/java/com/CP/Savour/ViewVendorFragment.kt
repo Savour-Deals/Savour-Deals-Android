@@ -11,27 +11,29 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.debop.kodatimes.today
 import java.util.*
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.hardware.camera2.CameraManager
 import android.location.Location
 import android.os.Build
+import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.ProgressBar
+import android.widget.*
+import com.camerakit.CameraKitView
 
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.vision.CameraSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -39,8 +41,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
+import java.io.File
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -74,6 +80,7 @@ class ViewVendorFragment : Fragment() {
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
+    private lateinit var cameraSource: CameraSource
 
     private var redeem: Boolean = false
 
@@ -192,7 +199,10 @@ class ViewVendorFragment : Fragment() {
         userInfoRef.addValueEventListener(userListener)
 
 
-
+        loyaltyButton.setOnClickListener {
+            val intent = Intent(context, ScanActivity::class.java)
+            startActivity(intent)
+        }
 
         followButton.setOnClickListener {
             if (followButton.text == "Follow") {
@@ -468,7 +478,14 @@ class ViewVendorFragment : Fragment() {
      * This function is called when the loyalty checkin is pressed
      */
 
-    protected fun readQRCode() {
+    protected fun readQRCode(bitmap: Bitmap) {
+        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+                .setBarcodeFormats(
+                        FirebaseVisionBarcode.FORMAT_QR_CODE
+                )
+                .build()
+
+        val image = FirebaseVisionImage.fromBitmap(bitmap)
     }
 
     override fun onDestroy() {
