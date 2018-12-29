@@ -45,6 +45,10 @@ class FavoritesFragment : Fragment() {
 
     var firstLocationUpdate = true
 
+    var activedeals = mutableMapOf<String, Deal?>()
+    var inactivedeals = mutableMapOf<String, Deal?>()
+    var dealsArray: List<Deal?> = arrayListOf()
+
     private lateinit var mAuth: FirebaseAuth
     private lateinit var authStateListner: FirebaseAuth.AuthStateListener
 
@@ -117,14 +121,13 @@ class FavoritesFragment : Fragment() {
     private fun getFirebaseData(lat:Double, lng:Double) {
         val userID = FirebaseAuth.getInstance().currentUser!!.uid
 
-        var dealsArray: List<Deal?>
+
         var oldFavs = ArrayList<String>()
 
         var  dealsReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Deals")
         val user = FirebaseAuth.getInstance().currentUser
         val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
-        var activedeals = mutableMapOf<String, Deal?>()
-        var inactivedeals = mutableMapOf<String, Deal?>()
+
 
         val favoritesListener = object : ValueEventListener {//Get favorites
             /**
@@ -310,6 +313,25 @@ class FavoritesFragment : Fragment() {
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
+        }else{
+            //recalculate distances and update recycler
+            for (deal in activedeals){
+                if (vendors[deal.value!!.vendorID] != null){
+                    deal.value!!.updateDistance(vendors[deal.value!!.vendorID]!!, location)
+                }
+            }
+            for (deal in inactivedeals){
+                if (vendors[deal.value!!.vendorID] != null){
+                    deal.value!!.updateDistance(vendors[deal.value!!.vendorID]!!, location)
+                }
+            }
+            if (deal_list != null){
+                dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+                adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
+                deal_list.layoutManager = layoutManager
+
+                deal_list.adapter = adapter
+            }
         }
     }
 

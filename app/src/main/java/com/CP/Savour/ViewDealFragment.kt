@@ -99,7 +99,8 @@ class ViewDealFragment : Fragment() {
         vendorName!!.text = deal!!.vendorName
         description!!.text = deal!!.dealDescription
 
-        //TODO: Get location to update distance when loading!
+
+//location should be fairly up to date from previous page (30s max)
 //        deal.updateDistance()
 
         if (from != "main"){
