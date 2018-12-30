@@ -12,7 +12,7 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         scannerView = ZXingScannerView(this)
-        setContentView(R.layout.activity_scan)
+        setContentView(scannerView)
 
     }
 
