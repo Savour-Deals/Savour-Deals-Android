@@ -1,5 +1,7 @@
 package com.CP.Savour
 
+import android.app.Activity
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ProgressBar
@@ -12,7 +14,8 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
-
+private const val RESULT_OK = 1
+private const val RESULT_FAIL = -1
 class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     private var scannerView: ZXingScannerView? = null
@@ -64,14 +67,22 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
 
         val code = rawResult.toString()
+
         println("THE PARCELABLE POINTS VALUE")
         println(points)
 
+        intent.putExtra("Test","Hello, World!")
+        intent.putExtra(POINTS,points)
         if (code == vendor.loyaltyCode) {
-            //loyaltyProgress!!.progress += 10
-            println("Codes are the same")
-            println(loyaltyProgress)
-            println(loyaltyText)
+            val intent = Intent()
+            points?.let {
+                var pts =  it.toInt()
+                pts += 10
+
+                intent.putExtra(POINTS,pts)
+            }
+
+            setResult(Activity.RESULT_OK,intent)
         }
         onBackPressed()
     }

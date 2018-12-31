@@ -1,6 +1,7 @@
 package com.CP.Savour
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
@@ -47,13 +48,14 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
 import java.io.File
+import java.lang.NumberFormatException
 
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
-
+private const val SCAN_QR_REQUEST = 1
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -187,9 +189,13 @@ class ViewVendorFragment : Fragment() {
                     println("userPoints is: " + userPoints)
                     loyaltyText.text = "$points/${vendor.loyaltyCount}"
 
+                    points?.let {
+                        loyaltyProgress.progress = it.toInt()
+                    }
+
                     println("Points baby")
                     println(points)
-                    //loyaltyProgress.progress = points!!.toInt()
+
 
                 } else {
                     println("no userPoints with loyalty already: ")
@@ -219,7 +225,7 @@ class ViewVendorFragment : Fragment() {
             }
             intent.putExtra(POINTS, points)
 
-            startActivity(intent)
+            startActivityForResult(intent, SCAN_QR_REQUEST)
         }
 
         followButton.setOnClickListener {
@@ -505,6 +511,26 @@ class ViewVendorFragment : Fragment() {
         if (dealsListener != null){
             dealsRef.removeEventListener(dealsListener)
         }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        println("ONACTIVITYRESULT FROM FRAGMENT!")
+
+        println(data!!.getStringExtra("Test"))
+        val pts = data.getIntExtra(POINTS,0)
+        println("PTS BABY")
+        println(pts)
+        if (Activity.RESULT_OK == resultCode) {
+            loyaltyProgress.progress = pts
+            loyaltyText.text = "$pts/${vendor.loyaltyCount}"
+        }
+        //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
+
+
+        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
     }
 
 
