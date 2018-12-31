@@ -188,6 +188,8 @@ class MainActivity : AppCompatActivity() {
                     //startActivity(intent)
                 } else if(grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     println("SECOND PERMISSION BABY WOO")
+                    refreshFragments()
+
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.

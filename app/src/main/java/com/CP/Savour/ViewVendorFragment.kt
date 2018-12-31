@@ -52,7 +52,7 @@ import java.io.File
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_VENDOR = "vendor"
-
+private const val POINTS = "points"
 
 /**
  * A simple [Fragment] subclass.
@@ -102,11 +102,11 @@ class ViewVendorFragment : Fragment() {
     private lateinit var dealsRef: Query
     val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
-    private lateinit var points: String
+    private var points: String? = null
+
     private lateinit var favoritesListener: ValueEventListener
     private lateinit var userListener: ValueEventListener
     private lateinit var dealsListener: ValueEventListener
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,10 +177,16 @@ class ViewVendorFragment : Fragment() {
 
                 if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
                     println("userPoints with loyalty already: ")
-                    println(snapshot.child("loyalty").child(vendor.id!!).child("count").toString())
-                    points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString()
-                    loyaltyText.text = points + "/" + vendor.loyaltyCount
-                    loyaltyProgress.progress = points.toInt()
+                    println(snapshot.child("loyalty"))
+                    println(vendor.id!!)
+                    println(snapshot.child("loyalty").child(vendor.id!!))
+                    points = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value as? String
+
+                    loyaltyText.text = "$points/${vendor.loyaltyCount}"
+
+                    println("Points baby")
+                    println(points)
+                    //loyaltyProgress.progress = points!!.toInt()
 
                 } else {
                     println("no userPoints with loyalty already: ")
@@ -188,6 +194,8 @@ class ViewVendorFragment : Fragment() {
                     println(vendor.loyaltyCount)
                     loyaltyText.text = "0/" + vendor.loyaltyCount
                     loyaltyProgress.progress = 0
+
+                    userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
 
                 }
             }
@@ -201,6 +209,13 @@ class ViewVendorFragment : Fragment() {
 
         loyaltyButton.setOnClickListener {
             val intent = Intent(context, ScanActivity::class.java)
+            intent.putExtra(ARG_VENDOR, vendor)
+
+            if (points == null) {
+                points = "0"
+            }
+            intent.putExtra(POINTS, points)
+
             startActivity(intent)
         }
 
@@ -474,19 +489,6 @@ class ViewVendorFragment : Fragment() {
         }
     }
 
-    /**
-     * This function is called when the loyalty checkin is pressed
-     */
-
-    protected fun readQRCode(bitmap: Bitmap) {
-        val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(
-                        FirebaseVisionBarcode.FORMAT_QR_CODE
-                )
-                .build()
-
-        val image = FirebaseVisionImage.fromBitmap(bitmap)
-    }
 
     override fun onDestroy() {
         super.onDestroy()
