@@ -180,8 +180,11 @@ class ViewVendorFragment : Fragment() {
                     println(snapshot.child("loyalty"))
                     println(vendor.id!!)
                     println(snapshot.child("loyalty").child(vendor.id!!))
-                    points = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value as? String
-
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions"))
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value)
+                    val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
+                    points = userPoints.toString()
+                    println("userPoints is: " + userPoints)
                     loyaltyText.text = "$points/${vendor.loyaltyCount}"
 
                     println("Points baby")

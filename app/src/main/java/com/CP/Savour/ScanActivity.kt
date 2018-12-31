@@ -29,6 +29,10 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         scannerView = ZXingScannerView(this)
         setContentView(scannerView)
 
+        println("Saved instance state of the ScanActivity")
+        println(savedInstanceState.toString())
+        loyaltyProgress = findViewById(R.id.loyalty_progress)
+        loyaltyText = findViewById(R.id.loyalty_text)
 
     }
 
@@ -45,23 +49,25 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         scannerView!!.stopCamera()
 
     }
+
     override fun handleResult(rawResult: Result?) {
         println("The raw result: ")
         println(rawResult.toString())
 
-        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(100)
-        loyaltyProgress = findViewById(R.id.loyalty_progress)
-        loyaltyText = findViewById(R.id.loyalty_text)
-
-
         vendor = intent.getParcelableExtra(ARG_VENDOR)
         points = intent.getStringExtra(POINTS)
+
+
+        println(userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count"))
+
+
+
 
         val code = rawResult.toString()
         println("THE PARCELABLE POINTS VALUE")
         println(points)
 
-        if (code == vendor!!.loyaltyCode) {
+        if (code == vendor.loyaltyCode) {
             //loyaltyProgress!!.progress += 10
             println("Codes are the same")
             println(loyaltyProgress)
