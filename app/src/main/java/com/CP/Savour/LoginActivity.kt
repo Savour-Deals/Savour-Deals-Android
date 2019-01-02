@@ -120,8 +120,16 @@ class LoginActivity : AppCompatActivity() {
 
 
         val user = FirebaseAuth.getInstance().currentUser
+        var userLoggedinFB = false
+
+        for (provider in user!!.providerData) {
+          if (provider.providerId.equals("facebook.com")) {
+              userLoggedinFB = true
+              System.out.println("User is signed in with Facebook")
+          }
+        }
         if (user != null) {
-            if(user.isEmailVerified){
+            if(user.isEmailVerified || userLoggedinFB){
                 Log.d(TAG, "userAlreadySignedin:success")
                 updateUI()
             }else{

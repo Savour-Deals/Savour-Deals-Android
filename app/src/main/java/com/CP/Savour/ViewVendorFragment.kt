@@ -2,7 +2,6 @@ package com.CP.Savour
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -13,23 +12,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import com.github.debop.kodatimes.today
 import java.util.*
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.hardware.camera2.CameraManager
 import android.location.Location
 import android.os.Build
-import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.*
-import com.camerakit.CameraKitView
 
-import com.firebase.geofire.GeoLocation
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
@@ -42,13 +35,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
-import java.io.File
-import java.lang.NumberFormatException
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -56,15 +44,7 @@ import java.lang.NumberFormatException
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
 private const val SCAN_QR_REQUEST = 1
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ViewVendorFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ViewVendorFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
+
 class ViewVendorFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private lateinit var vendor: Vendor
@@ -536,31 +516,25 @@ class ViewVendorFragment : Fragment() {
 
         println("ONACTIVITYRESULT FROM FRAGMENT!")
 
-        println(data!!.getStringExtra("Test"))
-        val pts = data.getIntExtra(POINTS,0)
-        println("PTS BABY")
-        println(pts)
-        if (Activity.RESULT_OK == resultCode) {
-            loyaltyProgress.progress = pts
-            loyaltyText.text = "$pts/${vendor.loyaltyCount}"
+        if (data != null) {
+            println(data!!.getStringExtra("Test"))
+            val pts = data.getIntExtra(POINTS, 0)
+            println("PTS BABY")
+            println(pts)
+            if (Activity.RESULT_OK == resultCode) {
+                loyaltyProgress.progress = pts
+                loyaltyText.text = "$pts/${vendor.loyaltyCount}"
+            }
+            //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
+
+
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
         }
-        //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
-
-
-        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
     }
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ViewVendorFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
         fun newInstance(): ViewVendorFragment = ViewVendorFragment()
 

@@ -22,16 +22,25 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.net.URL
 import android.os.StrictMode
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AlertDialog.*
+import android.support.v7.widget.SwitchCompat
+import android.util.Log
 import android.widget.TextView
 import com.facebook.login.LoginManager
 import com.google.android.gms.appinvite.AppInviteInvitation
+import com.onesignal.OSSubscriptionObserver
+import com.onesignal.OSSubscriptionStateChanges
+import com.onesignal.OneSignal
 
 
-class AccountFragment : Fragment() {
+class AccountFragment : Fragment(), OSSubscriptionObserver {
+
     private lateinit var mAuth: FirebaseAuth
     private lateinit var authStateListner: FirebaseAuth.AuthStateListener
+    private lateinit var notificationSwitch: SwitchCompat
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         mAuth = FirebaseAuth.getInstance()
@@ -41,6 +50,8 @@ class AccountFragment : Fragment() {
 //            }
 //        }
 //        mAuth.addAuthStateListener(authStateListner)
+        OneSignal.addSubscriptionObserver(this)
+
 
         val view = inflater.inflate(R.layout.fragment_account, container, false)
         var logoutButton: Button = view.findViewById(R.id.logout_button)
@@ -49,6 +60,11 @@ class AccountFragment : Fragment() {
         var contactButton: View = view.findViewById(R.id.contact_view)
         var shareButton: View = view.findViewById(R.id.friend_share)
         var vendorButton: View = view.findViewById(R.id.vendor_view)
+        notificationSwitch = view.findViewById(R.id.noti_switch)
+
+        val onesignalState = OneSignal.getPermissionSubscriptionState().subscriptionStatus.subscribed
+        val androidPermissionState = OneSignal.getPermissionSubscriptionState().permissionStatus.enabled
+        notificationSwitch.isChecked = (onesignalState && androidPermissionState)
 
         if (mAuth.currentUser != null) {
             if (mAuth.currentUser!!.displayName != null) {
@@ -68,6 +84,46 @@ class AccountFragment : Fragment() {
 
         vendorButton.setOnClickListener{
             vendorBtnOnclick()
+        }
+        notificationSwitch.setOnClickListener {
+            if (OneSignal.getPermissionSubscriptionState().permissionStatus.enabled){
+                //if user has android notification permissions on, we are good
+                if(notificationSwitch.isChecked){
+                    //switch is on, set onesignal to on
+                    OneSignal.setSubscription(true)
+                    notificationSwitch.isChecked = true
+                }else{
+                    //switch is off, set onesignal to off
+                    OneSignal.setSubscription(false)
+                    notificationSwitch.isChecked = false
+                }
+            }else{
+                notificationSwitch.isChecked = false
+                //android notification permissions off, send them to turn it on!
+                val alertDialog: AlertDialog? = activity?.let {
+                    val builder = AlertDialog.Builder(it)
+                    builder.apply {
+                        setPositiveButton("Take me there!",
+                                DialogInterface.OnClickListener { dialog, id ->
+                                    var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+                                        addCategory(Intent.CATEGORY_DEFAULT)
+                                        setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    activity!!.startActivity(intent)                                })
+                        setNegativeButton("Cancel",
+                                DialogInterface.OnClickListener { dialog, id ->
+                                    // User cancelled the dialog
+                                })
+                    }
+                    builder.setTitle("Turn on Notification Permissions")
+                    builder.setMessage("Please turn on notification permissions in Settings -> Notifications")
+                    builder.create()
+                }
+                alertDialog!!.show()
+
+            }
+
+
         }
 
 
@@ -126,6 +182,19 @@ class AccountFragment : Fragment() {
 
     companion object {
         fun newInstance(): AccountFragment = AccountFragment()
+    }
+
+    override fun onOSSubscriptionChanged(stateChanges: OSSubscriptionStateChanges?) {
+        //,make sure button reflects state. For when user changes android permissions
+        if (!stateChanges!!.getFrom().getSubscribed() && stateChanges!!.getTo().getSubscribed()) {
+            //use subscribed to notifications, set switch to on
+            notificationSwitch.isChecked = true
+            // get player ID
+            stateChanges.getTo().getUserId()
+        }else{
+            notificationSwitch.isChecked = false
+        }
+        Log.i("Debug", "onOSPermissionChanged: " + stateChanges);
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

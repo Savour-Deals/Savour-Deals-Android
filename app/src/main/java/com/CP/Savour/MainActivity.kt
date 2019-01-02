@@ -13,16 +13,10 @@ import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import android.widget.FrameLayout
 import android.content.DialogInterface
-import android.R.string.ok
-import android.R.string.ok
 import android.support.v7.app.AlertDialog
 import android.view.Menu
-import android.view.MenuInflater
-import android.widget.Toast
-import android.widget.Toolbar
 import android.content.Intent
-
-
+import com.onesignal.OneSignal
 
 
 class MainActivity : AppCompatActivity() {
@@ -95,6 +89,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.onResume()
+
+
 
         if (!firstEnter){
             overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
