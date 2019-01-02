@@ -519,11 +519,13 @@ class ViewVendorFragment : Fragment() {
 
         println("ONACTIVITYRESULT FROM FRAGMENT!")
 
-        println(data!!.getStringExtra("Test"))
-        val pts = data.getIntExtra(POINTS,0)
-        println("PTS BABY")
-        println(pts)
         if (Activity.RESULT_OK == resultCode) {
+            println(data!!.getStringExtra("Test"))
+            val pts = data.getIntExtra(POINTS,0)
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(pts)
+            println("PTS BABY")
+            println(pts)
+
             loyaltyProgress.progress = pts
             loyaltyText.text = "$pts/${vendor.loyaltyCount}"
         }
