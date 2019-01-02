@@ -1,6 +1,7 @@
 package com.CP.Savour
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
@@ -11,27 +12,29 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.debop.kodatimes.today
 import java.util.*
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.hardware.camera2.CameraManager
 import android.location.Location
 import android.os.Build
+import android.os.Environment
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.ProgressBar
+import android.widget.*
+import com.camerakit.CameraKitView
 
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.vision.CameraSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -39,15 +42,20 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
+import java.io.File
+import java.lang.NumberFormatException
 
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_VENDOR = "vendor"
-
-
+private const val POINTS = "points"
+private const val SCAN_QR_REQUEST = 1
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -74,11 +82,13 @@ class ViewVendorFragment : Fragment() {
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
+    private lateinit var cameraSource: CameraSource
 
     var activedeals = mutableMapOf<String, Deal?>()
     var inactivedeals = mutableMapOf<String, Deal?>()
     var dealsArray : List<Deal?> = arrayListOf()
 
+    private var redeem: Boolean = false
 
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
@@ -98,10 +108,11 @@ class ViewVendorFragment : Fragment() {
     private lateinit var dealsRef: Query
     val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
+    private var points: String? = null
+
     private lateinit var favoritesListener: ValueEventListener
     private lateinit var userListener: ValueEventListener
     private lateinit var dealsListener: ValueEventListener
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,6 +164,7 @@ class ViewVendorFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 println("triggered")
 
+
                 println(snapshot.toString())
 
                 if (snapshot.child("following").child(vendor.id!!).exists()) {
@@ -171,14 +183,32 @@ class ViewVendorFragment : Fragment() {
 
                 if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
                     println("userPoints with loyalty already: ")
-                    println(snapshot.child("loyalty").child(vendor.id!!).child("count").toString())
-                    val points = snapshot.child("loyalty").child(vendor.id!!).child("count").toString() + ""
+                    println(snapshot.child("loyalty"))
+                    println(vendor.id!!)
+                    println(snapshot.child("loyalty").child(vendor.id!!))
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions"))
+                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value)
+                    val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
+                    points = userPoints.toString()
+                    println("userPoints is: " + userPoints)
+                    loyaltyText.text = "$points/${vendor.loyaltyCount}"
+
+                    points?.let {
+                        loyaltyProgress.progress = it.toInt()
+                    }
+
+                    println("Points baby")
+                    println(points)
+
 
                 } else {
                     println("no userPoints with loyalty already: ")
                     println("vendor info: ")
                     println(vendor.loyaltyCount)
                     loyaltyText.text = "0/" + vendor.loyaltyCount
+                    loyaltyProgress.progress = 0
+
+                    userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
 
                 }
             }
@@ -190,7 +220,17 @@ class ViewVendorFragment : Fragment() {
         userInfoRef.addValueEventListener(userListener)
 
 
+        loyaltyButton.setOnClickListener {
+            val intent = Intent(context, ScanActivity::class.java)
+            intent.putExtra(ARG_VENDOR, vendor)
 
+            if (points == null) {
+                points = "0"
+            }
+            intent.putExtra(POINTS, points)
+
+            startActivityForResult(intent, SCAN_QR_REQUEST)
+        }
 
         followButton.setOnClickListener {
             if (followButton.text == "Follow") {
@@ -376,7 +416,7 @@ class ViewVendorFragment : Fragment() {
 
         val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
-                onLocationChanged(locationResult!!.getLastLocation())
+                onLocationChanged(locationResult.getLastLocation())
             }
 
         }
@@ -488,6 +528,26 @@ class ViewVendorFragment : Fragment() {
         if (dealsListener != null){
             dealsRef.removeEventListener(dealsListener)
         }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        println("ONACTIVITYRESULT FROM FRAGMENT!")
+
+        println(data!!.getStringExtra("Test"))
+        val pts = data.getIntExtra(POINTS,0)
+        println("PTS BABY")
+        println(pts)
+        if (Activity.RESULT_OK == resultCode) {
+            loyaltyProgress.progress = pts
+            loyaltyText.text = "$pts/${vendor.loyaltyCount}"
+        }
+        //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
+
+
+        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
     }
 
 
