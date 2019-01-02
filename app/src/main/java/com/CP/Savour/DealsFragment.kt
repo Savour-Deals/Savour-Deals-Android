@@ -418,7 +418,8 @@ class DealsFragment : Fragment() {
                         adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
                         deal_list.layoutManager = layoutManager
 
-                        deal_list.adapter = adapter                    }
+                        deal_list.adapter = adapter
+                    }
                 }
             }
         }

@@ -84,6 +84,10 @@ class ViewVendorFragment : Fragment() {
     private lateinit var loyaltyProgress: ProgressBar
     private lateinit var cameraSource: CameraSource
 
+    var activedeals = mutableMapOf<String, Deal?>()
+    var inactivedeals = mutableMapOf<String, Deal?>()
+    var dealsArray : List<Deal?> = arrayListOf()
+
     private var redeem: Boolean = false
 
     private var layoutManager : RecyclerView.LayoutManager? = null
@@ -290,9 +294,7 @@ class ViewVendorFragment : Fragment() {
     }
 
     fun getFirebaseData(){
-        var activedeals = mutableMapOf<String, Deal?>()
-        var inactivedeals = mutableMapOf<String, Deal?>()
-        var dealsArray : List<Deal?>
+
         var vendors = mutableMapOf<String, Vendor?>()
         vendors[vendor.id!!] = vendor
 
@@ -448,6 +450,21 @@ class ViewVendorFragment : Fragment() {
             if(firstLocationUpdate){
                 firstLocationUpdate = false
                 getFirebaseData()
+            }else{
+                if (deal_list != null){
+                    for (deal in activedeals){
+                        deal.value!!.updateDistance(vendor, location)
+                    }
+                    for (deal in inactivedeals){
+                        deal.value!!.updateDistance(vendor, location)
+                    }
+                    dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
+                    adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
+                    deal_list.layoutManager = layoutManager
+
+                    deal_list.adapter = adapter
+                }
+
             }
         }
 
