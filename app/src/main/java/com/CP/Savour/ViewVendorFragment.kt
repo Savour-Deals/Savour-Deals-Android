@@ -38,15 +38,11 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
 private const val SCAN_QR_REQUEST = 1
 
 class ViewVendorFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private lateinit var vendor: Vendor
     private lateinit var dealImage: ImageView
     private lateinit var dealsHeader: TextView
@@ -515,7 +511,7 @@ class ViewVendorFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         println("ONACTIVITYRESULT FROM FRAGMENT!")
-        
+
         if (Activity.RESULT_OK == resultCode) {
             println(data!!.getStringExtra("Test"))
             val pts = data.getIntExtra(POINTS,0)
@@ -525,10 +521,8 @@ class ViewVendorFragment : Fragment() {
 
             loyaltyProgress.progress = pts
             loyaltyText.text = "$pts/${vendor.loyaltyCount}"
-        }
-        //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
-
-
+        
+            //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
             userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
         }
     }
