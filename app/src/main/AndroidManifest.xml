@@ -12,7 +12,7 @@
     <application
         android:name=".ApplicationClass"
         android:allowBackup="true"
-        android:icon="@drawable/savour_logo"
+        android:icon="@drawable/icon_logo"
         android:label="Savour Deals"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -48,7 +48,9 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity"
+            android:theme="@style/SplashScreenTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

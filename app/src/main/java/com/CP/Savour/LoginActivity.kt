@@ -56,7 +56,9 @@ class LoginActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_login)
         progressBarHolder = findViewById(R.id.progress_overlay) as FrameLayout
         backgroundImg = findViewById(R.id.savour_logo)
@@ -122,13 +124,14 @@ class LoginActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
         var userLoggedinFB = false
 
-        for (provider in user!!.providerData) {
-          if (provider.providerId.equals("facebook.com")) {
-              userLoggedinFB = true
-              System.out.println("User is signed in with Facebook")
-          }
-        }
+
         if (user != null) {
+            for (provider in user!!.providerData) {
+                if (provider.providerId.equals("facebook.com")) {
+                    userLoggedinFB = true
+                    System.out.println("User is signed in with Facebook")
+                }
+            }
             if(user.isEmailVerified || userLoggedinFB){
                 Log.d(TAG, "userAlreadySignedin:success")
                 updateUI()
