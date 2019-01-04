@@ -373,9 +373,10 @@ class DealsFragment : Fragment() {
         if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
             locationMessage!!.visibility = View.INVISIBLE
             locationButton!!.visibility = View.INVISIBLE
-            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
+            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!, mLocationCallback, Looper.myLooper())
             registerLocationListner()
-
+//        }else if (){
+//            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         }else{
             //location not on. Tell user to turn it on
             locationMessage!!.visibility = View.VISIBLE
