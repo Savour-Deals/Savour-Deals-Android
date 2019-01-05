@@ -42,12 +42,12 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         viewHolder.vendorName.text = temp.vendorName + " - %.1f miles".format(temp.distanceMiles)
         viewHolder.dealDescription.text = temp.dealDescription
 
-        var dots = ""
+        var dots = " "
         for (day in temp.activeDays){
             if (day!!){
-                dots +=  "• "
+                dots +=  "●   "
             }else{
-                dots += "◦ "
+                dots += "○   "
             }
         }
         viewHolder.dots.text = dots
