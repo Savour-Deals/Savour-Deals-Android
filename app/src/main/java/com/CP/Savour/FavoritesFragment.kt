@@ -78,7 +78,7 @@ class FavoritesFragment : Fragment() {
         layoutManager = LinearLayoutManager(context)
 
         savourImg = view.findViewById(R.id.imageView5) as ImageView
-        nodealsText = view.findViewById(R.id.textView2)
+        nodealsText = view.findViewById(R.id.nodeals)
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
 
@@ -101,7 +101,7 @@ class FavoritesFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         authStateListner = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
-            if(user != null){
+            if(user != null && firstLocationUpdate){
                 startLocationUpdates()
             }
         }
@@ -187,12 +187,7 @@ class FavoritesFragment : Fragment() {
 
                                                           dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
-                                                          if (dealsArray.count() < 1) {
-                                                              nodealsText!!.setVisibility(View.VISIBLE)
-                                                              dealsArray = ArrayList()
-                                                          } else {
-                                                              nodealsText!!.setVisibility(View.INVISIBLE)
-                                                          }
+                                                          checkNoDeals()
                                                           adapter = DealsRecyclerAdapter(dealsArray, vendors, context!!)
 
                                                           deal_list.layoutManager = layoutManager
@@ -230,12 +225,7 @@ class FavoritesFragment : Fragment() {
                             inactivedeals.remove(favid)
                             dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
-                            if (dealsArray.count() < 1) {
-                                nodealsText!!.setVisibility(View.VISIBLE)
-                                dealsArray = ArrayList()
-                            } else {
-                                nodealsText!!.setVisibility(View.INVISIBLE)
-                            }
+                            checkNoDeals()
                             adapter = DealsRecyclerAdapter(dealsArray, vendors, context!!)
 
                             deal_list.layoutManager = layoutManager
@@ -244,8 +234,7 @@ class FavoritesFragment : Fragment() {
                     }
                     oldFavs = newFavs
                 }else{//If no favorites
-                    nodealsText!!.setVisibility(View.VISIBLE)
-                    dealsArray = ArrayList()
+                    checkNoDeals()
 
                     adapter = DealsRecyclerAdapter(dealsArray,vendors,context!!)
 
@@ -258,6 +247,15 @@ class FavoritesFragment : Fragment() {
             }
         }
         favoriteRef.addValueEventListener(favoritesListener)
+    }
+
+    fun checkNoDeals(){
+        if (dealsArray.count() < 1) {
+            nodealsText!!.setVisibility(View.VISIBLE)
+            dealsArray = ArrayList()
+        } else {
+            nodealsText!!.setVisibility(View.INVISIBLE)
+        }
     }
 
     // Trigger new location updates at interval

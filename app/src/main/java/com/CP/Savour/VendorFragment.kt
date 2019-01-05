@@ -29,6 +29,7 @@ import android.support.v4.content.ContextCompat
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.CP.Savour.R.id.vendor_list
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
@@ -42,6 +43,9 @@ class VendorFragment : Fragment() {
     private var savourImg: ImageView? = null
     private lateinit var locationMessage: TextView
     private lateinit var locationButton: Button
+    private lateinit var noVendorsText: TextView
+    var vendorArray : List<Vendor?> = arrayListOf()
+
 
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
@@ -75,6 +79,7 @@ class VendorFragment : Fragment() {
         savourImg = view.findViewById(R.id.imageView5) as ImageView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
+        noVendorsText = view.findViewById(R.id.novendors)
 
         locationButton.setOnClickListener {
             var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
@@ -100,8 +105,9 @@ class VendorFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        firstLocationUpdate = true
-        startLocationUpdates()
+        if (firstLocationUpdate){
+            startLocationUpdates()
+        }
     }
 
     override fun onPause() {
@@ -130,8 +136,8 @@ class VendorFragment : Fragment() {
 
                             vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
 
-                            val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
-
+                            vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+                            checkNoVendors()
                             adapter = RecyclerAdapter(vendorArray, context!!)
 
                             vendor_list.layoutManager = layoutManager
@@ -150,8 +156,8 @@ class VendorFragment : Fragment() {
                 println(String.format("Key %s is no longer in the search area", key))
                 vendors.remove(key)
 
-                val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
-
+                vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+                checkNoVendors()
                 adapter = RecyclerAdapter(vendorArray, context!!)
 
                 vendor_list.layoutManager = layoutManager
@@ -164,7 +170,8 @@ class VendorFragment : Fragment() {
             }
 
             override fun onGeoQueryReady() {
-//                println("All initial data has been loaded and events have been fired!")
+                println("All initial data has been loaded and events have been fired!")
+                checkNoVendors() // should perform a check if any keys enter radius. This will give a false check until firebase gives us data back from those keys
             }
 
             override fun onGeoQueryError(error: DatabaseError) {
@@ -222,6 +229,15 @@ class VendorFragment : Fragment() {
         }
     }
 
+    fun checkNoVendors(){
+        if (vendorArray.count() < 1) {
+            noVendorsText!!.setVisibility(View.VISIBLE)
+            vendorArray = ArrayList()
+        } else {
+            noVendorsText!!.setVisibility(View.INVISIBLE)
+        }
+    }
+
     fun onLocationChanged(location: Location) {
         // New location has now been determined
         this.myLocation = location
@@ -235,7 +251,9 @@ class VendorFragment : Fragment() {
                 for (vendor in vendors){
                     vendor.value!!.updateDistance(location)
                 }
-                val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+                vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+
+                checkNoVendors()
 
                 adapter = RecyclerAdapter(vendorArray, context!!)
                 vendor_list.layoutManager = layoutManager

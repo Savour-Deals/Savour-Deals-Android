@@ -36,7 +36,6 @@ class RecyclerAdapter(val vendors: List<Vendor?>, val context: Context) : Recycl
         viewHolder.distanceLabel.text = "%.1f".format(temp.distanceMiles) + " Miles Away"
     }
     override fun getItemCount(): Int {
-        println("VendorMap Size: " + vendors.size)
         return vendors.size
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

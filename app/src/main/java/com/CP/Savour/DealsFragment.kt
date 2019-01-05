@@ -49,6 +49,7 @@ class DealsFragment : Fragment() {
     private lateinit var savourImg: ImageView
     private lateinit var locationMessage: TextView
     private lateinit var locationButton: Button
+    private lateinit var  nodealsText: TextView
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
     val user = FirebaseAuth.getInstance().currentUser
@@ -105,6 +106,7 @@ class DealsFragment : Fragment() {
         savourImg = view.findViewById(R.id.imageView5) as ImageView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
+        nodealsText = view.findViewById(R.id.nodeals) as TextView
 
         locationButton.setOnClickListener {
             var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
@@ -130,7 +132,7 @@ class DealsFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
         authStateListner = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
-            if(user != null){
+            if(user != null && firstLocationUpdate){
                 startLocationUpdates()
             }
         }
@@ -274,6 +276,7 @@ class DealsFragment : Fragment() {
                                                     }
                                                     dealsArray = ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
 
+                                                    checkNoDeals()
 
                                                     adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
 
@@ -282,6 +285,8 @@ class DealsFragment : Fragment() {
                                                     deal_list.adapter = adapter
 
 
+                                                }else{
+                                                    checkNoDeals()
                                                 }
                                             }
 
@@ -289,6 +294,8 @@ class DealsFragment : Fragment() {
                                             }
                                         }
                                         dealsReference.orderByChild("vendor_id").equalTo(dataSnapshot.key!!).addValueEventListener(dealsListener!!)
+                                    }else{
+                                        checkNoDeals()
                                     }
                                 }
 
@@ -314,6 +321,8 @@ class DealsFragment : Fragment() {
                             }
 
                             dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+
+                            checkNoDeals()
 
                             adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
 
@@ -343,6 +352,14 @@ class DealsFragment : Fragment() {
         favoriteRef.addValueEventListener(favoritesListener!!)
     }
 
+    fun checkNoDeals(){
+        if (dealsArray.count() < 1) {
+            nodealsText!!.setVisibility(View.VISIBLE)
+//            dealsArray = ArrayList()
+        } else {
+            nodealsText!!.setVisibility(View.INVISIBLE)
+        }
+    }
 
     // Trigger new location updates at interval
     protected fun startLocationUpdates() {
@@ -417,6 +434,12 @@ class DealsFragment : Fragment() {
                     }
                     if (deal_list != null){
                         dealsArray =  ArrayList(activedeals.values).sortedBy { deal -> deal!!.distanceMiles } + ArrayList(inactivedeals.values).sortedBy { deal -> deal!!.distanceMiles }
+                        if (dealsArray.count() < 1) {
+                            nodealsText!!.setVisibility(View.VISIBLE)
+                            dealsArray = ArrayList()
+                        } else {
+                            nodealsText!!.setVisibility(View.INVISIBLE)
+                        }
                         adapter = DealsRecyclerAdapter(dealsArray,vendors, context!!)
                         deal_list.layoutManager = layoutManager
 

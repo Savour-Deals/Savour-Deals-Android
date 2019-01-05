@@ -102,7 +102,6 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         }
     }
     override fun getItemCount(): Int {
-        println("dealsMap Size: " + deals.size)
         return deals.size
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
