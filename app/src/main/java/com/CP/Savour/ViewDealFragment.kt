@@ -131,17 +131,15 @@ class ViewDealFragment : Fragment() {
                     termsText!!.text = deal!!.code
                 }
             }
-        }else if (deal!!.distanceMiles!! > 0.1F && deal!!.active!!) {//deal not in distance range (1/2 mile. can shrink after testing)
-            redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
-            redemptionButton!!.text = "Go to Location to Redeem"
-            inRange = false
         }else if (!deal!!.active!!){
             redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
             redemptionButton!!.text = "Deal Not Active"
             pulsator!!.color = resources.getColor(R.color.red_tint)
             termsText!!.text = "This deal is valid " + deal!!.inactiveString + "."
-            termsText!!.text = "This deal is valid " + deal!!.inactiveString + "."
-
+        }else if (deal!!.distanceMiles!! > 0.1F) {//deal not in distance range (1/2 mile. can shrink after testing)
+            redemptionButton!!.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
+            redemptionButton!!.text = "Go to Location to Redeem"
+            inRange = false
         }
 
         redemptionButton!!.setOnClickListener {redeemPressed()}
