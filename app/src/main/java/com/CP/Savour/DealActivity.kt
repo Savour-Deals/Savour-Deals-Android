@@ -27,6 +27,7 @@ class DealActivity : AppCompatActivity() {
         setContentView(R.layout.activity_deal)
         content = findViewById(R.id.content) as FrameLayout
 
+
         val deal = getIntent().getParcelableExtra(ARG_DEAL) as? Deal
         val vendor = getIntent().getParcelableExtra(ARG_VENDOR) as? Vendor
         val from = getIntent().getStringExtra(ARG_FROM)

@@ -15,6 +15,7 @@ import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
@@ -88,6 +89,8 @@ class CreateAccountActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
 
         facebookButton = findViewById(R.id.facebook_register) as LoginButton
+        facebookButton.setLoginBehavior(LoginBehavior.WEB_ONLY)
+
 
         callbackManager = CallbackManager.Factory.create()
 

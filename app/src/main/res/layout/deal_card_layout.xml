@@ -132,25 +132,22 @@
                 <TextView
                     android:id="@+id/days"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="10sp" />
+                    android:textSize="10dp" />
 
                 <TextView
                     android:id="@+id/dots"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="-10dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginTop="-10dp"
-                    android:fontFamily="@font/judson"
                     android:gravity="top"
                     android:text="◦ "
                     android:textColor="@color/colorPrimary"
-                    android:textSize="30sp" />
+                    android:textSize="10sp" />
 
             </LinearLayout>
 

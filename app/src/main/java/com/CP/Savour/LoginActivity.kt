@@ -22,6 +22,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.bumptech.glide.Glide
+import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
 
 
@@ -89,6 +90,7 @@ class LoginActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
 
         facebookButton.setReadPermissions(Arrays.asList(EMAIL))
+        facebookButton.setLoginBehavior(LoginBehavior.WEB_ONLY)
 
 
         facebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {

@@ -68,9 +68,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
                             Toast.makeText(this,message, Toast.LENGTH_SHORT).show()
                             updateUI()
                         } else {
-                            Toast.makeText(this, "Enter Email",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Failed! Try again later.",Toast.LENGTH_SHORT).show()
                         }
                     }
+        }else{
+            Toast.makeText(this, "Please enter your email.",Toast.LENGTH_SHORT).show()
         }
 
     }
