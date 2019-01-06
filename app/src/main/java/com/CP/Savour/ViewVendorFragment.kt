@@ -165,8 +165,11 @@ class ViewVendorFragment : Fragment() {
                     println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions"))
                     println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value)
                     val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
-
-                    redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
+                    if (snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").exists()) {
+                        redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
+                    } else {
+                        redemptionTime = 0
+                    }
                     points = userPoints.toString()
                     println("userPoints is: " + userPoints)
                     loyaltyText.text = "$points/${vendor.loyaltyCount}"
@@ -202,15 +205,20 @@ class ViewVendorFragment : Fragment() {
             //val time = userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time")
             println("LOYALTY TIME VALUE")
             println(redemptionTime)
-            val intent = Intent(context, ScanActivity::class.java)
-            intent.putExtra(ARG_VENDOR, vendor)
 
-            if (points == null) {
-                points = "0"
+            if (86400000 < (DateTime.now().millis) - redemptionTime) {
+                val intent = Intent(context, ScanActivity::class.java)
+                intent.putExtra(ARG_VENDOR, vendor)
+
+                if (points == null) {
+                    points = "0"
+                }
+                intent.putExtra(POINTS, points)
+
+                startActivityForResult(intent, SCAN_QR_REQUEST)
+            } else {
+                Toast.makeText(context, "The deal cannot be redeemed yet!", Toast.LENGTH_LONG).show()
             }
-            intent.putExtra(POINTS, points)
-
-            startActivityForResult(intent, SCAN_QR_REQUEST)
         }
 
         followButton.setOnClickListener {
