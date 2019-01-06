@@ -485,7 +485,7 @@ class ViewVendorFragment : Fragment() {
         }
 
         // add permission if android version is greater then 23
-        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+        if(checkPermission()) {
             LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
         }
 

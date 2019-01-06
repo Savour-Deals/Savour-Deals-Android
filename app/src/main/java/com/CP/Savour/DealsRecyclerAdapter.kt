@@ -25,7 +25,7 @@ private const val ARG_FROM = "from"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
+class DealsRecyclerAdapter(var deals: List<Deal?>,var vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.deal_card_layout,viewGroup, false)
@@ -52,6 +52,7 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         }
         viewHolder.dots.text = dots
         viewHolder.days.text = "Su. Mo. Tu. We. Th. Fr. Sa."
+
         if (temp.favorited!!){
             viewHolder.favorite.setBackgroundResource(R.drawable.filled_heart)
         }else{
@@ -101,8 +102,14 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
             }
         }
     }
+
     override fun getItemCount(): Int {
         return deals.size
+    }
+
+    fun updateElements(dealsList: List<Deal?>,vendorsList: Map<String, Vendor?>){
+        deals = dealsList
+        vendors = vendorsList
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
