@@ -94,10 +94,10 @@ class FavoritesFragment : Fragment() {
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
             })
+            startLocation()
         }else{
             println("FAVORITESFRAGMENT:onCreate:Error getting activity for locationService")
         }
-        startLocation()
 
         return view
     }
@@ -111,7 +111,9 @@ class FavoritesFragment : Fragment() {
 //            }
 //        }
 //        mAuth.addAuthStateListener(authStateListner)
-        startLocation()
+        if (locationService != null){ //check that we didnt get an error before and not init locationService
+            startLocation()
+        }
 
     }
 

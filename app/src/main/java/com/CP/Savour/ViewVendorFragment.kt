@@ -67,15 +67,10 @@ class ViewVendorFragment : Fragment() {
     private var redeem: Boolean = false
 
     private var layoutManager : RecyclerView.LayoutManager? = null
-    private var adapter : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>? = null
+    private var dealsAdapter : DealsViewVendorRecyclerAdapter? = null
 
     var firstLocationUpdate = true
-
-    private var mLocationRequest: LocationRequest? = null
-    private var myLocation: Location? = null
-
-    private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
-    private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
+    private lateinit var locationService: LocationService
 
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
@@ -96,9 +91,15 @@ class ViewVendorFragment : Fragment() {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
             dealsRef = FirebaseDatabase.getInstance().getReference("Deals").orderByChild("vendor_id").equalTo(vendor.id)
         }
-        startLocationUpdates()
+        if (this.activity != null){
+            locationService = LocationService(pActivity = this.activity!!,callback = {
+                onLocationChanged(it)
+            })
+            startLocation()
+        }else{
+            println("VIEWVENDORFRAGMENT:onCreate:Error getting activity for locationService")
+        }
 
-        println("User Info")
     }
 
 
@@ -329,7 +330,7 @@ class ViewVendorFragment : Fragment() {
                             if (dataSnapshot.exists()) {
 
                                 for (dealSnapshot in dataSnapshot.children) {
-                                    val temp = Deal(dealSnapshot,myLocation!!,vendor.location!!,user!!.uid, favorites)
+                                    val temp = Deal(dealSnapshot,locationService.currentLocation!!,vendor.location!!,user!!.uid, favorites)
 
                                     //if the deal is not expired or redeemed less than half an hour ago, show it
                                     if (temp.isAvailable()){
@@ -350,20 +351,9 @@ class ViewVendorFragment : Fragment() {
                                         inactivedeals.remove(temp.id!!)
                                     }
                                 }
-                                dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
-                                if (dealsArray.isEmpty()){
-                                    dealsHeader.text = "No Current Offers"
-                                }else{
-                                    dealsHeader.text = "Current Offers"
-                                }
-
-                                adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
-
-                                deal_list.layoutManager = layoutManager
-
-                                deal_list.adapter = adapter
+                                onDataChanged()
                             }else{
-                                dealsHeader.text = "No Current Offers"
+                                onDataChanged()
                             }
 
                         }
@@ -384,43 +374,50 @@ class ViewVendorFragment : Fragment() {
 
     }
 
-    // Trigger new location updates at interval
-    protected fun startLocationUpdates() {
+    fun checkNoDeals(){
+        if (dealsArray.isEmpty()){
+            dealsHeader.text = "No Current Offers"
+        }else{
+            dealsHeader.text = "Current Offers"
+        }
+    }
 
-        // Create the location request to start receiving updates
-        mLocationRequest = LocationRequest()
-        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
-        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+    fun onDataChanged(){
+        dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
+        checkNoDeals()
+        if (dealsAdapter == null) {
+            dealsAdapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
+            deal_list.layoutManager = layoutManager
+            deal_list.adapter = dealsAdapter
 
-        // Create LocationSettingsRequest object using location request
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
-        val locationSettingsRequest = builder.build()
+        } else {
+            dealsAdapter!!.updateElements(dealsArray)
+            dealsAdapter!!.notifyDataSetChanged()
+        }
+    }
 
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
-        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
-        settingsClient.checkLocationSettings(locationSettingsRequest)
+    fun startLocation(){
+        if(checkPermission() && !locationService.startedUpdates) {
+            locationService.startLocationUpdates()
+        }
+    }
 
-        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                onLocationChanged(locationResult.getLastLocation())
+    fun onLocationChanged(location: Location) {
+        // New location has now been determined
+        if(firstLocationUpdate){
+            firstLocationUpdate = false
+            getFirebaseData()
+        }else{
+            if (deal_list != null){
+                for (deal in activedeals){
+                    deal.value!!.updateDistance(vendor, location)
+                }
+                for (deal in inactivedeals){
+                    deal.value!!.updateDistance(vendor, location)
+                }
             }
 
         }
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
-            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
-            registerLocationListner()
-
-        }else{
-            //location denied. Tell user to turn it on
-            //we actually should have location here. Can't get here without it
-//            locationMessage!!.visibility = View.VISIBLE
-
-        }
-
     }
 
     private fun checkPermission() : Boolean {
@@ -432,65 +429,6 @@ class ViewVendorFragment : Fragment() {
         }
     }
 
-    fun onLocationChanged(location: Location) {
-        // New location has now been determined
-        myLocation = location
-        if (myLocation != null){
-            if(firstLocationUpdate){
-                firstLocationUpdate = false
-                getFirebaseData()
-            }else{
-                if (deal_list != null){
-                    for (deal in activedeals){
-                        deal.value!!.updateDistance(vendor, location)
-                    }
-                    for (deal in inactivedeals){
-                        deal.value!!.updateDistance(vendor, location)
-                    }
-                    dealsArray = ArrayList(activedeals.values) + ArrayList(inactivedeals.values)//.sortedBy { deal -> deal!!.distanceMiles } .sortedBy { deal -> deal!!.distanceMiles }
-                    adapter = DealsViewVendorRecyclerAdapter(dealsArray,vendor, context!!)
-                    deal_list.layoutManager = layoutManager
-
-                    deal_list.adapter = adapter
-                }
-
-            }
-        }
-
-    }
-
-    private fun registerLocationListner() {
-        // Create the location request to start receiving updates
-        mLocationRequest = LocationRequest()
-        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
-        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
-
-        // Create LocationSettingsRequest object using location request
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
-        val locationSettingsRequest = builder.build()
-
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
-        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
-        settingsClient.checkLocationSettings(locationSettingsRequest)
-
-        // initialize location callback object
-        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                onLocationChanged(locationResult!!.getLastLocation())
-            }
-
-        }
-
-        // add permission if android version is greater then 23
-        if(checkPermission()) {
-            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
-        }
-
-    }
-
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(this.activity!!, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"),1)
     }
@@ -499,7 +437,7 @@ class ViewVendorFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 1) {
             if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION ) {
-                registerLocationListner()
+                startLocation()
             }
         }
     }

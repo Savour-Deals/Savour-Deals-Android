@@ -110,10 +110,10 @@ class DealsFragment : Fragment() {
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
             })
+            startLocation()
         }else{
             println("DEALSFRAGMENT:onCreate:Error getting activity for locationService")
         }
-        startLocation()
 
         // Inflate the layout for this fragment
         return view
@@ -130,7 +130,9 @@ class DealsFragment : Fragment() {
 //            }
 //        }
 //        mAuth.addAuthStateListener(authStateListner)
-        startLocation()
+        if (locationService != null){ //check that we didnt get an error before and not init locationService
+            startLocation()
+        }
     }
 
 

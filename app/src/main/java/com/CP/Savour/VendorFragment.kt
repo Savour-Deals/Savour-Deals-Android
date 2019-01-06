@@ -98,10 +98,10 @@ class VendorFragment : Fragment() {
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
             })
+            startLocation()
         }else{
             println("VENDORFRAGMENT:onCreate:Error getting activity for locationService")
         }
-        startLocation()
 
         return view
     }
@@ -112,7 +112,9 @@ class VendorFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        startLocation()
+        if (locationService != null){ //check that we didnt get an error before and not init locationService
+            startLocation()
+        }
     }
 
     private fun getFirebaseData(lat:Double, lng:Double) {
