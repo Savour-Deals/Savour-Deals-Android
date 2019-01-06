@@ -117,6 +117,11 @@ class VendorFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        locationService.cancel()
+    }
+
     private fun getFirebaseData(lat:Double, lng:Double) {
         geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query
 

@@ -70,7 +70,7 @@ class ViewDealFragment : Fragment() {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
             from = it.getString(ARG_FROM)
         }
-
+        timer = Timer()
         if (this.activity != null){
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
@@ -93,6 +93,7 @@ class ViewDealFragment : Fragment() {
         if (timer != null){
             timer.cancel()
         }
+        locationService.cancel()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -154,7 +155,7 @@ class ViewDealFragment : Fragment() {
                     termsText.text = deal.code
                 }
             }
-        }else if (deal.active!! && deal.distanceMiles!! > 0.1F){//deal is active and in range
+        }else if (deal.active!! && deal.distanceMiles!! <= 1.1F){//deal is active and in range
             redemptionButton.setBackgroundDrawable(resources.getDrawable(R.drawable.primary_rounded))
             redemptionButton.text = "Redeem"
             termsText.text = resources.getString(R.string.terms_text)
@@ -164,13 +165,11 @@ class ViewDealFragment : Fragment() {
             redemptionButton.text = "Deal Not Active"
             pulsator.color = resources.getColor(R.color.red_tint)
             termsText.text = "This deal is valid " + deal.inactiveString + "."
-        }else if (deal.distanceMiles!! > 0.1F) {//deal not in distance range (1/2 mile. can shrink after testing)
+        }else if (deal.distanceMiles!! > 1.1F) {//deal not in distance range (1/2 mile. can shrink after testing)
             redemptionButton.setBackgroundDrawable(resources.getDrawable(R.drawable.red_rounded))
             redemptionButton.text = "Go to Location to Redeem"
             inRange = false
         }
-        val ft = fragmentManager!!.beginTransaction()
-        ft.detach(this).attach(this).commit()
     }
 
     private fun redeemPressed(){
@@ -242,7 +241,6 @@ class ViewDealFragment : Fragment() {
 
 
     fun runTimer(){
-        timer = Timer()
         //Set the schedule function
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -278,7 +276,9 @@ class ViewDealFragment : Fragment() {
     fun onLocationChanged(location: Location) {
         //update the deal location when it changes
         deal.updateDistance(vendor, location)
-        setButtons()
+//        setButtons()
+        val ft = fragmentManager!!.beginTransaction()
+        ft.detach(this).attach(this).commit()
     }
 
     private fun checkPermission() : Boolean {

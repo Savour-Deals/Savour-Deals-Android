@@ -91,21 +91,18 @@ class ViewVendorFragment : Fragment() {
             vendor = it.getParcelable(ARG_VENDOR) as Vendor
             dealsRef = FirebaseDatabase.getInstance().getReference("Deals").orderByChild("vendor_id").equalTo(vendor.id)
         }
-        if (this.activity != null){
-            locationService = LocationService(pActivity = this.activity!!,callback = {
+        if (this.activity != null) {
+            locationService = LocationService(pActivity = this.activity!!, callback = {
                 onLocationChanged(it)
             })
             startLocation()
-        }else{
+        } else {
             println("VIEWVENDORFRAGMENT:onCreate:Error getting activity for locationService")
         }
 
     }
 
-
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view_vendor, container, false)
 
@@ -455,6 +452,7 @@ class ViewVendorFragment : Fragment() {
         if (dealsListener != null){
             dealsRef.removeEventListener(dealsListener)
         }
+        locationService.cancel()
     }
 
 

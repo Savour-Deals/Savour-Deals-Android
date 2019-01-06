@@ -5,10 +5,7 @@ import android.app.Activity
 import android.location.Location
 import android.os.Build
 import android.os.Looper
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.*
 
 class LocationService {
     var ready = false
@@ -16,6 +13,7 @@ class LocationService {
     var currentLocation: Location? = null
 
     private var mLocationRequest: LocationRequest? = null
+    private var mLocationCallback: LocationCallback? = null
 
     private var UPDATE_INTERVAL: Long = 0
     private var FASTEST_INTERVAL: Long = 0
@@ -55,7 +53,7 @@ class LocationService {
         val settingsClient = LocationServices.getSettingsClient(this.parentActivity)
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
-        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
+        mLocationCallback = object : LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult) {
                 if (locationResult != null){
                     onLocationUpdated(locationResult!!.getLastLocation())
@@ -76,6 +74,10 @@ class LocationService {
         if (locationCallback != null){
             locationCallback(newLocation)
         }
+    }
+
+    fun cancel(){
+        LocationServices.getFusedLocationProviderClient(parentActivity).removeLocationUpdates(mLocationCallback)
     }
 }
 

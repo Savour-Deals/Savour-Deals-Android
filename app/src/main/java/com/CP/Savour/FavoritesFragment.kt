@@ -123,6 +123,12 @@ class FavoritesFragment : Fragment() {
 //            mAuth.removeAuthStateListener(authStateListner)
 //        }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationService.cancel()
+    }
+
     companion object {
         fun newInstance(): FavoritesFragment = FavoritesFragment()
     }

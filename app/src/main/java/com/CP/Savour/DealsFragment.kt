@@ -27,6 +27,8 @@ import com.firebase.geofire.GeoQueryEventListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_deals.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.joda.time.DateTime
 
 
@@ -36,6 +38,8 @@ class DealsFragment : Fragment() {
 
     var firstLocationUpdate = true
     private lateinit var locationService: LocationService
+
+    private var mutex = Mutex()
 
     private lateinit var savourImg: ImageView
     private lateinit var locationMessage: TextView
@@ -141,6 +145,11 @@ class DealsFragment : Fragment() {
 //        if (authStateListener != null){
 //            mAuth.removeAuthStateListener(authStateListener)
 //        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         if (favoritesListener != null){
             favoriteRef.removeEventListener(favoritesListener!!)
         }
@@ -153,6 +162,7 @@ class DealsFragment : Fragment() {
         if (geoQuery != null) {
             geoQuery!!.removeAllListeners()
         }
+        locationService.cancel()
     }
 
 
@@ -296,16 +306,24 @@ class DealsFragment : Fragment() {
                             println(String.format("Key %s is no longer in the search area", key))
                             vendors.remove(key)
 
-                            for (deal in activedeals){
-                                if (deal.value!!.vendorID == key){
-                                    activedeals.remove(deal.key)
+                            var tempdeals = mutableMapOf<String,Deal?>()
+                            tempdeals.putAll(activedeals)
+                            activedeals.forEach {
+                                if (it.value!!.vendorID == key) {
+                                    tempdeals.remove(it.key)
                                 }
                             }
-                            for (deal in inactivedeals){
-                                if (deal.value!!.vendorID == key){
-                                    inactivedeals.remove(deal.key)
+                            activedeals = tempdeals
+
+                            tempdeals = mutableMapOf<String,Deal?>()
+                            tempdeals.putAll(inactivedeals)
+                            inactivedeals.forEach {
+                                if (it.value!!.vendorID == key) {
+                                    tempdeals.remove(it.key)
                                 }
                             }
+                            inactivedeals = tempdeals
+
                             onDataChanged()
                         }
 
