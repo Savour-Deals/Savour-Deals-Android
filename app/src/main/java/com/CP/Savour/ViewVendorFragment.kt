@@ -59,7 +59,7 @@ class ViewVendorFragment : Fragment() {
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
     private lateinit var cameraSource: CameraSource
-
+    private var redemptionTime: Long = 0
     var activedeals = mutableMapOf<String, Deal?>()
     var inactivedeals = mutableMapOf<String, Deal?>()
     var dealsArray : List<Deal?> = arrayListOf()
@@ -165,6 +165,8 @@ class ViewVendorFragment : Fragment() {
                     println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions"))
                     println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value)
                     val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
+
+                    redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
                     points = userPoints.toString()
                     println("userPoints is: " + userPoints)
                     loyaltyText.text = "$points/${vendor.loyaltyCount}"
@@ -197,6 +199,9 @@ class ViewVendorFragment : Fragment() {
 
 
         loyaltyButton.setOnClickListener {
+            //val time = userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time")
+            println("LOYALTY TIME VALUE")
+            println(redemptionTime)
             val intent = Intent(context, ScanActivity::class.java)
             intent.putExtra(ARG_VENDOR, vendor)
 
@@ -512,19 +517,18 @@ class ViewVendorFragment : Fragment() {
 
         println("ONACTIVITYRESULT FROM FRAGMENT!")
 
-        if (Activity.RESULT_OK == resultCode) {
+        if (Activity.RESULT_OK == resultCode ) {
             println(data!!.getStringExtra("Test"))
             val pts = data.getIntExtra(POINTS,0)
             userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(pts)
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(DateTime.now().millis)
+
             println("PTS BABY")
             println(pts)
 
             loyaltyProgress.progress = pts
             loyaltyText.text = "$pts/${vendor.loyaltyCount}"
-        
-            //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
-        } else {
-            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
+
         }
     }
 
