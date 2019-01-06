@@ -523,6 +523,7 @@ class ViewVendorFragment : Fragment() {
             loyaltyText.text = "$pts/${vendor.loyaltyCount}"
         
             //loyaltyText.text =  pts + "/" + vendor.loyaltyCount
+        } else {
             userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
         }
     }
