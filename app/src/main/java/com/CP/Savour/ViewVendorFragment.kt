@@ -199,8 +199,8 @@ class ViewVendorFragment : Fragment() {
             println("LOYALTY TIME VALUE")
             println(redemptionTime)
 
-            //if (86400000 < (DateTime.now().millis) - redemptionTime) {
-            if (true) {
+            if (86400000 < (DateTime.now().millis) - redemptionTime) {
+            //if (true) {
                 val intent = Intent(context, ScanActivity::class.java)
                 intent.putExtra(ARG_VENDOR, vendor)
 

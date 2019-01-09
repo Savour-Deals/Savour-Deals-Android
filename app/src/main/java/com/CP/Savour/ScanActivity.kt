@@ -80,7 +80,9 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             val intent = Intent()
             points?.let {
                 var pts =  it.toInt()
-                println()
+
+                pts += vendor.loyaltyPoints[day - 1]
+
                 intent.putExtra(POINTS,pts)
             }
 

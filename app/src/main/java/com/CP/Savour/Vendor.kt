@@ -29,7 +29,7 @@ class Vendor : Parcelable {
     // want this to be an int but for whatever reason it is not working that way, so casting it as a string instead
     var loyaltyCount: String? = null
     var loyaltyDeal: String? = null
-    var loyaltyPoints = arrayOfNulls<Int>(7)
+    var loyaltyPoints = IntArray(7)
 
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
@@ -45,6 +45,7 @@ class Vendor : Parcelable {
         loyaltyCode = parcel.readString()
         loyaltyCount = parcel.readString()
         loyaltyDeal = parcel.readString()
+        loyaltyPoints = parcel.createIntArray()
     }
 
     constructor() { }
@@ -81,14 +82,14 @@ class Vendor : Parcelable {
         if(loyalty.getValue("loyalty_points") != null){
             val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
             val points = pointsmap.withDefault { null }
-            this.loyaltyPoints = arrayOf(
-                    points.getValue("sun")?.toInt(),
-                    points.getValue("mon")?.toInt(),
-                    points.getValue("tues")?.toInt(),
-                    points.getValue("wed")?.toInt(),
-                    points.getValue("thurs")?.toInt(),
-                    points.getValue("fri")?.toInt(),
-                    points.getValue("sat")?.toInt()
+            this.loyaltyPoints = intArrayOf(
+                    points.getValue("sun")?.toInt() ?: 0,
+                    points.getValue("mon")?.toInt() ?: 0,
+                    points.getValue("tues")?.toInt() ?: 0,
+                    points.getValue("wed")?.toInt() ?: 0,
+                    points.getValue("thurs")?.toInt() ?: 0,
+                    points.getValue("fri")?.toInt() ?: 0,
+                    points.getValue("sat")?.toInt() ?: 0
             )
         }
         this.location = vendorLocation
@@ -113,6 +114,7 @@ class Vendor : Parcelable {
         parcel.writeString(loyaltyCode)
         parcel.writeString(loyaltyCount)
         parcel.writeString(loyaltyDeal)
+        parcel.writeIntArray(loyaltyPoints)
     }
 
     override fun describeContents(): Int {
