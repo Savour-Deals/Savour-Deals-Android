@@ -58,7 +58,6 @@ class ViewVendorFragment : Fragment() {
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
-    private lateinit var cameraSource: CameraSource
     private var redemptionTime: Long = 0
     var activedeals = mutableMapOf<String, Deal?>()
     var inactivedeals = mutableMapOf<String, Deal?>()
@@ -71,7 +70,7 @@ class ViewVendorFragment : Fragment() {
 
     var firstLocationUpdate = true
     private lateinit var locationService: LocationService
-
+    private lateinit var loyaltyConstraint: ConstraintLayout
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
@@ -105,7 +104,7 @@ class ViewVendorFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view_vendor, container, false)
-
+        loyaltyConstraint = view.findViewById(R.id.loyalty_checkin)
         dealImage = view.findViewById(R.id.view_vendor_image)
         vendorName = view.findViewById(R.id.view_vendor_name)
         address = view.findViewById(R.id.vendor_address)
@@ -123,21 +122,11 @@ class ViewVendorFragment : Fragment() {
         loyaltyProgress = view.findViewById(R.id.loyalty_progress)
         loyaltyText = view.findViewById(R.id.loyalty_text)
 
-        if(vendor.loyaltyDeal != "") {
-            println("Deal Present!")
-            println(vendor.loyaltyDeal)
-        } else {
-            print("vendor deal is not present")
-            loyaltyButton!!.visibility = View.INVISIBLE
-            loyaltyProgress!!.visibility = View.INVISIBLE
-            loyaltyText!!.visibility = View.INVISIBLE
-        }
         layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
 
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 println("triggered")
-
 
                 println(snapshot.toString())
 
@@ -154,42 +143,48 @@ class ViewVendorFragment : Fragment() {
                     println("Follow")
 
                 }
-
-                if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
-                    println("userPoints with loyalty already: ")
-                    println(snapshot.child("loyalty"))
-                    println(vendor.id!!)
-                    println(snapshot.child("loyalty").child(vendor.id!!))
-                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions"))
-                    println(snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value)
-                    val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
-                    if (snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").exists()) {
-                        redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
-                    } else {
-                        redemptionTime = 0
-                    }
-                    points = userPoints.toString()
-                    println("userPoints is: " + userPoints)
-                    loyaltyText.text = "$points/${vendor.loyaltyCount}"
-
-                    points?.let {
-                        loyaltyProgress.progress = it.toInt()
-                    }
-
-                    println("Points baby")
-                    println(points)
-
-
+                if(vendor.loyaltyDeal == "") {
+                    val params = loyaltyConstraint.layoutParams
+                    params.height = 0
+                    loyaltyConstraint.layoutParams = params
                 } else {
-                    println("no userPoints with loyalty already: ")
-                    println("vendor info: ")
-                    println(vendor.loyaltyCount)
-                    loyaltyText.text = "0/" + vendor.loyaltyCount
-                    loyaltyProgress.progress = 0
 
-                    userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
+                    val params = loyaltyConstraint.layoutParams
+                    params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                    loyaltyConstraint.layoutParams = params
 
+                    if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
+
+                        val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
+                        if (snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").exists()) {
+                            redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
+                        } else {
+                            redemptionTime = 0
+                        }
+
+                        points = userPoints.toString()
+                        loyaltyText.text = "$points/${vendor.loyaltyCount}"
+
+                        points?.let {
+                            loyaltyProgress.progress = it.toInt()
+                        }
+
+                    } else {
+                        loyaltyText.text = "0/" + vendor.loyaltyCount
+                        loyaltyProgress.progress = 0
+
+                        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
+
+                    }
+
+                    if (points!!.toInt() >= vendor.loyaltyCount!!.toInt()) {
+                        loyaltyButton.text = "Redeem"
+                    } else {
+                        loyaltyButton.text = "Loyalty Check-in"
+                    }
                 }
+
+
             }
 
             override fun onCancelled(dbError: DatabaseError) {
@@ -204,7 +199,8 @@ class ViewVendorFragment : Fragment() {
             println("LOYALTY TIME VALUE")
             println(redemptionTime)
 
-            if (86400000 < (DateTime.now().millis) - redemptionTime) {
+            //if (86400000 < (DateTime.now().millis) - redemptionTime) {
+            if (true) {
                 val intent = Intent(context, ScanActivity::class.java)
                 intent.putExtra(ARG_VENDOR, vendor)
 

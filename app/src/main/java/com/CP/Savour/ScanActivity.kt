@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.joda.time.DateTime
 
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
@@ -70,15 +71,16 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
         println("THE PARCELABLE POINTS VALUE")
         println(points)
-
+        val day = DateTime.now().dayOfWeek
+        println("Day of week: ")
+        println(day)
         intent.putExtra("Test","Hello, World!")
         intent.putExtra(POINTS,points)
         if (code == vendor.loyaltyCode) {
             val intent = Intent()
             points?.let {
                 var pts =  it.toInt()
-                pts += 10
-
+                println()
                 intent.putExtra(POINTS,pts)
             }
 
