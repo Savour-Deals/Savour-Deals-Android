@@ -119,7 +119,7 @@ class Deal : Parcelable {
         if (start > end){//Deal goes past midnight (might be typical of bar's drink deals)
             end = end.plusDays(1)
         }
-        if (this.activeDays[now.dayOfWeek-1]!!){//Active today
+        if (this.activeDays[now.dayOfWeek]!!){//Active today
             if (now > start && now < end){
                 this.activeHours = "valid until " + endDateTime.toString(dtf)
                 this.active = true

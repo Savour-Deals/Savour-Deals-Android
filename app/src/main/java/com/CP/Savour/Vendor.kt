@@ -26,8 +26,7 @@ class Vendor : Parcelable {
     var subscriptionId: String? = null
     var dailyHours = arrayOfNulls<String>(7)
     var loyaltyCode: String? = null
-    // want this to be an int but for whatever reason it is not working that way, so casting it as a string instead
-    var loyaltyCount: String? = null
+    var loyaltyCount: Long? = null
     var loyaltyDeal: String? = null
     var loyaltyPoints = IntArray(7)
 
@@ -40,11 +39,13 @@ class Vendor : Parcelable {
         location = parcel.readParcelable(Location::class.java.classLoader)
         distanceMiles = parcel.readValue(Float::class.java.classLoader) as? Float
         menu = parcel.readString()
-        subscriptionId = parcel.readString()
+//        subscriptionId = parcel.readString()
         dailyHours = parcel.createStringArray()
         loyaltyCode = parcel.readString()
-        loyaltyCount = parcel.readString()
+        loyaltyCount = parcel.readLong()
         loyaltyDeal = parcel.readString()
+//        this.loyaltyPoints = IntArray(7)
+//        parcel.readIntArray(this.loyaltyPoints)
         loyaltyPoints = parcel.createIntArray()
     }
 
@@ -77,7 +78,7 @@ class Vendor : Parcelable {
         val loyaltymap = vendor.getValue("loyalty") as HashMap<String?,Any?>
         val loyalty = loyaltymap.withDefault { null }
         this.loyaltyCode = loyalty.getValue("loyalty_code")?.toString()  ?: ""
-        this.loyaltyCount = loyalty.getValue("loyalty_count")?.toString()  ?: ""
+        this.loyaltyCount = loyalty.getValue("loyalty_count") as Long?  ?: 0
         this.loyaltyDeal = loyalty.getValue("loyalty_deal")?.toString()  ?: ""
         if(loyalty.getValue("loyalty_points") != null){
             val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
@@ -109,10 +110,9 @@ class Vendor : Parcelable {
         parcel.writeParcelable(location, flags)
         parcel.writeValue(distanceMiles)
         parcel.writeString(menu)
-        parcel.writeString(subscriptionId)
         parcel.writeStringArray(dailyHours)
         parcel.writeString(loyaltyCode)
-        parcel.writeString(loyaltyCount)
+        parcel.writeLong(loyaltyCount!!)
         parcel.writeString(loyaltyDeal)
         parcel.writeIntArray(loyaltyPoints)
     }

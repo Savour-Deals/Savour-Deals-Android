@@ -13,8 +13,7 @@ import com.google.zxing.Result
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.joda.time.DateTime
 
-private const val ARG_VENDOR = "vendor"
-private const val POINTS = "points"
+private const val CODE = "code"
 private const val RESULT_OK = 1
 private const val RESULT_FAIL = -1
 class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
@@ -22,11 +21,7 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     private var scannerView: ZXingScannerView? = null
     private var loyaltyProgress: ProgressBar? = null
     private var loyaltyText: TextView? = null
-    private var points: String? = null
-
-    private lateinit var vendor: Vendor
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
-    private val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +37,6 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun onResume() {
         super.onResume()
-
         scannerView!!.setResultHandler(this)
         scannerView!!.startCamera()
 
@@ -55,39 +49,12 @@ class ScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     }
 
     override fun handleResult(rawResult: Result?) {
-        println("The raw result: ")
-        println(rawResult.toString())
-
-        vendor = intent.getParcelableExtra(ARG_VENDOR)
-        points = intent.getStringExtra(POINTS)
-
-
-        println(userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count"))
-
-
-
 
         val code = rawResult.toString()
 
-        println("THE PARCELABLE POINTS VALUE")
-        println(points)
-        val day = DateTime.now().dayOfWeek
-        println("Day of week: ")
-        println(day)
-        intent.putExtra("Test","Hello, World!")
-        intent.putExtra(POINTS,points)
-        if (code == vendor.loyaltyCode) {
-            val intent = Intent()
-            points?.let {
-                var pts =  it.toInt()
-
-                pts += vendor.loyaltyPoints[day - 1]
-
-                intent.putExtra(POINTS,pts)
-            }
-
-            setResult(Activity.RESULT_OK,intent)
-        }
+        //send code back to viewvendorfragmentz
+        intent.putExtra(CODE,code)
+        setResult(Activity.RESULT_OK,intent)
         onBackPressed()
     }
 }

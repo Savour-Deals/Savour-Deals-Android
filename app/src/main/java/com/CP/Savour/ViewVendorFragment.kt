@@ -2,6 +2,7 @@ package com.CP.Savour
 
 import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.graphics.drawable.ScaleDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.*
@@ -35,14 +37,17 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.onesignal.OneSignal
 import kotlinx.android.synthetic.main.fragment_deals.*
 import org.joda.time.DateTime
 
 private const val ARG_VENDOR = "vendor"
 private const val POINTS = "points"
+private const val CODE = "code"
 private const val SCAN_QR_REQUEST = 1
 
 class ViewVendorFragment : Fragment() {
+    //UI components
     private lateinit var vendor: Vendor
     private lateinit var dealImage: ImageView
     private lateinit var dealsHeader: TextView
@@ -58,6 +63,10 @@ class ViewVendorFragment : Fragment() {
     private lateinit var seeMore: TextView
     private lateinit var descriptionContainer: ConstraintLayout
     private lateinit var loyaltyProgress: ProgressBar
+    private lateinit var loyaltyLabel: TextView
+
+
+
     private var redemptionTime: Long = 0
     var activedeals = mutableMapOf<String, Deal?>()
     var inactivedeals = mutableMapOf<String, Deal?>()
@@ -71,14 +80,15 @@ class ViewVendorFragment : Fragment() {
     var firstLocationUpdate = true
     private lateinit var locationService: LocationService
     private lateinit var loyaltyConstraint: ConstraintLayout
+
     private var user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
     private var descriptionExpanded = false
 
-    val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
     private lateinit var dealsRef: Query
+    val favoriteRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid).child("favorites")
     val userInfoRef = FirebaseDatabase.getInstance().getReference("Users").child(user!!.uid)
 
-    private var points: String? = null
+    private var points: Long? = null
 
     private lateinit var favoritesListener: ValueEventListener
     private lateinit var userListener: ValueEventListener
@@ -104,6 +114,8 @@ class ViewVendorFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_view_vendor, container, false)
+
+        //grab out UI components
         loyaltyConstraint = view.findViewById(R.id.loyalty_checkin)
         dealImage = view.findViewById(R.id.view_vendor_image)
         vendorName = view.findViewById(R.id.view_vendor_name)
@@ -113,80 +125,63 @@ class ViewVendorFragment : Fragment() {
         seeMore = view.findViewById(R.id.see_more)
         descriptionContainer = view.findViewById(R.id.info_container)
         dealsHeader = view.findViewById(R.id.deals_header)
-
         menuButton = view.findViewById(R.id.vendor_menu)
         directionsButton = view.findViewById(R.id.vendor_directions)
         followButton = view.findViewById(R.id.vendor_follow)
-
         loyaltyButton = view.findViewById(R.id.checkin_button)
         loyaltyProgress = view.findViewById(R.id.loyalty_progress)
         loyaltyText = view.findViewById(R.id.loyalty_text)
+        loyaltyLabel = view.findViewById(R.id.loyalty_label)
 
         layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
 
         userListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                println("triggered")
-
-                println(snapshot.toString())
-
+                //is this user following this vendor or not?
                 if (snapshot.child("following").child(vendor.id!!).exists()) {
                     followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button)
                     followButton.text = "Following"
-                    println("Following")
-
-
-
                 } else {
                     followButton.background = ContextCompat.getDrawable(context!!, R.drawable.vendor_button_selected)
                     followButton.text = "Follow"
-                    println("Follow")
-
                 }
+                //setup loyalty deal visible or not depending on if it exists
                 if(vendor.loyaltyDeal == "") {
+                    //no loyalty program, set invisible
                     val params = loyaltyConstraint.layoutParams
                     params.height = 0
                     loyaltyConstraint.layoutParams = params
-                } else {
-
+                }else{
+                    //vendor has loyalty program, go ahead and get user data
+                    //set visible
                     val params = loyaltyConstraint.layoutParams
                     params.height = ViewGroup.LayoutParams.MATCH_PARENT
                     loyaltyConstraint.layoutParams = params
 
+                    //get user data
                     if (snapshot.child("loyalty").child(vendor.id!!).exists()) {
-
-                        val userPoints = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value
-                        if (snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").exists()) {
-                            redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long
-                        } else {
-                            redemptionTime = 0
-                        }
-
-                        points = userPoints.toString()
+                        points = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("count").value as Long? ?:0
+                        redemptionTime = snapshot.child("loyalty").child(vendor.id!!).child("redemptions").child("time").value as Long? ?:0
                         loyaltyText.text = "$points/${vendor.loyaltyCount}"
-
-                        points?.let {
-                            loyaltyProgress.progress = it.toInt()
+                        loyaltyProgress.progress = points!!.toInt()
+                        if (points!! >= vendor.loyaltyCount!!){
+                            loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
+                        }else{
+                            loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                            "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
                         }
-
-                    } else {
+                    }else{
                         loyaltyText.text = "0/" + vendor.loyaltyCount
                         loyaltyProgress.progress = 0
-
                         userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
-
                     }
-
                     if (points!!.toInt() >= vendor.loyaltyCount!!.toInt()) {
                         loyaltyButton.text = "Redeem"
                     } else {
                         loyaltyButton.text = "Loyalty Check-in"
                     }
                 }
-
-
             }
-
             override fun onCancelled(dbError: DatabaseError) {
                 println("cancelled userListener")
             }
@@ -194,64 +189,17 @@ class ViewVendorFragment : Fragment() {
         userInfoRef.addValueEventListener(userListener)
 
 
+        //Button listeners
         loyaltyButton.setOnClickListener {
-            //val time = userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time")
-            println("LOYALTY TIME VALUE")
-            println(redemptionTime)
-
-            if (86400000 < (DateTime.now().millis) - redemptionTime) {
-            //if (true) {
-                val intent = Intent(context, ScanActivity::class.java)
-                intent.putExtra(ARG_VENDOR, vendor)
-
-                if (points == null) {
-                    points = "0"
-                }
-                intent.putExtra(POINTS, points)
-
-                startActivityForResult(intent, SCAN_QR_REQUEST)
-            } else {
-                Toast.makeText(context, "The deal cannot be redeemed yet!", Toast.LENGTH_LONG).show()
-            }
+            loyaltyPressed()
         }
 
         followButton.setOnClickListener {
-            if (followButton.text == "Follow") {
-
-                userInfoRef.child("following").child(vendor.id!!).setValue(true)
-                println("set value")
-
-
-
-            } else {
-                userInfoRef.child("following").child(vendor.id!!).removeValue()
-                println("remove")
-            }
+            followPressed()
         }
-        vendorName.text = vendor.name
-        address.text = vendor.address
-        hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK - 1]
-        description.text = vendor.description
-
-        Glide.with(this)
-                .load(vendor.photo)
-                .into(dealImage)
 
         descriptionContainer.setOnClickListener {
-            if (!descriptionExpanded){
-                descriptionExpanded = true
-                seeMore.text = "tap to see less..."
-                val params = description.layoutParams
-                params.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                description.layoutParams = params
-            }else{
-                descriptionExpanded = false
-                val scale = resources.displayMetrics.scaledDensity
-                seeMore.text = "tap to see more..."
-                val params = description.layoutParams
-                params.height = (36 * scale).toInt()
-                description.layoutParams = params
-            }
+            descriptionToggled()
         }
 
         menuButton.setOnClickListener {
@@ -266,14 +214,21 @@ class ViewVendorFragment : Fragment() {
             startActivity(intent)
         }
 
+        //Setup UI display for vendor
+        vendorName.text = vendor.name
+        address.text = vendor.address
+        hours.text = vendor.dailyHours[Calendar.DAY_OF_WEEK - 1]
+        description.text = vendor.description
 
+        Glide.with(this)
+                .load(vendor.photo)
+                .into(dealImage)
 
         // getting the buttons, and scaling their logo
         val scaledMap = ScaleDrawable(ContextCompat.getDrawable(context!!, R.drawable.icon_business),0, 5f,5f)
         val directionsButton = view.findViewById<Button>(R.id.vendor_directions)
         directionsButton.setCompoundDrawables(null, null,null,scaledMap)
         return view
-
     }
 
     fun getFirebaseData(){
@@ -367,6 +322,116 @@ class ViewVendorFragment : Fragment() {
 
     }
 
+    fun followPressed() {
+        if (followButton.text == "Follow") {
+            userInfoRef.child("following").child(vendor.id!!).setValue(true)
+        } else {
+            userInfoRef.child("following").child(vendor.id!!).removeValue()
+        }
+    }
+
+    fun descriptionToggled() {
+        if (!descriptionExpanded) {
+            descriptionExpanded = true
+            seeMore.text = "tap to see less..."
+            val params = description.layoutParams
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            description.layoutParams = params
+        } else {
+            descriptionExpanded = false
+            val scale = resources.displayMetrics.scaledDensity
+            seeMore.text = "tap to see more..."
+            val params = description.layoutParams
+            params.height = (36 * scale).toInt()
+            description.layoutParams = params
+        }
+    }
+
+    fun loyaltyPressed() {
+        var timeNow = DateTime.now().millis / 1000
+        vendor.updateDistance(locationService.currentLocation!!)
+        //Check if the deal is within range?
+        if (vendor.distanceMiles!! < 0.2) {//close enough to continue
+            //Now check their points count
+            if (points!!.toInt() >= vendor.loyaltyCount!!) {//user has enough points to redeem!
+                if (10800 < (timeNow - redemptionTime)) {//We are ready to redeem! Prompt user with next steps
+                    redeemLoyalty()
+                } else {
+                    displayMessage("Too Soon!","Come back tomorrow to redeem your points!")
+                }
+            }else{//user needs more points, let them check-in
+                if (10800 < (timeNow - redemptionTime)) {//Ready to checkin!
+                    val intent = Intent(context, ScanActivity::class.java)
+                    if (points == null) {
+                        points = 0
+                    }
+                    startActivityForResult(intent, SCAN_QR_REQUEST)
+                } else {
+                    displayMessage("Too Soon!","Come back tomorrow to get another loyalty visit!")
+                }
+            }
+        }else{//vendor too far away
+            displayMessage("Too far away!", "Go to location to use their loyalty program!")
+        }
+    }
+
+    fun checkCode(code: String){
+        if (code == vendor.loyaltyCode){
+            redemptionTime = DateTime.now().millis/1000
+            val status  = OneSignal.getPermissionSubscriptionState()
+            //Redundant following for user and rest
+            FirebaseDatabase.getInstance().getReference("Vendors").child(vendor.id!!).child("followers").child(user!!.uid).setValue(status.subscriptionStatus.userId)
+            userInfoRef.child("following").child(vendor.id!!).setValue(true)
+
+            OneSignal.sendTag(vendor.id!!,"true")
+
+            points = points?.plus(vendor.loyaltyPoints[DateTime.now().dayOfWeek])
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(points)
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(redemptionTime)
+            loyaltyProgress.progress = points!!.toInt()
+            loyaltyText.text = "$points/${vendor.loyaltyCount}"
+
+            //update loyalty text
+            if (points!! >= vendor.loyaltyCount!!){
+                loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
+            }else{
+                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                        "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
+            }
+            displayMessage("Success!", "Successfully checked in.")
+        }else{
+            //wrong code. let user know whats up
+            displayMessage("Incorrect code!", "The Check-In QRcode you used was incorrect. Please try again.")
+        }
+    }
+
+    fun redeemLoyalty(){
+        val builder = AlertDialog.Builder(this.context!!)
+        builder.setTitle("Confirm Redemption!")
+        builder.setMessage("If you wish to redeem this loyalty deal now, show this message to the server. " +
+                "If you wish to save this deal for later, hit CANCEL.")
+        /* Set up the buttons */
+        builder.setPositiveButton("Redeem") { dialogInterface, which->
+            points = points!! - vendor.loyaltyCount!!
+            redemptionTime = DateTime.now().millis / 1000
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(points)
+            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(redemptionTime)
+
+            //update loyalty text
+            loyaltyButton.setText("Loyalty Check-In")
+            if (points!! >= vendor.loyaltyCount!!){
+                loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
+            }else{
+                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                        "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialogInterface, which->
+            //Cancelled redemption
+        }
+        builder.show()
+    }
+
     fun checkNoDeals(){
         if (dealsArray.isEmpty()){
             dealsHeader.text = "No Current Offers"
@@ -454,24 +519,22 @@ class ViewVendorFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        println("ONACTIVITYRESULT FROM FRAGMENT!")
+        println("ONACTIVITYRESULT FROM SCAN FRAGMENT!")
 
         if (Activity.RESULT_OK == resultCode ) {
-            println(data!!.getStringExtra("Test"))
-            val pts = data.getIntExtra(POINTS,0)
-            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(pts)
-            userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(DateTime.now().millis)
-
-            println("PTS BABY")
-            println(pts)
-
-            loyaltyProgress.progress = pts
-            loyaltyText.text = "$pts/${vendor.loyaltyCount}"
-
+            val codeResult = data!!.getStringExtra(CODE)
+            checkCode(codeResult)
         }
     }
 
+    fun displayMessage(title: String, message: String){
+        val builder = AlertDialog.Builder(this.context!!)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        /* Set up the button */
+        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int -> }
+        builder.show()
+    }
 
     companion object {
 
