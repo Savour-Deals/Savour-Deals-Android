@@ -57,7 +57,7 @@ class Vendor : Parcelable {
         this.id = vendorSnap.key
         this.address = vendor.getValue("address").toString()
         this.description = vendor.getValue("description").toString()
-        this.menu = vendor.getValue("menu")?.toString() ?: ""
+        this.menu = vendor.getValue("menu")?.toString()
         this.name = vendor.getValue("name").toString()
         this.photo = vendor.getValue("photo").toString()
 //        this.subscriptionId = vendor.getValue("subscription_id").toString()

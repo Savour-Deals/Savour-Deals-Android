@@ -2,6 +2,7 @@ package com.CP.Savour
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -16,9 +17,6 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
-
-import java.util.*
-import android.widget.Toast
 import com.google.firebase.auth.FacebookAuthProvider
 import com.facebook.AccessToken
 import com.bumptech.glide.Glide
@@ -27,18 +25,11 @@ import com.facebook.login.LoginManager
 
 
 class LoginActivity : AppCompatActivity() {
-
-
-
     private val TAG = "LoginActivity"
     private final  val EMAIL = "email"
-
     private var email: String? = null
     private var password: String? = null
-
     private var loading: ProgressBar? = null
-
-
 
     // UI Elements
     private var textViewForgotPassword: TextView? = null
@@ -76,7 +67,9 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        callbackManager.onActivityResult(requestCode, resultCode, data)
+        if (data != null){
+            callbackManager.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     private fun initialize() {
@@ -86,13 +79,12 @@ class LoginActivity : AppCompatActivity() {
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonLogin = findViewById(R.id.btn_login) as Button
         facebookButton = findViewById(R.id.facebook_login) as LoginButton
+        val privacyButton = findViewById(R.id.privacy_button) as Button
+        val termsButton = findViewById(R.id.terms_button) as Button
 
         callbackManager = CallbackManager.Factory.create()
-
-        facebookButton.setReadPermissions(Arrays.asList(EMAIL))
+        facebookButton.setReadPermissions("public_profile", "email", "user_friends")
         facebookButton.setLoginBehavior(LoginBehavior.WEB_ONLY)
-
-
         facebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 println("OMG FACEBOOK LOGIN!!!!")
@@ -109,6 +101,14 @@ class LoginActivity : AppCompatActivity() {
             }
 
         })
+
+        privacyButton.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.savourdeals.com/privacy-policy/")))
+        }
+
+        termsButton.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.savourdeals.com/terms-of-use/")))
+        }
 
 
         makeTransparentStatusBar(true)
@@ -210,7 +210,6 @@ class LoginActivity : AppCompatActivity() {
                         progressBarHolder!!.visibility = View.INVISIBLE
                     }
                 }
-
     }
 
     fun errorPopup(message: String, title: String){

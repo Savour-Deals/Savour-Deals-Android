@@ -82,7 +82,6 @@ class DealsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setRetainInstance(true)
 
-
         val view = inflater.inflate(R.layout.fragment_deals, container, false)
         // grabbing the search bar
         //val searchBar = view!!.findViewById(R.id.deal_search) as SearchView

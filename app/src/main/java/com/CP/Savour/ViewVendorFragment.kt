@@ -203,8 +203,7 @@ class ViewVendorFragment : Fragment() {
         }
 
         menuButton.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(vendor.menu))
-            startActivity(browserIntent)
+            menuPressed()
         }
 
         directionsButton.setOnClickListener {
@@ -322,6 +321,15 @@ class ViewVendorFragment : Fragment() {
 
     }
 
+    fun menuPressed(){
+        if (vendor.menu != null){
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(vendor.menu))
+            startActivity(browserIntent)
+        }else{
+            displayMessage("Sorry!", "Looks like this vendor has not yet made their menu avaliable to us! Sorry for the inconvenience.", "😢 Okay")
+        }
+    }
+
     fun followPressed() {
         if (followButton.text == "Follow") {
             userInfoRef.child("following").child(vendor.id!!).setValue(true)
@@ -357,7 +365,7 @@ class ViewVendorFragment : Fragment() {
                 if (10800 < (timeNow - redemptionTime)) {//We are ready to redeem! Prompt user with next steps
                     redeemLoyalty()
                 } else {
-                    displayMessage("Too Soon!","Come back tomorrow to redeem your points!")
+                    displayMessage("Too Soon!","Come back tomorrow to redeem your points!", "Okay")
                 }
             }else{//user needs more points, let them check-in
                 if (10800 < (timeNow - redemptionTime)) {//Ready to checkin!
@@ -367,11 +375,11 @@ class ViewVendorFragment : Fragment() {
                     }
                     startActivityForResult(intent, SCAN_QR_REQUEST)
                 } else {
-                    displayMessage("Too Soon!","Come back tomorrow to get another loyalty visit!")
+                    displayMessage("Too Soon!","Come back tomorrow to get another loyalty visit!", "Okay")
                 }
             }
         }else{//vendor too far away
-            displayMessage("Too far away!", "Go to location to use their loyalty program!")
+            displayMessage("Too far away!", "Go to location to use their loyalty program!", "Okay")
         }
     }
 
@@ -398,10 +406,10 @@ class ViewVendorFragment : Fragment() {
                 loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
                         "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
             }
-            displayMessage("Success!", "Successfully checked in.")
+            displayMessage("Success!", "Successfully checked in.", "Okay")
         }else{
             //wrong code. let user know whats up
-            displayMessage("Incorrect code!", "The Check-In QRcode you used was incorrect. Please try again.")
+            displayMessage("Incorrect code!", "The Check-In QRcode you used was incorrect. Please try again.", "Okay")
         }
     }
 
@@ -527,12 +535,12 @@ class ViewVendorFragment : Fragment() {
         }
     }
 
-    fun displayMessage(title: String, message: String){
+    fun displayMessage(title: String, message: String, buttonText: String){
         val builder = AlertDialog.Builder(this.context!!)
         builder.setTitle(title)
         builder.setMessage(message)
         /* Set up the button */
-        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int -> }
+        builder.setPositiveButton(buttonText) { dialogInterface: DialogInterface, i: Int -> }
         builder.show()
     }
 
