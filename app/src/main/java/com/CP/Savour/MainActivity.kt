@@ -90,6 +90,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         super.onResume()
 
+        OneSignal.setSubscription(true)
+
         if (!firstEnter){
             overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
         }
