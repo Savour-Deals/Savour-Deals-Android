@@ -41,8 +41,8 @@ android {
         applicationId "com.CP.Savour"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.1.0"
+        versionCode 5
+        versionName "1.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 onesignal_app_id : 'f1c64902-ab03-4674-95e9-440f7c8f33d0',

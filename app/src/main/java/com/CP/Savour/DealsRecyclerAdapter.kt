@@ -43,8 +43,13 @@ class DealsRecyclerAdapter(var deals: List<Deal?>,var vendors: Map<String, Vendo
         viewHolder.dealDescription.text = temp.dealDescription
 
         var dots = " "
-        for (day in temp.activeDays){
-            if (day!!){
+        if (temp.activeDays[6]!!){
+            dots +=  "●   "
+        }else{
+            dots += "○   "
+        }
+        for (i in 0..5){
+            if (temp.activeDays[i]!!){
                 dots +=  "●   "
             }else{
                 dots += "○   "
