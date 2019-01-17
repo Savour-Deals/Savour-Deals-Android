@@ -83,14 +83,14 @@ class ViewDealFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (timer != null){
+        if (::timer.isInitialized){
             timer.cancel()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        if (timer != null){
+        if (::timer.isInitialized){
             timer.cancel()
         }
         locationService.cancel()

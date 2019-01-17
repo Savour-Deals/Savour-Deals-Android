@@ -512,13 +512,13 @@ class ViewVendorFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         followButton.setOnClickListener(null)
-        if (userListener != null){
+        if (::userListener.isInitialized){
             userInfoRef.removeEventListener(userListener)
         }
-        if (favoritesListener != null){
+        if (::favoritesListener.isInitialized){
             favoriteRef.removeEventListener(favoritesListener)
         }
-        if (dealsListener != null){
+        if (::dealsListener.isInitialized){
             dealsRef.removeEventListener(dealsListener)
         }
         locationService.cancel()
