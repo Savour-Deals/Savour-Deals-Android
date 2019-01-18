@@ -119,7 +119,7 @@ class Deal : Parcelable {
         if (start > end){//Deal goes past midnight (might be typical of bar's drink deals)
             end = end.plusDays(1)
         }
-        if (this.activeDays[now.dayOfWeek]!!){//Active today
+        if (this.activeDays[now.dayOfWeek-1]!!){//Active today
             if (now > start && now < end){
                 this.activeHours = "valid until " + endDateTime.toString(dtf)
                 this.active = true
@@ -133,7 +133,7 @@ class Deal : Parcelable {
             }
         }else{//Not Active today
             this.inactiveString = ""
-            val days = arrayOf("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")
+            val days = arrayOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
             for (i in 0..6){
                 if (this.activeDays[i]!!){
                     if (this.inactiveString != ""){
@@ -178,7 +178,7 @@ class Deal : Parcelable {
         if (start.hourOfDay > end.hourOfDay){//Deal goes past midnight (might be typical of bar's drink deals)
             end = end.plusDays(1)
         }
-        if (this.activeDays[now.dayOfWeek]!!){//Active today
+        if (this.activeDays[now.dayOfWeek-1]!!){//Active today
             if (now > start && now < end){
                 this.activeHours = "valid until " + endDateTime.toString(dtf)
                 this.active = true

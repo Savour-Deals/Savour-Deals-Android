@@ -18,6 +18,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
@@ -86,6 +88,7 @@ class ViewDealFragment : Fragment() {
         if (::timer.isInitialized){
             timer.cancel()
         }
+        locationService.cancel()
     }
 
     override fun onPause() {
@@ -174,6 +177,7 @@ class ViewDealFragment : Fragment() {
 
     private fun redeemPressed(){
         if (deal.active!! && !deal.redeemed!! && inRange){//perform redemption process
+//        if (true){
             val builder = AlertDialog.Builder(this.context!!)
             builder.setTitle("Vendor Approval")
             builder.setMessage("This deal is intended for one person only. " +
@@ -243,18 +247,21 @@ class ViewDealFragment : Fragment() {
     fun runTimer(){
         //Set the schedule function
         timer.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                val timeSince = Date().time/1000 - deal.redeemedTime!!
-                termsText.setTextColor(resources.getColor(R.color.gray))
-                timerLabel.text = time2String(timeSince) //This will update the label
-                if (timeSince > 1800) {
-                    if (deal.code != null){
-                        termsText.text = deal.code
+            override fun run(){
+                val handler = Handler(Looper.getMainLooper())
+                handler.post({
+                    val timeSince = Date().time/1000 - deal.redeemedTime!!
+                    termsText.setTextColor(resources.getColor(R.color.gray))
+                    timerLabel.text = time2String(timeSince) //This will update the label
+                    if (timeSince > 1800) {
+                        if (deal.code != null){
+                            termsText.text = deal.code
+                        }
+                        timerLabel.text = "Reedeemed over half an hour ago"
+                        pulsator.color = resources.getColor(R.color.red_tint)
+                        timer.cancel()
                     }
-                    timerLabel.text = "Reedeemed over half an hour ago"
-                    pulsator.color = resources.getColor(R.color.red_tint)
-                    timer.cancel()
-                }
+                })
             }
         },0, 1000)
 

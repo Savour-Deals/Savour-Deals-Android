@@ -84,13 +84,13 @@ class Vendor : Parcelable {
             val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
             val points = pointsmap.withDefault { null }
             this.loyaltyPoints = intArrayOf(
-                    points.getValue("sun")?.toInt() ?: 0,
                     points.getValue("mon")?.toInt() ?: 0,
                     points.getValue("tues")?.toInt() ?: 0,
                     points.getValue("wed")?.toInt() ?: 0,
                     points.getValue("thurs")?.toInt() ?: 0,
                     points.getValue("fri")?.toInt() ?: 0,
-                    points.getValue("sat")?.toInt() ?: 0
+                    points.getValue("sat")?.toInt() ?: 0,
+                    points.getValue("sun")?.toInt() ?: 0
             )
         }
         this.location = vendorLocation

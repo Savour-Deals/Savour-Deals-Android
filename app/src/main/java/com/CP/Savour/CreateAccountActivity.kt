@@ -114,10 +114,16 @@ class CreateAccountActivity : AppCompatActivity() {
 
             override fun onCancel() {
                 Log.d(TAG, "facebook:onCancel")
+                progressBarHolder!!.visibility = View.INVISIBLE
+                messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
+
             }
 
             override fun onError(error: FacebookException?) {
                 println(error)
+                progressBarHolder!!.visibility = View.INVISIBLE
+                messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
+
             }
 
         })

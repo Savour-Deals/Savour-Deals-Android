@@ -167,7 +167,7 @@ class ViewVendorFragment : Fragment() {
                         if (points!! >= vendor.loyaltyCount!!){
                             loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
                         }else{
-                            loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                            loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek-1]}" +
                             "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
                         }
                     }else{
@@ -393,7 +393,7 @@ class ViewVendorFragment : Fragment() {
 
             OneSignal.sendTag(vendor.id!!,"true")
 
-            points = points?.plus(vendor.loyaltyPoints[DateTime.now().dayOfWeek])
+            points = points?.plus(vendor.loyaltyPoints[DateTime.now().dayOfWeek-1])
             userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(points)
             userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("time").setValue(redemptionTime)
             loyaltyProgress.progress = points!!.toInt()
@@ -403,7 +403,7 @@ class ViewVendorFragment : Fragment() {
             if (points!! >= vendor.loyaltyCount!!){
                 loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
             }else{
-                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek-1]}" +
                         "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
             }
             displayMessage("Success!", "Successfully checked in.", "Okay")
@@ -430,7 +430,7 @@ class ViewVendorFragment : Fragment() {
             if (points!! >= vendor.loyaltyCount!!){
                 loyaltyLabel.text = "You're ready to redeem your ${vendor.loyaltyDeal}!"
             }else{
-                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek]}" +
+                loyaltyLabel.text = "Today: +${vendor.loyaltyPoints[DateTime.now().dayOfWeek-1]}" +
                         "\n Reach points goal and recieve: a ${vendor.loyaltyDeal}!"
             }
         }

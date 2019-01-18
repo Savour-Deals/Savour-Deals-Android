@@ -22,6 +22,7 @@ import com.facebook.AccessToken
 import com.bumptech.glide.Glide
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
+import com.onesignal.OneSignal
 
 
 class LoginActivity : AppCompatActivity() {
@@ -94,10 +95,14 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onCancel() {
                 Log.d(TAG, "facebook:onCancel")
+                progressBarHolder!!.visibility = View.INVISIBLE
+                errorPopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
             }
 
             override fun onError(error: FacebookException?) {
                 println(error)
+                progressBarHolder!!.visibility = View.INVISIBLE
+                errorPopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
             }
 
         })
