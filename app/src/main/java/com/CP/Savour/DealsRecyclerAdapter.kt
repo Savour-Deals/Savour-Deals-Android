@@ -25,7 +25,7 @@ private const val ARG_FROM = "from"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
+class DealsRecyclerAdapter(var deals: List<Deal?>,var vendors: Map<String, Vendor?>, val context: Context) : RecyclerView.Adapter<DealsRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.deal_card_layout,viewGroup, false)
@@ -42,16 +42,22 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
         viewHolder.vendorName.text = temp.vendorName + " - %.1f miles".format(temp.distanceMiles)
         viewHolder.dealDescription.text = temp.dealDescription
 
-        var dots = ""
-        for (day in temp.activeDays){
-            if (day!!){
-                dots +=  "• "
+        var dots = " "
+        if (temp.activeDays[6]!!){
+            dots +=  "●   "
+        }else{
+            dots += "○   "
+        }
+        for (i in 0..5){
+            if (temp.activeDays[i]!!){
+                dots +=  "●   "
             }else{
-                dots += "◦"
+                dots += "○   "
             }
         }
         viewHolder.dots.text = dots
         viewHolder.days.text = "Su. Mo. Tu. We. Th. Fr. Sa."
+
         if (temp.favorited!!){
             viewHolder.favorite.setBackgroundResource(R.drawable.filled_heart)
         }else{
@@ -65,10 +71,14 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
             viewHolder.activeText.visibility = View.VISIBLE
         }
         if (temp.activeHours != ""){
-            viewHolder.timeText.text = "valid from " + temp.activeHours
-            viewHolder.timeText.height = 0
+            viewHolder.timeText.text =  temp.activeHours
+            val params = viewHolder.timeText.layoutParams
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            viewHolder.timeText.layoutParams = params
         }else{
-            viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            val params = viewHolder.timeText.layoutParams
+            params.height = 0
+            viewHolder.timeText.layoutParams = params
         }
 
         if (temp.redeemed!!) {
@@ -97,9 +107,14 @@ class DealsRecyclerAdapter(val deals: List<Deal?>,val vendors: Map<String, Vendo
             }
         }
     }
+
     override fun getItemCount(): Int {
-        println("dealsMap Size: " + deals.size)
         return deals.size
+    }
+
+    fun updateElements(dealsList: List<Deal?>,vendorsList: Map<String, Vendor?>){
+        deals = dealsList
+        vendors = vendorsList
     }
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView

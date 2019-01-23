@@ -19,4 +19,10 @@
     <string name="tag_string_com_facebook_image_download_unknown_error">tag @string/com_facebook_image_download_unknown_error</string>
     <string name="favorite_string_deal_image">favorite @string/deal_image</string>
     <string name="deal_img">deal_img</string>
+    <string name="invitation_deep_link_kotlin">https://savourdeals.page.link/getsavour</string>
+    <string name="IOS_CIENT_ID">165647122349-mk0mjtmkclnsk6cgn53i4qef69kboek5.apps.googleusercontent.com</string>
+    <string name="invitation_message">Check out Savour to get deals from local restaurants!</string>
+    <string name="invitation_title">Savour Deals</string>
+    <string name="invitation_cta">Download Now!</string>
+    <string name="terms_text">For dine in and carry out only. Not redeemable with any other promotions unless otherwise mentioned. This deal is only valid for one person. BOGO free items are for equal or lesser value. This deal has no cash value. You must be 21+ to redeem any alcohol deals.</string>
 </resources>

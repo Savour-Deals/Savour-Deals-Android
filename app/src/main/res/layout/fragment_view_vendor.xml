@@ -229,6 +229,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/loyalty_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toTopOf="@+id/loyalty_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/checkin_button" />
                 <ProgressBar
                     android:id="@+id/loyalty_progress"
                     style="?android:attr/progressBarStyleHorizontal"
@@ -238,7 +251,6 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
-                    android:progress="50"
                     android:progressDrawable="@drawable/green_progress_bar"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -254,6 +266,8 @@
                     app:layout_constraintEnd_toEndOf="@+id/loyalty_progress"
                     app:layout_constraintStart_toStartOf="@+id/loyalty_progress"
                     app:layout_constraintTop_toTopOf="@+id/loyalty_progress" />
+
+
             </android.support.constraint.ConstraintLayout>
 
             <TextView

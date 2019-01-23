@@ -1,23 +1,25 @@
 package com.CP.Savour
 
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.*
-import com.CP.Savour.R.id.backgroundImg
-import com.bumptech.glide.Glide
-import com.facebook.AccessToken
+import com.google.firebase.auth.FirebaseAuth
+import android.view.WindowManager
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.facebook.login.widget.LoginButton
 import com.google.firebase.auth.FacebookAuthProvider
-import com.google.firebase.auth.FirebaseAuth
+import com.facebook.AccessToken
+import com.bumptech.glide.Glide
+import com.facebook.login.LoginBehavior
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
@@ -29,7 +31,6 @@ class CreateAccountActivity : AppCompatActivity() {
     private var editTextEmail: EditText? = null
     private var editTextPassword: EditText? = null
     private var buttonCreateAccount: Button? = null
-    private var progressBar: ProgressBar? = null
 
     //Firebase references
     private var mDatabaseReference: DatabaseReference? = null
@@ -38,7 +39,7 @@ class CreateAccountActivity : AppCompatActivity() {
 
     private lateinit var facebookButton: LoginButton
     private lateinit var callbackManager: CallbackManager
-    var progressBarHolder: FrameLayout? = null
+    private lateinit var progressBarHolder: FrameLayout
 
     private val TAG = "CreateAccountActivity"
 
@@ -50,9 +51,12 @@ class CreateAccountActivity : AppCompatActivity() {
     private var logoImg: ImageView? = null
     private var backgroundImg: ImageView? = null
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
+        progressBarHolder = findViewById(R.id.progress_overlay) as FrameLayout
         logoImg = findViewById(R.id.imageView)
         backgroundImg = findViewById(R.id.backgroundImg)
         Glide.with(this)
@@ -65,11 +69,13 @@ class CreateAccountActivity : AppCompatActivity() {
         initialize()
     }
 
-    /**
-     * This method retrieves the views from the layout, and creates the progress bar
-     * the method also retrieves an instance of the firebase database and retrieves a reference
-     * to the Users database location
-     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data != null){
+            callbackManager.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     private fun initialize() {
 
         // retrieving the views from the layout
@@ -77,7 +83,9 @@ class CreateAccountActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.et_email) as EditText
         editTextPassword = findViewById(R.id.et_password) as EditText
         buttonCreateAccount = findViewById(R.id.btn_register) as Button
-        progressBar = findViewById(R.id.signup_progress) as ProgressBar
+        val privacyButton = findViewById(R.id.privacy_button) as Button
+        val termsButton = findViewById(R.id.terms_button) as Button
+        facebookButton = findViewById(R.id.facebook_register) as LoginButton
 
         makeTransparentStatusBar(true)
 
@@ -86,28 +94,36 @@ class CreateAccountActivity : AppCompatActivity() {
         mDatabaseReference = mDatabase!!.reference!!.child("Users")
         mAuth = FirebaseAuth.getInstance()
 
-        facebookButton = findViewById(R.id.facebook_register) as LoginButton
+        privacyButton.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.savourdeals.com/privacy-policy/")))
+        }
+
+        termsButton.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.savourdeals.com/terms-of-use/")))
+        }
 
         callbackManager = CallbackManager.Factory.create()
-
-//        facebookButton.setReadPermissions(Arrays.asList(EMAIL))
-
-
+        facebookButton.setReadPermissions("public_profile", "email", "user_friends")
+        facebookButton.setLoginBehavior(LoginBehavior.WEB_ONLY)
         facebookButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 println("OMG FACEBOOK LOGIN!!!!")
-                progressBarHolder!!.visibility = View.VISIBLE
-
-
-                handleFacebookAccessToken(result!!.getAccessToken());
+                progressBarHolder.visibility = View.VISIBLE
+                handleFacebookAccessToken(result!!.getAccessToken())
             }
 
             override fun onCancel() {
-                Log.d(TAG, "facebook:onCancel");
+                Log.d(TAG, "facebook:onCancel")
+                progressBarHolder!!.visibility = View.INVISIBLE
+                messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
+
             }
 
             override fun onError(error: FacebookException?) {
                 println(error)
+                progressBarHolder!!.visibility = View.INVISIBLE
+                messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
+
             }
 
         })
@@ -125,11 +141,7 @@ class CreateAccountActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * This method is used as a callback for the button to register a new user
-     */
     private fun createNewAccount() {
-
         // retrieving the text from the edit text boxes
         fullName = editTextFullName?.text.toString()
         email = editTextEmail?.text.toString()
@@ -141,7 +153,7 @@ class CreateAccountActivity : AppCompatActivity() {
             mAuth!!
                     .createUserWithEmailAndPassword(email!!,password!!)
                     .addOnCompleteListener(this) { task ->
-                        progressBar!!.visibility = View.VISIBLE
+                        progressBarHolder.visibility = View.VISIBLE
                         if (task.isSuccessful) {
                             // sign in success, update UI with the signed-in user's information
                             Log.d(TAG,"createUserWithEmail:success")
@@ -155,32 +167,30 @@ class CreateAccountActivity : AppCompatActivity() {
                             val currentUserDb = mDatabaseReference!!.child(userId)
                             currentUserDb.child("full_name").setValue(fullName)
 
-                            updateUserInfoAndUI()
+                            //we dont want to login yet!
+//                            updateUserInfoAndUI()
                         } else {
                             // if log in fails, display a message to the user
                             Log.w(TAG, "createUserWithEmail:failure",task.exception)
-                            Toast.makeText(this@CreateAccountActivity, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+                            messagePopup( task.exception!!.localizedMessage,"User creation failed!")
                         }
+                        progressBarHolder.visibility = View.INVISIBLE
                     }
         } else {
-            Toast.makeText(this, "Enter all details please", Toast.LENGTH_SHORT).show()
+            messagePopup("Please enter all details ","Information Missing!")
+            progressBarHolder.visibility = View.INVISIBLE
         }
-        progressBar!!.visibility = View.GONE
     }
 
     private fun verifyEmail() {
-        val mUser = mAuth!!.currentUser;
+        val mUser = mAuth!!.currentUser
         mUser!!.sendEmailVerification()
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(this@CreateAccountActivity,
-                                "Verification email sent to " + mUser.getEmail(),
-                                Toast.LENGTH_SHORT).show()
+                        messagePopup("Verification email sent to " + mUser.getEmail() + ". Please check your email to verify your account. Then come back to login!","Verify Email")
                     } else {
                         Log.e(TAG, "sendEmailVerification", task.exception)
-                        Toast.makeText(this@CreateAccountActivity,
-                                "Failed to send verification email.",
-                                Toast.LENGTH_SHORT).show()
+                        messagePopup("Please try again. If this problem persists, contact us.","Failed to send verification email.")
                     }
                 }
     }
@@ -190,6 +200,7 @@ class CreateAccountActivity : AppCompatActivity() {
         val intent = Intent(this@CreateAccountActivity, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
+        finish()
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
@@ -202,14 +213,26 @@ class CreateAccountActivity : AppCompatActivity() {
                         // Sign in success, update UI with signed-in user's information
                         Log.d(TAG, "signInWithFacebook:success")
                         updateUserInfoAndUI()
-                        progressBarHolder!!.visibility = View.INVISIBLE
-
+//                        progressBarHolder!!.visibility = View.INVISIBLE
                     } else {
                         Log.e(TAG,"signInWithFacebook:failure",task.exception)
-                        Toast.makeText(this@CreateAccountActivity,"Authentication failed.",Toast.LENGTH_SHORT).show()
-                        progressBarHolder!!.visibility = View.INVISIBLE
+                        messagePopup("Could not sign in with Facebook. Please try again.","Authentication failed.")
+                        progressBarHolder.visibility = View.INVISIBLE
                     }
                 }
 
+    }
+
+    fun messagePopup(message: String, title: String){
+        val alertDialog: AlertDialog? = this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setPositiveButton("Ok",null)
+            }
+            builder?.setMessage(message)
+                    .setTitle(title)
+            builder.create()
+        }
+        alertDialog!!.show()
     }
 }

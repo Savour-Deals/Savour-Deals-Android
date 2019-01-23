@@ -17,11 +17,10 @@
             android:layout_width="100sp"
             android:layout_height="100sp"
             android:layout_marginTop="64dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/name"
@@ -71,10 +70,10 @@
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:gravity="center_vertical"
                 android:text="Click here to invite your friends to Savour Deals"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -238,7 +237,7 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
@@ -248,10 +247,10 @@
             android:layout_width="125dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="Logout"
             android:background="?android:attr/selectableItemBackground"
+            android:text="Logout"
 
-            android:textColor="@color/colorText" />
+            android:textColor="@color/red_tint" />
     </android.support.v7.widget.Toolbar>
 
 </FrameLayout>

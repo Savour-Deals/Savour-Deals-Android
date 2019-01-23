@@ -29,6 +29,7 @@ import android.support.v4.content.ContextCompat
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.CP.Savour.R.id.vendor_list
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
@@ -37,11 +38,14 @@ import kotlinx.android.synthetic.main.fragment_vendor.*
 
 class VendorFragment : Fragment() {
     private var layoutManager : RecyclerView.LayoutManager? = null
-    private var adapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
+    private var vendorAdapter : VendorRecyclerAdapter? = null
 
     private var savourImg: ImageView? = null
     private lateinit var locationMessage: TextView
     private lateinit var locationButton: Button
+    private lateinit var noVendorsText: TextView
+    var vendorArray : List<Vendor?> = arrayListOf()
+
 
     var geoRef: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors_Location")
     var geoFire = GeoFire(geoRef)
@@ -49,14 +53,12 @@ class VendorFragment : Fragment() {
     val vendors = mutableMapOf<String, Vendor?>()
 
     var firstLocationUpdate = true
+    private lateinit var locationService: LocationService
+
     var geoQuery:GeoQuery? = null
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
-    private var mLocationRequest: LocationRequest? = null
-    private var myLocation: Location? = null
 
-    private val UPDATE_INTERVAL = (30 * 1000).toLong()  /* 30 secs */
-    private val FASTEST_INTERVAL: Long = 2000 /* 2 sec */
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -75,6 +77,7 @@ class VendorFragment : Fragment() {
         savourImg = view.findViewById(R.id.imageView5) as ImageView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
+        noVendorsText = view.findViewById(R.id.novendors)
 
         locationButton.setOnClickListener {
             var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
@@ -91,6 +94,15 @@ class VendorFragment : Fragment() {
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
 
+        if (this.activity != null){
+            locationService = LocationService(pActivity = this.activity!!,callback = {
+                onLocationChanged(it)
+            })
+            startLocation()
+        }else{
+            println("VENDORFRAGMENT:onCreate:Error getting activity for locationService")
+        }
+
         return view
     }
 
@@ -100,13 +112,14 @@ class VendorFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        firstLocationUpdate = true
-        startLocationUpdates()
+        if (locationService != null){ //check that we didnt get an error before and not init locationService
+            startLocation()
+        }
     }
 
-    override fun onPause() {
-
-        super.onPause()
+    override fun onDestroy() {
+        super.onDestroy()
+        locationService.cancel()
     }
 
     private fun getFirebaseData(lat:Double, lng:Double) {
@@ -128,16 +141,8 @@ class VendorFragment : Fragment() {
                             val vendorLocation = Location("")
                             vendorLocation.latitude = location.latitude
                             vendorLocation.longitude = location.longitude
-
-                            vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,myLocation!!,vendorLocation))
-
-                            val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
-
-                            adapter = RecyclerAdapter(vendorArray, context!!)
-
-                            vendor_list.layoutManager = layoutManager
-
-                            vendor_list.adapter = adapter
+                            vendors.put(dataSnapshot.key!!,Vendor(dataSnapshot,locationService.currentLocation!!,vendorLocation))
+                            onDataChanged()
                         }
                     }
 
@@ -150,14 +155,7 @@ class VendorFragment : Fragment() {
             override fun onKeyExited(key: String) {
                 println(String.format("Key %s is no longer in the search area", key))
                 vendors.remove(key)
-
-                val vendorArray =  ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
-
-                adapter = RecyclerAdapter(vendorArray, context!!)
-
-                vendor_list.layoutManager = layoutManager
-
-                vendor_list.adapter = adapter
+                onDataChanged()
             }
 
             override fun onKeyMoved(key: String, location: GeoLocation) {
@@ -165,7 +163,8 @@ class VendorFragment : Fragment() {
             }
 
             override fun onGeoQueryReady() {
-//                println("All initial data has been loaded and events have been fired!")
+                println("All initial data has been loaded and events have been fired!")
+                checkNoVendors() // should perform a check if any keys enter radius. This will give a false check until firebase gives us data back from those keys
             }
 
             override fun onGeoQueryError(error: DatabaseError) {
@@ -175,43 +174,61 @@ class VendorFragment : Fragment() {
 
     }
 
-    // Trigger new location updates at interval
-    protected fun startLocationUpdates() {
-
-        // Create the location request to start receiving updates
-        mLocationRequest = LocationRequest()
-        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
-        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
-
-        // Create LocationSettingsRequest object using location request
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest!!)
-        val locationSettingsRequest = builder.build()
-
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
-        val settingsClient = LocationServices.getSettingsClient(this.activity!!)
-        settingsClient.checkLocationSettings(locationSettingsRequest)
-
-        val mLocationCallback = object : com.google.android.gms.location.LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult) {
-                onLocationChanged(locationResult!!.getLastLocation())
-            }
-
+    fun checkNoVendors(){
+        if (vendorArray.count() < 1) {
+            noVendorsText!!.setVisibility(View.VISIBLE)
+            vendorArray = ArrayList()
+        } else {
+            noVendorsText!!.setVisibility(View.INVISIBLE)
         }
+    }
 
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
+    fun onDataChanged(){
+        vendorArray = ArrayList(vendors.values).sortedBy { vendor -> vendor!!.distanceMiles }
+        checkNoVendors()
+        if (vendorAdapter == null) {
+            vendorAdapter = VendorRecyclerAdapter(vendorArray, context!!)
+            vendor_list.layoutManager = layoutManager
+            vendor_list.adapter = vendorAdapter
+
+        } else {
+            vendorAdapter!!.updateElements(vendorArray)
+            vendorAdapter!!.notifyDataSetChanged()
+        }
+    }
+
+    fun startLocation(){
+        if(checkPermission()) {
             locationMessage!!.visibility = View.INVISIBLE
             locationButton!!.visibility = View.INVISIBLE
-            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest!!,mLocationCallback, Looper.myLooper())
-        }else{
+            if (!locationService.startedUpdates){
+                locationService.startLocationUpdates()
+            }
+        }else {
             //location not on. Tell user to turn it on
             locationMessage!!.visibility = View.VISIBLE
             locationButton!!.visibility = View.VISIBLE
         }
+    }
 
+
+    fun onLocationChanged(location: Location) {
+        // New location has now been determined
+        if(firstLocationUpdate){
+            firstLocationUpdate = false
+            getFirebaseData(location.latitude,location.longitude)
+        }else{
+            //recalculate distances and update recycler
+            if (geoQuery!!.center != GeoLocation(location.latitude, location.longitude)) {
+                geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
+            }
+            if (vendor_list != null){
+                for (vendor in vendors){
+                    vendor.value!!.updateDistance(location)
+                }
+                onDataChanged()
+            }
+        }
     }
 
     private fun checkPermission() : Boolean {
@@ -223,32 +240,6 @@ class VendorFragment : Fragment() {
         }
     }
 
-    fun onLocationChanged(location: Location) {
-        // New location has now been determined
-        this.myLocation = location
-        if(firstLocationUpdate){
-            firstLocationUpdate = false
-            getFirebaseData(location.latitude,location.longitude)
-        }else{
-            geoQuery!!.center = GeoLocation(location.latitude, location.longitude)
-        }
-    }
-
-    private fun registerLocationListner() {
-        // initialize location callback object
-        val locationCallback = object : com.google.android.gms.location.LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult?) {
-                onLocationChanged(locationResult!!.getLastLocation())
-            }
-        }
-
-        // add permission if android version is greater then 23
-        if(Build.VERSION.SDK_INT >= 19 && checkPermission()) {
-            LocationServices.getFusedLocationProviderClient(this.activity!!).requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
-        }
-
-    }
-
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(this.activity!!, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"),1)
     }
@@ -257,7 +248,7 @@ class VendorFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if(requestCode == 1) {
             if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION ) {
-                registerLocationListner()
+                startLocation()
             }
         }
     }

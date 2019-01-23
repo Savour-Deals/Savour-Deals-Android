@@ -26,10 +26,9 @@ class Vendor : Parcelable {
     var subscriptionId: String? = null
     var dailyHours = arrayOfNulls<String>(7)
     var loyaltyCode: String? = null
-    // want this to be an int but for whatever reason it is not working that way, so casting it as a string instead
-    var loyaltyCount: String? = null
+    var loyaltyCount: Long? = null
     var loyaltyDeal: String? = null
-    var loyaltyPoints = arrayOfNulls<Int>(7)
+    var loyaltyPoints = IntArray(7)
 
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
@@ -40,11 +39,14 @@ class Vendor : Parcelable {
         location = parcel.readParcelable(Location::class.java.classLoader)
         distanceMiles = parcel.readValue(Float::class.java.classLoader) as? Float
         menu = parcel.readString()
-        subscriptionId = parcel.readString()
+//        subscriptionId = parcel.readString()
         dailyHours = parcel.createStringArray()
         loyaltyCode = parcel.readString()
-        loyaltyCount = parcel.readString()
+        loyaltyCount = parcel.readLong()
         loyaltyDeal = parcel.readString()
+//        this.loyaltyPoints = IntArray(7)
+//        parcel.readIntArray(this.loyaltyPoints)
+        loyaltyPoints = parcel.createIntArray()
     }
 
     constructor() { }
@@ -55,7 +57,7 @@ class Vendor : Parcelable {
         this.id = vendorSnap.key
         this.address = vendor.getValue("address").toString()
         this.description = vendor.getValue("description").toString()
-        this.menu = vendor.getValue("menu")?.toString() ?: ""
+        this.menu = vendor.getValue("menu")?.toString()
         this.name = vendor.getValue("name").toString()
         this.photo = vendor.getValue("photo").toString()
 //        this.subscriptionId = vendor.getValue("subscription_id").toString()
@@ -76,19 +78,19 @@ class Vendor : Parcelable {
         val loyaltymap = vendor.getValue("loyalty") as HashMap<String?,Any?>
         val loyalty = loyaltymap.withDefault { null }
         this.loyaltyCode = loyalty.getValue("loyalty_code")?.toString()  ?: ""
-        this.loyaltyCount = loyalty.getValue("loyalty_count")?.toString()  ?: ""
+        this.loyaltyCount = loyalty.getValue("loyalty_count") as Long?  ?: 0
         this.loyaltyDeal = loyalty.getValue("loyalty_deal")?.toString()  ?: ""
         if(loyalty.getValue("loyalty_points") != null){
             val pointsmap = loyalty.getValue("loyalty_points") as HashMap<String?,Number?>
             val points = pointsmap.withDefault { null }
-            this.loyaltyPoints = arrayOf(
-                    points.getValue("sun")?.toInt(),
-                    points.getValue("mon")?.toInt(),
-                    points.getValue("tues")?.toInt(),
-                    points.getValue("wed")?.toInt(),
-                    points.getValue("thurs")?.toInt(),
-                    points.getValue("fri")?.toInt(),
-                    points.getValue("sat")?.toInt()
+            this.loyaltyPoints = intArrayOf(
+                    points.getValue("mon")?.toInt() ?: 0,
+                    points.getValue("tues")?.toInt() ?: 0,
+                    points.getValue("wed")?.toInt() ?: 0,
+                    points.getValue("thurs")?.toInt() ?: 0,
+                    points.getValue("fri")?.toInt() ?: 0,
+                    points.getValue("sat")?.toInt() ?: 0,
+                    points.getValue("sun")?.toInt() ?: 0
             )
         }
         this.location = vendorLocation
@@ -108,11 +110,11 @@ class Vendor : Parcelable {
         parcel.writeParcelable(location, flags)
         parcel.writeValue(distanceMiles)
         parcel.writeString(menu)
-        parcel.writeString(subscriptionId)
         parcel.writeStringArray(dailyHours)
         parcel.writeString(loyaltyCode)
-        parcel.writeString(loyaltyCount)
+        parcel.writeLong(loyaltyCount!!)
         parcel.writeString(loyaltyDeal)
+        parcel.writeIntArray(loyaltyPoints)
     }
 
     override fun describeContents(): Int {

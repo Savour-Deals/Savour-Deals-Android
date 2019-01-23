@@ -26,7 +26,7 @@ private const val ARG_FROM = "from"
 /**
  * The recycler adapter class creates the individual cards that are on display in the main activity
  */
-class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, val context: Context) : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>() {
+class DealsViewVendorRecyclerAdapter(var deals: List<Deal?>,val vendor: Vendor, val context: Context) : RecyclerView.Adapter<DealsViewVendorRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.deal_view_vendor_card_layout,viewGroup, false)
@@ -55,12 +55,6 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
             viewHolder.activeText.text = "Deal unavailable"
             viewHolder.activeText.visibility = View.VISIBLE
         }
-        if (temp.activeHours != ""){
-            viewHolder.timeText.text = "valid from " + temp.activeHours
-            viewHolder.timeText.height = 0
-        }else{
-            viewHolder.timeText.height = ViewGroup.LayoutParams.WRAP_CONTENT
-        }
 
         if (temp.redeemed!!) {
             viewHolder.activeText.text = "Deal Already Redeemed!"
@@ -83,9 +77,13 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
         }
     }
     override fun getItemCount(): Int {
-        println("dealsMap Size: " + deals.size)
         return deals.size
     }
+
+    fun updateElements(dealList: List<Deal?>){
+        deals = dealList
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var itemImage: ImageView
         var dealDescription: TextView
@@ -93,20 +91,19 @@ class DealsViewVendorRecyclerAdapter(val deals: List<Deal?>,val vendor: Vendor, 
         var deal : Deal? = null
         var vendor: Vendor? = null
         var activeText: TextView
-        var timeText: TextView
 
         init {
             itemImage = itemView.findViewById(R.id.item_image)
             dealDescription = itemView.findViewById(R.id.description)
             favorite = itemView.findViewById(R.id.favButton)
             activeText = itemView.findViewById(R.id.activetext)
-            timeText = itemView.findViewById(R.id.time)
 
             itemView.setOnClickListener {
                 val intent = Intent(context, DealActivity::class.java)
                 intent.putExtra(ARG_DEAL, deal)
                 intent.putExtra(ARG_VENDOR, vendor)
                 intent.putExtra(ARG_FROM, "vendor")
+
                 context.startActivity(intent)
             }
         }
