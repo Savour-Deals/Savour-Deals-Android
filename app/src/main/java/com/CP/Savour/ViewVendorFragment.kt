@@ -331,11 +331,40 @@ class ViewVendorFragment : Fragment() {
     }
 
     fun followPressed() {
+        val dataRef = FirebaseDatabase.getInstance().getReference()
         if (followButton.text == "Follow") {
-            userInfoRef.child("following").child(vendor.id!!).setValue(true)
+            //subscribe user to vendor
+            val status = OneSignal.getPermissionSubscriptionState()
+            if (status.subscriptionStatus.userId != null){
+                //Redundant following for user and rest
+                OneSignal.sendTag(vendor.id!!, "true")
+                dataRef.child("Vendors").child(vendor.id!!).child("followers").child(user.uid).setValue(status.subscriptionStatus.userId)
+                userInfoRef.child("following").child(vendor.id!!).setValue(true)
+            }
         } else {
-            userInfoRef.child("following").child(vendor.id!!).removeValue()
+            if (vendor.loyaltyDeal == ""){
+                unfollow()
+            }else{
+                val builder = AlertDialog.Builder(this.context!!)
+                builder.setTitle("Notice!")
+                builder.setMessage("By unfollowing this restaurant you will lose all your loyalty check-ins!")
+                /* Set up the buttons */
+                builder.setPositiveButton("Cancel") { dialogInterface, which->
+                }
+                builder.setNegativeButton("OK") { dialogInterface, which->
+                    unfollow()
+                }
+                builder.show()
+            }
         }
+    }
+
+    fun unfollow(){
+        val dataRef = FirebaseDatabase.getInstance().getReference()
+        OneSignal.sendTag(vendor.id!!, "false")
+        dataRef.child("Vendors").child(vendor.id!!).child("followers").child(user.uid).removeValue()
+        userInfoRef.child("following").child(vendor.id!!).removeValue()
+        userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
     }
 
     fun descriptionToggled() {
@@ -357,6 +386,16 @@ class ViewVendorFragment : Fragment() {
 
     fun loyaltyPressed() {
         var timeNow = DateTime.now().millis / 1000
+
+        //subscribe user to vendor
+        val dataRef = FirebaseDatabase.getInstance().getReference()
+        val status = OneSignal.getPermissionSubscriptionState()
+        if (status.subscriptionStatus.userId != null){
+            //Redundant following for user and rest
+            OneSignal.sendTag(vendor.id!!, "true")
+            dataRef.child("Vendors").child(vendor.id!!).child("followers").child(user.uid).setValue(status.subscriptionStatus.userId)
+            dataRef.child("Users").child(user.uid).child("following").child(vendor.id!!).setValue(true)
+        }
         vendor.updateDistance(locationService.currentLocation!!)
         //Check if the deal is within range?
         if (vendor.distanceMiles!! < 0.2) {//close enough to continue

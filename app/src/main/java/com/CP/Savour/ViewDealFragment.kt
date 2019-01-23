@@ -219,6 +219,7 @@ class ViewDealFragment : Fragment() {
                 val status = OneSignal.getPermissionSubscriptionState()
                 if (status.subscriptionStatus.userId != null){
                     //Redundant following for user and rest
+                    OneSignal.sendTag(vendor.id!!, "true")
                     dataRef.child("Vendors").child(vendor.id!!).child("followers").child(uID).setValue(status.subscriptionStatus.userId)
                     dataRef.child("Users").child(uID).child("following").child(vendor.id!!).setValue(true)
                 }

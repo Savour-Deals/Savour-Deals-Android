@@ -17,9 +17,9 @@ class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHa
         String customKey;
 
         if (data != null) {
-            customKey = data.optString("customkey", null);
+            customKey = data.optString("deal", null);
             if (customKey != null)
-                Log.i("OneSignalExample", "customkey set with value: " + customKey);
+                Log.i("OneSignalExample", "deal set with value: " + customKey);
         }
 
         if (actionType == OSNotificationAction.ActionType.ActionTaken)
