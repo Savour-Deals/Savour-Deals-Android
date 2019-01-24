@@ -25,4 +25,5 @@
     <string name="invitation_title">Savour Deals</string>
     <string name="invitation_cta">Download Now!</string>
     <string name="terms_text">For dine in and carry out only. Not redeemable with any other promotions unless otherwise mentioned. This deal is only valid for one person. BOGO free items are for equal or lesser value. This deal has no cash value. You must be 21+ to redeem any alcohol deals.</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
