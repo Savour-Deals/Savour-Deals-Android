@@ -27,16 +27,21 @@ import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.CP.Savour.R.id.vendor_list
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import kotlinx.android.synthetic.main.fragment_vendor.*
 
 
-class VendorFragment : Fragment() {
+class VendorFragment : Fragment(), OnMapReadyCallback {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var vendorAdapter : VendorRecyclerAdapter? = null
 
@@ -44,6 +49,13 @@ class VendorFragment : Fragment() {
     private lateinit var locationMessage: TextView
     private lateinit var locationButton: Button
     private lateinit var noVendorsText: TextView
+    private lateinit var listButton: TextView
+    private lateinit var mapButton: TextView
+    private lateinit var mapFrame: FrameLayout
+    private lateinit var listFrame: FrameLayout
+    private lateinit var mapView: SupportMapFragment
+
+    private var isList = true
     var vendorArray : List<Vendor?> = arrayListOf()
 
 
@@ -59,6 +71,9 @@ class VendorFragment : Fragment() {
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
 
+    override fun onMapReady(googleMap: GoogleMap?) {
+
+    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
@@ -74,10 +89,45 @@ class VendorFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_vendor, container, false)
 
 
-        savourImg = view.findViewById(R.id.imageView5) as ImageView
+        //savourImg = view.findViewById(R.id.imageView5) as ImageView
+        listButton = view.findViewById(R.id.vendor_list_button) as TextView
+        mapButton = view.findViewById(R.id.vendor_map_button) as TextView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
         noVendorsText = view.findViewById(R.id.novendors)
+        mapFrame = view.findViewById(R.id.vendor_map_layout) as FrameLayout
+        listFrame = view.findViewById(R.id.vendor_list_layout) as FrameLayout
+        mapView = fragmentManager!!.findFragmentById(R.id.map) as SupportMapFragment
+
+        mapFrame.visibility = View.INVISIBLE
+
+        listButton.setOnClickListener {
+            if(!isList) {
+                listButton.setBackgroundColor(resources.getColor(R.color.white))
+                listButton.setTextColor(resources.getColor(R.color.colorPrimary))
+
+                mapButton.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+                mapButton.setTextColor(resources.getColor(R.color.white))
+
+                isList = true
+                mapFrame.visibility = View.INVISIBLE
+                listFrame.visibility = View.VISIBLE
+            }
+        }
+
+        mapButton.setOnClickListener {
+            if(isList) {
+                mapButton.setBackgroundColor(resources.getColor(R.color.white))
+                mapButton.setTextColor(resources.getColor(R.color.colorPrimary))
+
+                listButton.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+                listButton.setTextColor(resources.getColor(R.color.white))
+
+                isList = false
+                mapFrame.visibility = View.VISIBLE
+                listFrame.visibility = View.INVISIBLE
+            }
+        }
 
         locationButton.setOnClickListener {
             var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
@@ -87,9 +137,9 @@ class VendorFragment : Fragment() {
             activity!!.startActivity(intent)
         }
 
-        Glide.with(this)
-                .load(R.drawable.savour_white)
-                .into(savourImg!!)
+//        Glide.with(this)
+//                .load(R.drawable.savour_white)
+//                .into(savourImg!!)
 
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
