@@ -34,10 +34,10 @@ import com.CP.Savour.R.id.vendor_list
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_vendor.*
 
 
@@ -53,8 +53,11 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mapButton: TextView
     private lateinit var mapFrame: FrameLayout
     private lateinit var listFrame: FrameLayout
-    private lateinit var mapView: SupportMapFragment
 
+    private var userLocation: LatLng? = null
+    private var mapView: SupportMapFragment? = null
+    private var map: GoogleMap? = null
+    //private var fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity::clva)
     private var isList = true
     var vendorArray : List<Vendor?> = arrayListOf()
 
@@ -72,14 +75,51 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
+        val sydney = LatLng(-33.852, 151.211)
+        map = googleMap
 
+        if (googleMap != null) {
+//            googleMap.addMarker(MarkerOptions().position(sydney))
+//            if (userLocation != null) {
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
+//            }
+            updateLocationUI()
+        }
+    }
+
+    private fun getDeviceLocation() {
+
+    }
+
+    /**
+     * This method is used to set the location of the map to the current location of the user
+     */
+    private fun updateLocationUI() {
+        if (this.map == null) {
+            return
+        }
+
+        if (checkPermission()) {
+            map.also {
+                if (it != null) {
+                    it.isMyLocationEnabled = true
+                    it.uiSettings.isMyLocationButtonEnabled = true
+                }
+            }
+        } else {
+            map.also {
+                if (it != null) {
+                    it.isMyLocationEnabled = false
+                    it.uiSettings.isMyLocationButtonEnabled = false
+                }
+            }
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         onCreate(savedInstanceState)
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -97,7 +137,8 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
         noVendorsText = view.findViewById(R.id.novendors)
         mapFrame = view.findViewById(R.id.vendor_map_layout) as FrameLayout
         listFrame = view.findViewById(R.id.vendor_list_layout) as FrameLayout
-        mapView = fragmentManager!!.findFragmentById(R.id.map) as SupportMapFragment
+
+
 
         mapFrame.visibility = View.INVISIBLE
 
@@ -147,12 +188,16 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
         if (this.activity != null){
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
+                userLocation = LatLng(it.latitude,it.longitude)
+
             })
             startLocation()
         }else{
             println("VENDORFRAGMENT:onCreate:Error getting activity for locationService")
         }
+        mapView = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
 
+        if (mapView != null) mapView?.getMapAsync(this)
         return view
     }
 
@@ -263,10 +308,33 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
 
 
     fun onLocationChanged(location: Location) {
+        if (this.map != null) {
+            userLocation = LatLng(location.latitude,location.longitude)
+
+            this.map.let {
+                if (it != null) {
+                    it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
+                    for (vendor in vendorArray) {
+                        if (vendor != null) {
+                                var lat: Double
+                                var lng: Double
+                                vendor.location.let {
+                                    lat = it!!.latitude
+                                    lng =  it!!.longitude
+                                }
+                                it.addMarker(MarkerOptions().position(LatLng(lat,lng)))
+
+                        }
+
+                    }
+                }
+            }
+        }
         // New location has now been determined
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
+
         }else{
             //recalculate distances and update recycler
             if (geoQuery!!.center != GeoLocation(location.latitude, location.longitude)) {

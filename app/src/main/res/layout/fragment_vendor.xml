@@ -56,12 +56,12 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="5dp"
+            android:padding="10dp"
             android:stretchColumns="*">
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="15dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="0dp"
                 android:background="@color/white"
                 android:padding="1dp">
