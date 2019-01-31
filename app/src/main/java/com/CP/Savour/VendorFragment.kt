@@ -37,11 +37,16 @@ import com.google.android.gms.location.LocationServices.getFusedLocationProvider
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_vendor.*
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
+
+private const val ARG_VENDOR = "vendor"
 
 
-class VendorFragment : Fragment(), OnMapReadyCallback {
+class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, OnInfoWindowClickListener {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var vendorAdapter : VendorRecyclerAdapter? = null
 
@@ -77,14 +82,43 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap?) {
         val sydney = LatLng(-33.852, 151.211)
         map = googleMap
+        if (map != null) {
+            map.let {
+                if (it != null) {
+                    it.setOnMarkerClickListener(this)
+                    it.setOnInfoWindowClickListener(this)
+                }
 
-        if (googleMap != null) {
+            }
 //            googleMap.addMarker(MarkerOptions().position(sydney))
 //            if (userLocation != null) {
 //                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
 //            }
             updateLocationUI()
         }
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+
+        return false
+    }
+
+    override fun onInfoWindowClick(marker: Marker?) {
+        println("INFOWINDOW CLICKEDDD")
+        if (marker != null) {
+            println("NOT NULL INFOWINDOW CLICKEDDD")
+
+            val vend = vendors[marker.tag]
+            val intent = Intent(context, VendorActivity::class.java)
+            intent.putExtra(ARG_VENDOR,vend)
+           context.let {
+               if (it != null) {
+                   it.startActivity(intent)
+               }
+           }
+
+        }
+
     }
 
     private fun getDeviceLocation() {
@@ -171,7 +205,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
         }
 
         locationButton.setOnClickListener {
-            var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.packageName)).apply {
                 addCategory(Intent.CATEGORY_DEFAULT)
                 setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
@@ -307,25 +341,29 @@ class VendorFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-    fun onLocationChanged(location: Location) {
+    private fun onLocationChanged(location: Location) {
         if (this.map != null) {
             userLocation = LatLng(location.latitude,location.longitude)
 
             this.map.let {
                 if (it != null) {
-                    it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
                     for (vendor in vendorArray) {
                         if (vendor != null) {
                                 var lat: Double
                                 var lng: Double
-                                vendor.location.let {
-                                    lat = it!!.latitude
-                                    lng =  it!!.longitude
+                                vendor.location.let {its ->
+                                    lat = its!!.latitude
+                                    lng =  its!!.longitude
                                 }
-                                it.addMarker(MarkerOptions().position(LatLng(lat,lng)))
+                                val marker = MarkerOptions().position(LatLng(lat,lng))
+                                        .title(vendor.name)
+
+
+                                it.addMarker(marker).tag = vendor.id
+
 
                         }
-
+                        it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
                     }
                 }
             }
