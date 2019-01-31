@@ -87,6 +87,23 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
                 if (it != null) {
                     it.setOnMarkerClickListener(this)
                     it.setOnInfoWindowClickListener(this)
+                    for (vendor in vendorArray) {
+                        if (vendor != null) {
+                            var lat: Double
+                            var lng: Double
+                            vendor.location.let {its ->
+                                lat = its!!.latitude
+                                lng =  its!!.longitude
+                            }
+                            val marker = MarkerOptions().position(LatLng(lat,lng))
+                                    .title(vendor.name)
+
+
+                            it.addMarker(marker).tag = vendor.id
+
+
+                        }
+                    }
                 }
 
             }
@@ -250,10 +267,36 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         super.onDestroy()
         locationService.cancel()
     }
+    private fun loadMap(lat: Double, lng: Double) {
+        if (this.map != null) {
+            userLocation = LatLng(lat,lng)
 
+            this.map.let {
+                if (it != null) {
+                    for (vendor in vendorArray) {
+                        if (vendor != null) {
+                            var lat: Double
+                            var lng: Double
+                            vendor.location.let {its ->
+                                lat = its!!.latitude
+                                lng =  its!!.longitude
+                            }
+                            val marker = MarkerOptions().position(LatLng(lat,lng))
+                                    .title(vendor.name)
+
+
+                            it.addMarker(marker).tag = vendor.id
+
+
+                        }
+                    }
+                    it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
+                }
+            }
+        }
+    }
     private fun getFirebaseData(lat:Double, lng:Double) {
         geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query
-
         geoQuery!!.addGeoQueryEventListener(object : GeoQueryEventListener {
             override fun onKeyEntered(key: String, location: GeoLocation) {
                 println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude))
@@ -342,36 +385,13 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
 
 
     private fun onLocationChanged(location: Location) {
-        if (this.map != null) {
-            userLocation = LatLng(location.latitude,location.longitude)
 
-            this.map.let {
-                if (it != null) {
-                    for (vendor in vendorArray) {
-                        if (vendor != null) {
-                                var lat: Double
-                                var lng: Double
-                                vendor.location.let {its ->
-                                    lat = its!!.latitude
-                                    lng =  its!!.longitude
-                                }
-                                val marker = MarkerOptions().position(LatLng(lat,lng))
-                                        .title(vendor.name)
-
-
-                                it.addMarker(marker).tag = vendor.id
-
-
-                        }
-                        it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
-                    }
-                }
-            }
-        }
         // New location has now been determined
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
+            loadMap(location.latitude,location.longitude)
+
 
         }else{
             //recalculate distances and update recycler
@@ -382,6 +402,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
                 for (vendor in vendors){
                     vendor.value!!.updateDistance(location)
                 }
+                loadMap(location.latitude,location.longitude)
                 onDataChanged()
             }
         }
