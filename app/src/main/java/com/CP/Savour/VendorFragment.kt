@@ -80,39 +80,8 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        val sydney = LatLng(-33.852, 151.211)
         map = googleMap
-        if (map != null) {
-            map.let {
-                if (it != null) {
-                    it.setOnMarkerClickListener(this)
-                    it.setOnInfoWindowClickListener(this)
-                    for (vendor in vendorArray) {
-                        if (vendor != null) {
-                            var lat: Double
-                            var lng: Double
-                            vendor.location.let {its ->
-                                lat = its!!.latitude
-                                lng =  its!!.longitude
-                            }
-                            val marker = MarkerOptions().position(LatLng(lat,lng))
-                                    .title(vendor.name)
-
-
-                            it.addMarker(marker).tag = vendor.id
-
-
-                        }
-                    }
-                }
-
-            }
-//            googleMap.addMarker(MarkerOptions().position(sydney))
-//            if (userLocation != null) {
-//                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
-//            }
-            updateLocationUI()
-        }
+        loadMarkers()
     }
 
     override fun onMarkerClick(marker: Marker?): Boolean {
@@ -121,10 +90,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
     }
 
     override fun onInfoWindowClick(marker: Marker?) {
-        println("INFOWINDOW CLICKEDDD")
         if (marker != null) {
-            println("NOT NULL INFOWINDOW CLICKEDDD")
-
             val vend = vendors[marker.tag]
             val intent = Intent(context, VendorActivity::class.java)
             intent.putExtra(ARG_VENDOR,vend)
@@ -249,6 +215,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         mapView = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
 
         if (mapView != null) mapView?.getMapAsync(this)
+        loadMarkers()
         return view
     }
 
@@ -258,6 +225,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
 
     override fun onStart() {
         super.onStart()
+        loadMarkers()
         if (locationService != null){ //check that we didnt get an error before and not init locationService
             startLocation()
         }
@@ -267,29 +235,41 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         super.onDestroy()
         locationService.cancel()
     }
+
+    private fun loadMarkers() {
+        if (map != null) {
+            map.let {
+                if (it != null) {
+                    it.setOnMarkerClickListener(this)
+                    it.setOnInfoWindowClickListener(this)
+                    for (vendor in vendorArray) {
+                        if (vendor != null) {
+
+                            vendor.location.let {its ->
+                                val marker = MarkerOptions().position(LatLng(its!!.latitude,its!!.longitude))
+                                        .title(vendor.name)
+                                it.addMarker(marker).tag = vendor.id
+                            }
+                        }
+                    }
+                }
+
+            }
+//            googleMap.addMarker(MarkerOptions().position(sydney))
+//            if (userLocation != null) {
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
+//            }
+            updateLocationUI()
+        }
+    }
     private fun loadMap(lat: Double, lng: Double) {
+
         if (this.map != null) {
             userLocation = LatLng(lat,lng)
 
             this.map.let {
                 if (it != null) {
-                    for (vendor in vendorArray) {
-                        if (vendor != null) {
-                            var lat: Double
-                            var lng: Double
-                            vendor.location.let {its ->
-                                lat = its!!.latitude
-                                lng =  its!!.longitude
-                            }
-                            val marker = MarkerOptions().position(LatLng(lat,lng))
-                                    .title(vendor.name)
-
-
-                            it.addMarker(marker).tag = vendor.id
-
-
-                        }
-                    }
+                    loadMarkers()
                     it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
                 }
             }
@@ -308,7 +288,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
                      */
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
-
+                            loadMarkers()
                             //convert to android Location object
                             val vendorLocation = Location("")
                             vendorLocation.latitude = location.latitude
@@ -369,7 +349,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         }
     }
 
-    fun startLocation(){
+    private fun startLocation(){
         if(checkPermission()) {
             locationMessage!!.visibility = View.INVISIBLE
             locationButton!!.visibility = View.INVISIBLE
