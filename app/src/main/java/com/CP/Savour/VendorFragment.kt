@@ -402,6 +402,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
                 for (vendor in vendors){
                     vendor.value!!.updateDistance(location)
                 }
+
                 loadMap(location.latitude,location.longitude)
                 onDataChanged()
             }
