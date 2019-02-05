@@ -370,8 +370,8 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
-            loadMap(location.latitude,location.longitude)
 
+            loadMap(location.latitude,location.longitude)
 
         }else{
             //recalculate distances and update recycler
@@ -383,7 +383,6 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
                     vendor.value!!.updateDistance(location)
                 }
 
-                loadMap(location.latitude,location.longitude)
                 onDataChanged()
             }
         }
