@@ -42,6 +42,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_vendor.*
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
+import kotlin.math.abs
+import kotlin.math.truncate
 
 private const val ARG_VENDOR = "vendor"
 
@@ -240,6 +242,7 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
         if (map != null) {
             map.let {
                 if (it != null) {
+                    it.clear()
                     it.setOnMarkerClickListener(this)
                     it.setOnInfoWindowClickListener(this)
                     for (vendor in vendorArray) {
@@ -365,13 +368,24 @@ class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, On
 
 
     private fun onLocationChanged(location: Location) {
+        userLocation.let {
+            if (it != null) {
+                if (abs(it.latitude - location.latitude) >= .02 || abs(it.longitude - location.longitude)  >= .02 ) {
+                    userLocation = LatLng(location.latitude,location.longitude)
+                    loadMap(location.latitude,location.longitude)
+                }
+            } else {
+                if (firstLocationUpdate) {
+                    loadMap(location.latitude,location.longitude)
+                }
+            }
+        }
 
         // New location has now been determined
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
 
-            loadMap(location.latitude,location.longitude)
 
         }else{
             //recalculate distances and update recycler
