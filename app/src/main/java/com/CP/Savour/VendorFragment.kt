@@ -27,16 +27,28 @@ import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import com.CP.Savour.R.id.vendor_list
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_vendor.*
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener
+import kotlin.math.abs
+import kotlin.math.truncate
+
+private const val ARG_VENDOR = "vendor"
 
 
-class VendorFragment : Fragment() {
+class VendorFragment : Fragment(), OnMapReadyCallback, OnMarkerClickListener, OnInfoWindowClickListener {
     private var layoutManager : RecyclerView.LayoutManager? = null
     private var vendorAdapter : VendorRecyclerAdapter? = null
 
@@ -44,6 +56,16 @@ class VendorFragment : Fragment() {
     private lateinit var locationMessage: TextView
     private lateinit var locationButton: Button
     private lateinit var noVendorsText: TextView
+    private lateinit var listButton: TextView
+    private lateinit var mapButton: TextView
+    private lateinit var mapFrame: FrameLayout
+    private lateinit var listFrame: FrameLayout
+
+    private var userLocation: LatLng? = null
+    private var mapView: SupportMapFragment? = null
+    private var map: GoogleMap? = null
+    //private var fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity::clva)
+    private var isList = true
     var vendorArray : List<Vendor?> = arrayListOf()
 
 
@@ -59,12 +81,64 @@ class VendorFragment : Fragment() {
     var  vendorReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("Vendors")
 
 
+    override fun onMapReady(googleMap: GoogleMap?) {
+        map = googleMap
+        loadMarkers()
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+
+        return false
+    }
+
+    override fun onInfoWindowClick(marker: Marker?) {
+        if (marker != null) {
+            val vend = vendors[marker.tag]
+            val intent = Intent(context, VendorActivity::class.java)
+            intent.putExtra(ARG_VENDOR,vend)
+           context.let {
+               if (it != null) {
+                   it.startActivity(intent)
+               }
+           }
+
+        }
+
+    }
+
+    private fun getDeviceLocation() {
+
+    }
+
+    /**
+     * This method is used to set the location of the map to the current location of the user
+     */
+    private fun updateLocationUI() {
+        if (this.map == null) {
+            return
+        }
+
+        if (checkPermission()) {
+            map.also {
+                if (it != null) {
+                    it.isMyLocationEnabled = true
+                    it.uiSettings.isMyLocationButtonEnabled = true
+                }
+            }
+        } else {
+            map.also {
+                if (it != null) {
+                    it.isMyLocationEnabled = false
+                    it.uiSettings.isMyLocationButtonEnabled = false
+                }
+            }
+        }
+    }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         onCreate(savedInstanceState)
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -74,22 +148,58 @@ class VendorFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_vendor, container, false)
 
 
-        savourImg = view.findViewById(R.id.imageView5) as ImageView
+        //savourImg = view.findViewById(R.id.imageView5) as ImageView
+        listButton = view.findViewById(R.id.vendor_list_button) as TextView
+        mapButton = view.findViewById(R.id.vendor_map_button) as TextView
         locationMessage = view.findViewById(R.id.locationMessage) as TextView
         locationButton = view.findViewById(R.id.location_button) as Button
         noVendorsText = view.findViewById(R.id.novendors)
+        mapFrame = view.findViewById(R.id.vendor_map_layout) as FrameLayout
+        listFrame = view.findViewById(R.id.vendor_list_layout) as FrameLayout
+
+
+
+        mapFrame.visibility = View.INVISIBLE
+
+        listButton.setOnClickListener {
+            if(!isList) {
+                listButton.setBackgroundColor(resources.getColor(R.color.white))
+                listButton.setTextColor(resources.getColor(R.color.colorPrimary))
+
+                mapButton.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+                mapButton.setTextColor(resources.getColor(R.color.white))
+
+                isList = true
+                mapFrame.visibility = View.INVISIBLE
+                listFrame.visibility = View.VISIBLE
+            }
+        }
+
+        mapButton.setOnClickListener {
+            if(isList) {
+                mapButton.setBackgroundColor(resources.getColor(R.color.white))
+                mapButton.setTextColor(resources.getColor(R.color.colorPrimary))
+
+                listButton.setBackgroundColor(resources.getColor(R.color.colorPrimary))
+                listButton.setTextColor(resources.getColor(R.color.white))
+
+                isList = false
+                mapFrame.visibility = View.VISIBLE
+                listFrame.visibility = View.INVISIBLE
+            }
+        }
 
         locationButton.setOnClickListener {
-            var intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.getPackageName())).apply {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + activity!!.packageName)).apply {
                 addCategory(Intent.CATEGORY_DEFAULT)
                 setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             activity!!.startActivity(intent)
         }
 
-        Glide.with(this)
-                .load(R.drawable.savour_white)
-                .into(savourImg!!)
+//        Glide.with(this)
+//                .load(R.drawable.savour_white)
+//                .into(savourImg!!)
 
         // retrieving the vendors from the database
         layoutManager = LinearLayoutManager(context)
@@ -97,12 +207,17 @@ class VendorFragment : Fragment() {
         if (this.activity != null){
             locationService = LocationService(pActivity = this.activity!!,callback = {
                 onLocationChanged(it)
+                userLocation = LatLng(it.latitude,it.longitude)
+
             })
             startLocation()
         }else{
             println("VENDORFRAGMENT:onCreate:Error getting activity for locationService")
         }
+        mapView = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
 
+        if (mapView != null) mapView?.getMapAsync(this)
+        loadMarkers()
         return view
     }
 
@@ -112,6 +227,7 @@ class VendorFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        loadMarkers()
         if (locationService != null){ //check that we didnt get an error before and not init locationService
             startLocation()
         }
@@ -122,9 +238,48 @@ class VendorFragment : Fragment() {
         locationService.cancel()
     }
 
+    private fun loadMarkers() {
+        if (map != null) {
+            map.let {
+                if (it != null) {
+                    it.clear()
+                    it.setOnMarkerClickListener(this)
+                    it.setOnInfoWindowClickListener(this)
+                    for (vendor in vendorArray) {
+                        if (vendor != null) {
+
+                            vendor.location.let {its ->
+                                val marker = MarkerOptions().position(LatLng(its!!.latitude,its!!.longitude))
+                                        .title(vendor.name)
+                                it.addMarker(marker).tag = vendor.id
+                            }
+                        }
+                    }
+                }
+
+            }
+//            googleMap.addMarker(MarkerOptions().position(sydney))
+//            if (userLocation != null) {
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation))
+//            }
+            updateLocationUI()
+        }
+    }
+    private fun loadMap(lat: Double, lng: Double) {
+
+        if (this.map != null) {
+            userLocation = LatLng(lat,lng)
+
+            this.map.let {
+                if (it != null) {
+                    loadMarkers()
+                    it.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,10f))
+                }
+            }
+        }
+    }
     private fun getFirebaseData(lat:Double, lng:Double) {
         geoQuery = geoFire.queryAtLocation(GeoLocation(lat, lng), 80.5) // About 50 mile query
-
         geoQuery!!.addGeoQueryEventListener(object : GeoQueryEventListener {
             override fun onKeyEntered(key: String, location: GeoLocation) {
                 println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude))
@@ -136,7 +291,7 @@ class VendorFragment : Fragment() {
                      */
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
-
+                            loadMarkers()
                             //convert to android Location object
                             val vendorLocation = Location("")
                             vendorLocation.latitude = location.latitude
@@ -197,7 +352,7 @@ class VendorFragment : Fragment() {
         }
     }
 
-    fun startLocation(){
+    private fun startLocation(){
         if(checkPermission()) {
             locationMessage!!.visibility = View.INVISIBLE
             locationButton!!.visibility = View.INVISIBLE
@@ -212,11 +367,26 @@ class VendorFragment : Fragment() {
     }
 
 
-    fun onLocationChanged(location: Location) {
+    private fun onLocationChanged(location: Location) {
+        userLocation.let {
+            if (it != null) {
+                if (abs(it.latitude - location.latitude) >= .02 || abs(it.longitude - location.longitude)  >= .02 ) {
+                    userLocation = LatLng(location.latitude,location.longitude)
+                    loadMap(location.latitude,location.longitude)
+                }
+            } else {
+                if (firstLocationUpdate) {
+                    loadMap(location.latitude,location.longitude)
+                }
+            }
+        }
+
         // New location has now been determined
         if(firstLocationUpdate){
             firstLocationUpdate = false
             getFirebaseData(location.latitude,location.longitude)
+
+
         }else{
             //recalculate distances and update recycler
             if (geoQuery!!.center != GeoLocation(location.latitude, location.longitude)) {
@@ -226,6 +396,7 @@ class VendorFragment : Fragment() {
                 for (vendor in vendors){
                     vendor.value!!.updateDistance(location)
                 }
+
                 onDataChanged()
             }
         }
