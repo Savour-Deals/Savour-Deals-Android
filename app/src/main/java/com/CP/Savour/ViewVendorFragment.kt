@@ -175,11 +175,14 @@ class ViewVendorFragment : Fragment() {
                         loyaltyProgress.progress = 0
                         userInfoRef.child("loyalty").child(vendor.id!!).child("redemptions").child("count").setValue(0)
                     }
-                    if (points!!.toInt() >= vendor.loyaltyCount!!.toInt()) {
-                        loyaltyButton.text = "Redeem"
-                    } else {
-                        loyaltyButton.text = "Loyalty Check-in"
+                    if (vendor.loyaltyCount != null && points != null) {
+                        if (points!!.toInt() >= vendor.loyaltyCount!!.toInt()) {
+                            loyaltyButton.text = "Redeem"
+                        } else {
+                            loyaltyButton.text = "Loyalty Check-in"
+                        }
                     }
+
                 }
             }
             override fun onCancelled(dbError: DatabaseError) {
