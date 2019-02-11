@@ -96,6 +96,8 @@
         </activity>
         <activity android:name=".VendorActivity" />
         <activity android:name=".ScanActivity" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        
     </application>
 
 </manifest>
